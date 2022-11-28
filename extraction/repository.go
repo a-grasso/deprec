@@ -6,7 +6,6 @@ import (
 	"deprec/model"
 	"github.com/google/go-github/v48/github"
 	"golang.org/x/oauth2"
-	"log"
 	"strings"
 )
 
@@ -58,8 +57,6 @@ func (re *GitHubExtractor) extractContributors() []*model.Contributor {
 		}
 		opt.Page = r.NextPage
 	}
-
-	log.Println(re.Config.APIToken)
 
 	var result []*model.Contributor
 	for _, c := range allContributors {
