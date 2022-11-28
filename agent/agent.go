@@ -1,7 +1,9 @@
 package agent
 
 import (
+	"deprec/configuration"
 	"deprec/extraction"
+	"deprec/mapping"
 	"deprec/model"
 	"log"
 )
@@ -9,10 +11,11 @@ import (
 type Agent struct {
 	Dependency *model.Dependency
 	DataModel  *model.DataModel
+	Config     *configuration.Configuration
 }
 
-func NewAgent(dependency *model.Dependency) *Agent {
-	agent := Agent{Dependency: dependency, DataModel: &model.DataModel{}}
+func NewAgent(dependency *model.Dependency, configuration *configuration.Configuration) *Agent {
+	agent := Agent{Dependency: dependency, DataModel: &model.DataModel{}, Config: configuration}
 	return &agent
 }
 
@@ -22,21 +25,24 @@ func (agent *Agent) Start() model.AgentResult {
 	log.Printf("...Extraction complete")
 
 	log.Printf("Starting Combination & Conclusion...")
-	agent.CombinationAndConclusion()
+	result := agent.CombinationAndConclusion()
 	log.Printf("...Combination & Conclusion complete")
 
-	return model.AgentResult{
-		Dependency: agent.Dependency,
-		Result:     0.0,
-	}
+	return *result
 }
 
 func (agent *Agent) Extraction() {
 
-	extractor := extraction.NewRepositoryExtractor(agent.Dependency)
+	extractor := extraction.NewGitHubExtractor(agent.Dependency, agent.DataModel, agent.Config.GitHub)
 	extractor.Extract(agent.DataModel)
 }
 
-func (agent *Agent) CombinationAndConclusion() {
+func (agent *Agent) CombinationAndConclusion() *model.AgentResult {
 
+	network := mapping.Network(agent.DataModel)
+
+	return &model.AgentResult{
+		Dependency: agent.Dependency,
+		Result:     network,
+	}
 }
