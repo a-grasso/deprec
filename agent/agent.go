@@ -6,6 +6,7 @@ import (
 	"deprec/mapping"
 	"deprec/model"
 	"log"
+	"strings"
 )
 
 type Agent struct {
@@ -33,8 +34,9 @@ func (agent *Agent) Start() model.AgentResult {
 
 func (agent *Agent) Extraction() {
 
-	extractor := extraction.NewGitHubExtractor(agent.Dependency, agent.DataModel, agent.Config.GitHub)
-	extractor.Extract(agent.DataModel)
+	if strings.Contains(agent.Dependency.MetaData["vcs"], "github") {
+		extraction.NewGitHubExtractor(agent.Dependency, agent.Config.GitHub).Extract(agent.DataModel)
+	}
 }
 
 func (agent *Agent) CombinationAndConclusion() *model.AgentResult {
