@@ -107,7 +107,7 @@ func main() {
 	var result []float64
 	for i, dep := range customSBOM {
 
-		if i > 20 {
+		if i > 2 {
 			break
 		}
 		log.Printf("Running Agent for %s:%s", dep.Name, dep.Version)

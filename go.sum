@@ -15,6 +15,8 @@ github.com/google/go-github/v48 v48.1.0 h1:nqPqq+0oRY2AMR/SRskGrrP4nnewPB7e/m2+k
 github.com/google/go-github/v48 v48.1.0/go.mod h1:dDlehKBDo850ZPvCTK0sEqTCVWcrGl2LcDiajkYi89Y=
 github.com/google/go-querystring v1.1.0 h1:AnCroh3fv4ZBgVIf1Iwtovgjaw/GiKJo8M8yD/fhyJ8=
 github.com/google/go-querystring v1.1.0/go.mod h1:Kcdr2DB4koayq7X8pmAG4sNG59So17icRSOU623lUBU=
+github.com/jensteichert/colt v0.0.0-20220814175240-8f458b7d3d0d h1:9/7YirzNmXMvanoL9g2LJK4//8pga8hEG3Gv93Q7f0k=
+github.com/jensteichert/colt v0.0.0-20220814175240-8f458b7d3d0d/go.mod h1:wg6M6U2uM172LFu6QTVAuolbHQbWKrKm6T32HgYyFw8=
 github.com/klauspost/compress v1.13.6 h1:P76CopJELS0TiO2mebmnzgWaajssP/EszplttgQxcgc=
 github.com/klauspost/compress v1.13.6/go.mod h1:/3/Vjq9QcHkK5uEr5lBEmyoZ1iFhe47etQ6QUkpK6sk=
 github.com/kr/pretty v0.1.0/go.mod h1:dAy3ld7l9f0ibDNOQOHHMYYIIbhfbHSm3C4ZsoJORNo=

@@ -5,6 +5,8 @@ import (
 	"deprec/configuration"
 	"deprec/model"
 	"github.com/google/go-github/v48/github"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/oauth2"
 	"log"
 	"strings"
@@ -12,22 +14,33 @@ import (
 
 type GitHubExtractor struct {
 	Repository string
-	Config     configuration.GitHub
+	Config     *configuration.Configuration
 	Client     *GitHubClientWrapper
 }
 
-func NewGitHubExtractor(dependency *model.Dependency, gh configuration.GitHub) *GitHubExtractor {
+func NewGitHubExtractor(dependency *model.Dependency, config *configuration.Configuration) *GitHubExtractor {
 
 	ctx := context.Background()
 	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: gh.APIToken},
+		&oauth2.Token{AccessToken: config.APIToken},
 	)
 	tc := oauth2.NewClient(ctx, ts)
 
 	client := github.NewClient(tc)
 
-	ghWrapper := NewGitHubClientWrapper(client)
-	return &GitHubExtractor{Repository: dependency.MetaData["vcs"], Config: gh, Client: ghWrapper}
+	credentials := options.Credential{
+		Username: config.Username,
+		Password: config.Password,
+	}
+
+	clientOpts := options.Client().ApplyURI(config.URI).SetAuth(credentials)
+	cache, err := mongo.Connect(context.TODO(), clientOpts)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	ghWrapper := NewGitHubClientWrapper(client, cache)
+	return &GitHubExtractor{Repository: dependency.MetaData["vcs"], Config: config, Client: ghWrapper}
 }
 
 func (re *GitHubExtractor) Extract(dataModel *model.DataModel) {
@@ -50,7 +63,7 @@ func (re *GitHubExtractor) extractContributors() []*model.Contributor {
 
 	owner, repo := re.parseVCSString(re.Repository)
 
-	contributors, err := re.Client.RepositoriesListContributors(context.TODO(), owner, repo, nil)
+	contributors, err := re.Client.Repositories.ListContributors(context.TODO(), owner, repo, &github.ListContributorsOptions{})
 
 	if err != nil {
 		return nil
@@ -73,24 +86,11 @@ func (re *GitHubExtractor) extractContributors() []*model.Contributor {
 }
 
 func (re *GitHubExtractor) listContributorRepositories(user string) int {
-	log.Printf("Listing Repos of Contributor %s", user)
 
-	var allRepos []*github.Repository
-	opt := &github.RepositoryListOptions{
-		ListOptions: github.ListOptions{PerPage: 10},
-	}
-	for {
-		projects, r, err := re.Client.RepositoriesList(context.TODO(), user, opt)
-
-		if err != nil {
-			break
-		}
-		allRepos = append(allRepos, projects...)
-		if r.NextPage == 0 {
-			break
-		}
-		opt.Page = r.NextPage
+	repos, err := re.Client.Repositories.List(context.TODO(), user, &github.RepositoryListOptions{})
+	if err != nil {
+		return 0
 	}
 
-	return len(allRepos)
+	return len(repos)
 }

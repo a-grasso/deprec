@@ -35,7 +35,7 @@ func (agent *Agent) Start() model.AgentResult {
 func (agent *Agent) Extraction() {
 
 	if strings.Contains(agent.Dependency.MetaData["vcs"], "github") {
-		extraction.NewGitHubExtractor(agent.Dependency, agent.Config.GitHub).Extract(agent.DataModel)
+		extraction.NewGitHubExtractor(agent.Dependency, agent.Config).Extract(agent.DataModel)
 	}
 }
 
