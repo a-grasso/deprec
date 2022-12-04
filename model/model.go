@@ -81,7 +81,8 @@ type Issue struct {
 type Contributor struct {
 	Name              string
 	Sponsors          []string
-	Organizations     []string
+	Organizations     int
+	Contributions     int
 	Repositories      int
 	FirstContribution string
 	LastContribution  string

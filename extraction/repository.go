@@ -64,19 +64,21 @@ func (re *GitHubExtractor) extractContributors() []*model.Contributor {
 	owner, repo := re.parseVCSString(re.Repository)
 
 	contributors, err := re.Client.Repositories.ListContributors(context.TODO(), owner, repo, &github.ListContributorsOptions{})
-
 	if err != nil {
-		return nil
+		return []*model.Contributor{}
 	}
 
 	var result []*model.Contributor
 	for _, c := range contributors {
-		projects := re.listContributorRepositories(c.GetLogin())
+		user := c.GetLogin()
+		projects := re.listContributorRepositories(user)
+		orgs := re.listContributorOrganizations(user)
 		result = append(result, &model.Contributor{
 			Name:              c.GetLogin(),
 			Sponsors:          nil,
-			Organizations:     nil,
-			Repositories:      projects,
+			Organizations:     len(orgs),
+			Contributions:     c.GetContributions(),
+			Repositories:      len(projects),
 			FirstContribution: "",
 			LastContribution:  "",
 		})
@@ -85,12 +87,22 @@ func (re *GitHubExtractor) extractContributors() []*model.Contributor {
 	return result
 }
 
-func (re *GitHubExtractor) listContributorRepositories(user string) int {
+func (re *GitHubExtractor) listContributorRepositories(user string) []*github.Repository {
 
 	repos, err := re.Client.Repositories.List(context.TODO(), user, &github.RepositoryListOptions{})
 	if err != nil {
-		return 0
+		return []*github.Repository{}
 	}
 
-	return len(repos)
+	return repos
+}
+
+func (re *GitHubExtractor) listContributorOrganizations(user string) []*github.Organization {
+
+	orgs, err := re.Client.Organizations.List(context.TODO(), user, &github.ListOptions{})
+	if err != nil {
+		return []*github.Organization{}
+	}
+
+	return orgs
 }
