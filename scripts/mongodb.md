@@ -2,9 +2,11 @@
 # Prerequisites
 
 ## Install Necessary Packages
-mongosh: https://www.mongodb.com/docs/mongodb-shell/install/
+
+`mongosh`: https://www.mongodb.com/docs/mongodb-shell/install/
 
 ## Environment Variables for Backup / Restore
+
 ```bash
 MONGO_HOST="localhost"
 MONGO_PORT="27017"
@@ -19,20 +21,21 @@ DUMP_DIR="./../dumps/"
 CONNECTION="--host ${MONGO_HOST} --port ${MONGO_PORT} ${AUTH_PARAM}"
 ```
 
-# Drop all Databases
-```bash
-mongosh ${CONNECTION} ${DATABASE} --eval '
-db.adminCommand("listDatabases").databases.
-   map(d => d.name).
-   filter(n => ["admin", "config", "local"].indexOf(n) == -1 ).
-   map(n => db.getSiblingDB(n).dropDatabase());
-   '
-```
-
-# Dump all Collections of Database
+# Dump all Databases
 
 ```bash
 mongodump ${CONNECTION} --out ${DUMP_DIR}
+```
+
+# Drop all Databases
+
+```bash
+mongosh ${CONNECTION} ${DATABASE} --eval '
+    db.adminCommand("listDatabases").databases.
+       map(d => d.name).
+       filter(n => ["admin", "config", "local"].indexOf(n) == -1 ).
+       map(n => db.getSiblingDB(n).dropDatabase());
+   '
 ```
 
 # Import Dumps
