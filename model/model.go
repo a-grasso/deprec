@@ -1,5 +1,7 @@
 package model
 
+import "time"
+
 type Dependency struct {
 	Name     string
 	Version  string
@@ -26,28 +28,39 @@ type Repository struct {
 	Commits      []*Commit
 	Releases     []*Release
 
-	Owner   string
-	Org     string
-	License string
+	*RepositoryData
+}
 
-	ReadMe      string
-	Archivation bool
-	About       string
+type RepositoryData struct {
+	Owner     *string
+	Org       *string
+	CreatedAt *time.Time
+	Size      *int
 
-	KLOC              int
-	TotalCommits      int
-	TotalIssues       int
-	TotalPRs          int
-	TotalContributors int
+	License      *string
+	AllowForking *bool
 
-	Forks    int
-	Watchers int
-	Stars    int
+	ReadMe      *string
+	About       *string
+	Archivation *bool
+	Disabled    *bool
 
-	Dependencies []string
-	Dependents   []string
+	KLOC              *int
+	TotalCommits      *int
+	TotalIssues       *int
+	TotalPRs          *int
+	TotalContributors *int
 
-	CommunityStandards float64
+	Forks    *int
+	Watchers *int
+	Stars    *int
+
+	Dependencies *[]string
+	Dependents   *[]string
+
+	OpenIssues *int
+
+	CommunityStandards *float64
 }
 
 type Commit struct {
@@ -57,14 +70,17 @@ type Commit struct {
 	Type         string
 	Message      string
 	Branch       string
-	Timestamp    string
+	Timestamp    time.Time
+	Additions    int
+	Deletions    int
+	Total        int
 }
 type Release struct {
 	Author  string
 	Version map[string]int
 	Changes []string
 	Type    string
-	Date    string
+	Date    time.Time
 }
 type Issue struct {
 	Author           string
@@ -79,13 +95,14 @@ type Issue struct {
 }
 
 type Contributor struct {
-	Name              string
-	Sponsors          []string
-	Organizations     int
-	Contributions     int
-	Repositories      int
-	FirstContribution string
-	LastContribution  string
+	Name               *string
+	Sponsors           *[]string
+	Organizations      *int
+	Contributions      *int
+	Repositories       *int
+	FirstContribution  *string
+	LastContribution   *string
+	TotalContributions *int
 }
 
 type Distribution struct {
@@ -96,7 +113,7 @@ type Distribution struct {
 type Artifact struct {
 	NewVersionAvailable  bool
 	ArtifactRepositories []string
-	Date                 string
+	Date                 time.Time
 	Vulnerabilities      []string
 	Dependents           []string
 	Dependencies         []string

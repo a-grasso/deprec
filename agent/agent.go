@@ -5,7 +5,6 @@ import (
 	"deprec/extraction"
 	"deprec/mapping"
 	"deprec/model"
-	"log"
 	"strings"
 )
 
@@ -21,13 +20,9 @@ func NewAgent(dependency *model.Dependency, configuration *configuration.Configu
 }
 
 func (agent *Agent) Start() model.AgentResult {
-	log.Printf("Starting Extraction...")
 	agent.Extraction()
-	log.Printf("...Extraction complete")
 
-	log.Printf("Starting Combination & Conclusion...")
 	result := agent.CombinationAndConclusion()
-	log.Printf("...Combination & Conclusion complete")
 
 	return *result
 }
