@@ -32,39 +32,40 @@ type Repository struct {
 }
 
 type RepositoryData struct {
-	Owner     *string
-	Org       *string
-	CreatedAt *time.Time
-	Size      *int
+	Owner     string
+	Org       string
+	CreatedAt time.Time
+	Size      int
 
-	License      *string
-	AllowForking *bool
+	License      string
+	AllowForking bool
 
-	ReadMe      *string
-	About       *string
-	Archivation *bool
-	Disabled    *bool
+	ReadMe      string
+	About       string
+	Archivation bool
+	Disabled    bool
 
-	KLOC              *int
-	TotalCommits      *int
-	TotalIssues       *int
-	TotalPRs          *int
-	TotalContributors *int
+	KLOC              int
+	TotalCommits      int
+	TotalIssues       int
+	TotalPRs          int
+	TotalContributors int
 
-	Forks    *int
-	Watchers *int
-	Stars    *int
+	Forks    int
+	Watchers int
+	Stars    int
 
-	Dependencies *[]string
-	Dependents   *[]string
+	Dependencies []string
+	Dependents   []string
 
-	OpenIssues *int
+	OpenIssues int
 
-	CommunityStandards *float64
+	CommunityStandards float64
 }
 
 type Commit struct {
 	Author       string
+	Committer    string
 	Changes      []string
 	ChangedFiles []string
 	Type         string
@@ -95,19 +96,19 @@ type Issue struct {
 }
 
 type Contributor struct {
-	Name               *string
-	Sponsors           *[]string
-	Organizations      *int
-	Contributions      *int
-	Repositories       *int
-	FirstContribution  *string
-	LastContribution   *string
-	TotalContributions *int
+	Name               string
+	Sponsors           []string
+	Organizations      int
+	Contributions      int
+	Repositories       int
+	FirstContribution  string
+	LastContribution   string
+	TotalContributions int
 }
 
 type Distribution struct {
-	Library  Library
-	Artifact Artifact
+	Library  *Library
+	Artifact *Artifact
 }
 
 type Artifact struct {

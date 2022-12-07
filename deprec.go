@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"deprec/agent"
 	"deprec/configuration"
 	"deprec/logging"
@@ -9,8 +10,10 @@ import (
 	"flag"
 	"fmt"
 	cdx "github.com/CycloneDX/cyclonedx-go"
+	"io"
 	"net/http"
 	"os"
+	"strings"
 )
 
 type input struct {
@@ -72,26 +75,59 @@ func exitGracefully(err error) {
 	logging.SugaredLogger.Fatalf("exited gracefully : %v\n", err)
 }
 
-func decodeSBOM(sbomPath string) *cdx.BOM {
+func getSBOMFromURL(url string) (io.ReadCloser, error) {
 
 	res, err := http.Get("https://github.com/DependencyTrack/dependency-track/releases/download/4.1.0/bom.json")
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	defer res.Body.Close()
+	return res.Body, nil
+}
 
-	//json, err := os.ReadFile(sbomPath)
-	//if err != nil {
-	//	log.Fatalf("Could not read sbom file '%s': %s", sbomPath, err)
-	//}
+func decodeSBOM(sbomPath string) *cdx.BOM {
+
+	json, err := os.ReadFile(sbomPath)
+	if err != nil {
+		logging.SugaredLogger.Fatalf("could not read sbom file '%s': %s", sbomPath, err)
+	}
+	reader := bytes.NewReader(json)
 
 	bom := new(cdx.BOM)
-	decoder := cdx.NewBOMDecoder(res.Body, cdx.BOMFileFormatJSON)
+	decoder := cdx.NewBOMDecoder(reader, cdx.BOMFileFormatJSON)
 	if err = decoder.Decode(bom); err != nil {
 		logging.SugaredLogger.Fatalf("could not decode SBOM: %s", err)
 		panic(err)
 	}
+
+	calcSBOMStats(bom)
+
 	return bom
+}
+
+func calcSBOMStats(bom *cdx.BOM) {
+	noVCS := 0
+	vcsGitHub := 0
+	for _, component := range *bom.Components {
+		if component.ExternalReferences == nil {
+			noVCS += 1
+			continue
+		}
+
+		externalReference := parseExternalReference(component)
+		vcs, exists := externalReference["vcs"]
+
+		if !exists {
+			noVCS += 1
+			continue
+		}
+
+		if strings.Contains(vcs, "github.com") {
+			vcsGitHub += 1
+		}
+	}
+
+	logging.SugaredLogger.Infof("%d/%d/%d github/vcs/total", vcsGitHub, len(*bom.Components)-noVCS, len(*bom.Components))
 }
 
 func parseSBOM(sbom *cdx.BOM) []*model.Dependency {

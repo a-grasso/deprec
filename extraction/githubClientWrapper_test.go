@@ -10,19 +10,13 @@ import (
 	"testing"
 )
 
-var config = configuration.Configuration{
-	GitHub: configuration.GitHub{},
-	MongoDB: configuration.MongoDB{
-		Username: "root",
-		Password: "rootpassword",
-		URI:      "mongodb://localhost:27027",
-	},
-}
+var config = configuration.Load("./../test.config.json")
+
 var sut = GitHubExtractor{
 	RepositoryURL: "test-Repo-URL",
 	Repository:    "test-Repo",
 	Owner:         "test-Owner",
-	Config:        &config,
+	Config:        config,
 	Client: &GitHubClientWrapper{
 		client:        nil,
 		cache:         nil,

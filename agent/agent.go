@@ -38,8 +38,18 @@ func (agent *Agent) CombinationAndConclusion() *model.AgentResult {
 
 	network := mapping.Network(agent.DataModel)
 
+	deityGiven := mapping.DeityGiven(agent.DataModel)
+
+	result := 0.0
+
+	if deityGiven == 1 {
+		result = 1
+	} else {
+		result = network
+	}
+
 	return &model.AgentResult{
 		Dependency: agent.Dependency,
-		Result:     network,
+		Result:     result,
 	}
 }

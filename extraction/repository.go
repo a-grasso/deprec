@@ -83,8 +83,8 @@ func (ghe *GitHubExtractor) Extract(dataModel *model.DataModel) {
 
 	commits := ghe.extractCommits()
 
-	*repositoryData.TotalContributors = len(contributors)
-	*repositoryData.TotalCommits = len(commits)
+	repositoryData.TotalContributors = len(contributors)
+	repositoryData.TotalCommits = len(commits)
 
 	repository := &model.Repository{
 		Contributors:   contributors,
@@ -108,52 +108,47 @@ func (ghe *GitHubExtractor) extractRepositoryData() *model.RepositoryData {
 
 	readme := ghe.extractReadMe()
 
-	var org *string
-	if repository.GetOrganization() == nil {
-		org = nil
-	} else {
-		org = repository.GetOrganization().Login
-	}
+	org := repository.GetOrganization().GetLogin()
 
 	repositoryData := &model.RepositoryData{
-		Owner:              repository.GetOwner().Login,
+		Owner:              repository.GetOwner().GetLogin(),
 		Org:                org,
-		CreatedAt:          &repository.CreatedAt.Time,
-		Size:               repository.Size,
-		License:            repository.GetLicense().Name,
-		AllowForking:       repository.AllowForking,
+		CreatedAt:          repository.GetCreatedAt().Time,
+		Size:               repository.GetSize(),
+		License:            repository.GetLicense().GetName(),
+		AllowForking:       repository.GetAllowForking(),
 		ReadMe:             readme,
-		About:              repository.Description,
-		Archivation:        repository.Archived,
-		Disabled:           repository.Disabled,
-		KLOC:               new(int),
-		TotalCommits:       new(int),
-		TotalIssues:        new(int),
-		TotalPRs:           new(int),
-		TotalContributors:  new(int),
-		Forks:              repository.ForksCount,
-		Watchers:           repository.SubscribersCount,
-		Stars:              repository.StargazersCount,
+		About:              repository.GetDescription(),
+		Archivation:        repository.GetArchived(),
+		Disabled:           repository.GetDisabled(),
+		KLOC:               0,
+		TotalCommits:       0,
+		TotalIssues:        0,
+		TotalPRs:           0,
+		TotalContributors:  0,
+		Forks:              repository.GetForksCount(),
+		Watchers:           repository.GetSubscribersCount(),
+		Stars:              repository.GetStargazersCount(),
 		Dependencies:       nil,
 		Dependents:         nil,
-		CommunityStandards: new(float64),
+		CommunityStandards: 0,
 	}
 
 	return repositoryData
 }
 
-func (ghe *GitHubExtractor) extractReadMe() *string {
+func (ghe *GitHubExtractor) extractReadMe() string {
 	readme, err := ghe.Client.Repositories.GetReadMe(context.TODO(), ghe.Owner, ghe.Repository, &github.RepositoryContentGetOptions{})
 	if err != nil {
-		return nil
+		return ""
 	}
 
 	readmeContent, err := readme.GetContent()
 	if err != nil {
-		return nil
+		return ""
 	}
 
-	return &readmeContent
+	return readmeContent
 }
 
 func (ghe *GitHubExtractor) extractCommits() []*model.Commit {
@@ -174,12 +169,13 @@ func (ghe *GitHubExtractor) extractCommits() []*model.Commit {
 
 		commit := &model.Commit{
 			Author:       c.GetAuthor().GetLogin(),
+			Committer:    c.GetCommitter().GetLogin(),
 			Changes:      nil,
 			ChangedFiles: changedFiles,
 			Type:         "",
 			Message:      c.GetCommit().GetMessage(),
 			Branch:       "",
-			Timestamp:    c.GetCommit().GetAuthor().GetDate(),
+			Timestamp:    c.GetCommit().GetCommitter().GetDate(),
 			Additions:    c.GetCommit().GetStats().GetAdditions(),
 			Deletions:    c.GetCommit().GetStats().GetDeletions(),
 			Total:        c.GetCommit().GetStats().GetTotal(),
@@ -208,11 +204,11 @@ func (ghe *GitHubExtractor) extractContributors() []*model.Contributor {
 
 		orgs := len(ghe.listContributorOrganizations(user))
 		contributor := model.Contributor{
-			Name:               c.Login,
+			Name:               c.GetLogin(),
 			Sponsors:           nil,
-			Organizations:      &orgs,
-			Contributions:      c.Contributions,
-			Repositories:       &projects,
+			Organizations:      orgs,
+			Contributions:      c.GetContributions(),
+			Repositories:       projects,
 			FirstContribution:  firstContribution,
 			LastContribution:   lastContribution,
 			TotalContributions: total,
@@ -224,26 +220,26 @@ func (ghe *GitHubExtractor) extractContributors() []*model.Contributor {
 	return result
 }
 
-func siftContributorStats(stats *github.ContributorStats) (*string, *string, *int) {
+func siftContributorStats(stats *github.ContributorStats) (string, string, int) {
 
 	if stats == nil {
-		return nil, nil, nil
+		return "", "", 0
 	}
 
-	var first, last *string
+	var first, last string
 	for i, week := range stats.Weeks {
 		if i == 0 {
-			tmp := week.Week.String()
-			first = &tmp
+			tmp := week.GetWeek().String()
+			first = tmp
 		}
 
 		if i == len(stats.Weeks)-1 {
 			tmp := week.Week.String()
-			last = &tmp
+			last = tmp
 		}
 	}
 
-	return first, last, stats.Total
+	return first, last, stats.GetTotal()
 }
 
 func (ghe *GitHubExtractor) listContributorStats(user string) *github.ContributorStats {
