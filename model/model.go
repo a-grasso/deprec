@@ -50,6 +50,7 @@ type RepositoryData struct {
 	TotalIssues       int
 	TotalPRs          int
 	TotalContributors int
+	TotalReleases     int
 
 	Forks    int
 	Watchers int
@@ -87,21 +88,23 @@ type Commit struct {
 	Total        int
 }
 type Release struct {
-	Author  string
-	Version map[string]int
-	Changes []string
-	Type    string
-	Date    time.Time
+	Author      string
+	Version     string
+	Description string
+	Changes     []string
+	Type        string
+	Date        time.Time
 }
 type Issue struct {
+	Number           int
 	Author           string
 	Labels           []string
 	Contributions    []string
 	Contributors     []*Contributor
-	CreationTime     string
+	CreationTime     time.Time
 	FirstResponse    string
-	LastContribution string
-	ClosingTime      string
+	LastContribution time.Time
+	ClosingTime      time.Time
 	Content          string
 }
 

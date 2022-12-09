@@ -15,6 +15,7 @@ type GitHubClientWrapper struct {
 
 	Repositories  *RepositoriesServiceWrapper
 	Organizations *OrganizationsServiceWrapper
+	Issues        *IssuesServiceWrapper
 }
 
 type ServiceWrapper struct {
@@ -24,6 +25,7 @@ type ServiceWrapper struct {
 
 type RepositoriesServiceWrapper ServiceWrapper
 type OrganizationsServiceWrapper ServiceWrapper
+type IssuesServiceWrapper ServiceWrapper
 
 func NewGitHubClientWrapper(client *github.Client, cache *mongo.Client) *GitHubClientWrapper {
 
@@ -34,6 +36,7 @@ func NewGitHubClientWrapper(client *github.Client, cache *mongo.Client) *GitHubC
 
 	wrapper.Repositories = (*RepositoriesServiceWrapper)(&wrapper.common)
 	wrapper.Organizations = (*OrganizationsServiceWrapper)(&wrapper.common)
+	wrapper.Issues = (*IssuesServiceWrapper)(&wrapper.common)
 
 	return wrapper
 }
@@ -124,4 +127,37 @@ func (s *RepositoriesServiceWrapper) ListCommits(ctx context.Context, owner stri
 	}
 
 	return fetchPagination[*github.RepositoryCommit](ctx, coll, f, &opts.ListOptions)
+}
+
+func (s *RepositoriesServiceWrapper) ListReleases(ctx context.Context, owner string, repository string, opts *github.ListOptions) ([]*github.RepositoryRelease, error) {
+
+	coll := s.cache.Database("repositories_list_releases").Collection(fmt.Sprintf("%s-%s", owner, repository))
+
+	f := func() ([]*github.RepositoryRelease, *github.Response, error) {
+		return s.client.Repositories.ListReleases(ctx, owner, repository, opts)
+	}
+
+	return fetchPagination[*github.RepositoryRelease](ctx, coll, f, opts)
+}
+
+func (s *IssuesServiceWrapper) ListByRepo(ctx context.Context, owner string, repository string, opts *github.IssueListByRepoOptions) ([]*github.Issue, error) {
+
+	coll := s.cache.Database("issues_list_by_repo").Collection(fmt.Sprintf("%s-%s", owner, repository))
+
+	f := func() ([]*github.Issue, *github.Response, error) {
+		return s.client.Issues.ListByRepo(ctx, owner, repository, opts)
+	}
+
+	return fetchPagination[*github.Issue](ctx, coll, f, &opts.ListOptions)
+}
+
+func (s *RepositoriesServiceWrapper) ListTags(ctx context.Context, owner string, repository string, opts *github.ListOptions) ([]*github.RepositoryTag, error) {
+
+	coll := s.cache.Database("repositories_list_tags").Collection(fmt.Sprintf("%s-%s", owner, repository))
+
+	f := func() ([]*github.RepositoryTag, *github.Response, error) {
+		return s.client.Repositories.ListTags(ctx, owner, repository, opts)
+	}
+
+	return fetchPagination[*github.RepositoryTag](ctx, coll, f, opts)
 }

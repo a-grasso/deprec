@@ -84,14 +84,20 @@ func (ghe *GitHubExtractor) Extract(dataModel *model.DataModel) {
 
 	commits := ghe.extractCommits(ghe.Owner, ghe.Repository)
 
+	releases := ghe.extractReleases(ghe.Owner, ghe.Repository)
+
+	issues := ghe.extractIssues(ghe.Owner, ghe.Repository)
+
 	repositoryData.TotalContributors = len(contributors)
 	repositoryData.TotalCommits = len(commits)
+	repositoryData.TotalReleases = len(releases)
+	repositoryData.TotalIssues = len(issues)
 
 	repository := &model.Repository{
 		Contributors:   contributors,
-		Issues:         nil,
+		Issues:         issues,
 		Commits:        commits,
-		Releases:       nil,
+		Releases:       releases,
 		RepositoryData: repositoryData,
 	}
 
@@ -151,6 +157,67 @@ func (ghe *GitHubExtractor) extractReadMe(owner, repo string) string {
 	}
 
 	return readmeContent
+}
+
+func (ghe *GitHubExtractor) extractReleases(owner, repo string) []*model.Release {
+	releases, err := ghe.Client.Repositories.ListReleases(context.TODO(), owner, repo, &github.ListOptions{})
+	if err != nil {
+		logging.SugaredLogger.Errorf("could not extract releases of '%s' : %s", ghe.RepositoryURL, err)
+		return nil
+	}
+
+	if releases == nil {
+		//TODO switch to tags instead of releases (important for apache mirrors, though watch out for semantic versioning)
+	}
+
+	var result []*model.Release
+
+	for _, release := range releases {
+
+		r := &model.Release{
+			Author:      release.GetAuthor().GetLogin(),
+			Version:     release.GetName(),
+			Description: release.GetBody(),
+			Changes:     nil,
+			Type:        "",
+			Date:        release.GetPublishedAt().Time,
+		}
+
+		result = append(result, r)
+	}
+
+	return result
+}
+
+func (ghe *GitHubExtractor) extractIssues(owner, repo string) []*model.Issue {
+	issues, err := ghe.Client.Issues.ListByRepo(context.TODO(), owner, repo, &github.IssueListByRepoOptions{
+		State: "all",
+	})
+	if err != nil {
+		logging.SugaredLogger.Errorf("could not extract issues of '%s' : %s", ghe.RepositoryURL, err)
+		return nil
+	}
+
+	var result []*model.Issue
+
+	for _, issue := range issues {
+		i := &model.Issue{
+			Number:           issue.GetNumber(),
+			Author:           "",
+			Labels:           nil,
+			Contributions:    nil,
+			Contributors:     nil,
+			CreationTime:     issue.GetCreatedAt(),
+			FirstResponse:    "",
+			LastContribution: issue.GetUpdatedAt(),
+			ClosingTime:      issue.GetClosedAt(),
+			Content:          issue.GetBody(),
+		}
+
+		result = append(result, i)
+	}
+
+	return result
 }
 
 func (ghe *GitHubExtractor) extractCommits(owner, repo string) []*model.Commit {
