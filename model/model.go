@@ -33,7 +33,7 @@ type Repository struct {
 
 type RepositoryData struct {
 	Owner     string
-	Org       string
+	Org       *Organization
 	CreatedAt time.Time
 	Size      int
 
@@ -61,6 +61,16 @@ type RepositoryData struct {
 	OpenIssues int
 
 	CommunityStandards float64
+}
+
+type Organization struct {
+	Login             string
+	PublicRepos       int
+	Followers         int
+	Following         int
+	TotalPrivateRepos int
+	OwnedPrivateRepos int
+	Collaborators     int
 }
 
 type Commit struct {
@@ -96,14 +106,14 @@ type Issue struct {
 }
 
 type Contributor struct {
-	Name               string
-	Sponsors           []string
-	Organizations      int
-	Contributions      int
-	Repositories       int
-	FirstContribution  string
-	LastContribution   string
-	TotalContributions int
+	Name                    string
+	Sponsors                []string
+	Organizations           int
+	Contributions           int
+	Repositories            int
+	FirstContribution       time.Time
+	LastContribution        time.Time
+	TotalStatsContributions int
 }
 
 type Distribution struct {
@@ -118,6 +128,7 @@ type Artifact struct {
 	Vulnerabilities      []string
 	Dependents           []string
 	Dependencies         []string
+	DeprecationWarning   bool
 }
 
 type Library struct {

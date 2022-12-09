@@ -10,25 +10,11 @@ import (
 	"testing"
 )
 
-var config = configuration.Load("./../test.config.json")
+var cacheConfig = configuration.Load("./../test.ut.config.json")
 
-var sut = GitHubExtractor{
-	RepositoryURL: "test-Repo-URL",
-	Repository:    "test-Repo",
-	Owner:         "test-Owner",
-	Config:        config,
-	Client: &GitHubClientWrapper{
-		client:        nil,
-		cache:         nil,
-		common:        ServiceWrapper{},
-		Repositories:  nil,
-		Organizations: nil,
-	},
-}
-
-var cache, _ = mongo.Connect(context.TODO(), options.Client().ApplyURI(config.URI).SetAuth(options.Credential{
-	Username: config.Username,
-	Password: config.Password,
+var cache, _ = mongo.Connect(context.TODO(), options.Client().ApplyURI(cacheConfig.URI).SetAuth(options.Credential{
+	Username: cacheConfig.Username,
+	Password: cacheConfig.Password,
 }))
 
 func init() {

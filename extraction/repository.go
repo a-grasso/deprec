@@ -11,6 +11,7 @@ import (
 	"golang.org/x/oauth2"
 	"log"
 	"strings"
+	"time"
 )
 
 type GitHubExtractor struct {
@@ -27,16 +28,16 @@ func NewGitHubExtractor(dependency *model.Dependency, config *configuration.Conf
 
 	cache := mongoDBClient(config)
 
-	ghWrapper := NewGitHubClientWrapper(client, cache)
+	gitHubClientWrapper := NewGitHubClientWrapper(client, cache)
 
 	vcs := dependency.MetaData["vcs"]
 	owner, repo := parseVCSString(vcs)
 
-	return &GitHubExtractor{RepositoryURL: vcs, Owner: owner, Repository: repo, Config: config, Client: ghWrapper}
+	return &GitHubExtractor{RepositoryURL: vcs, Owner: owner, Repository: repo, Config: config, Client: gitHubClientWrapper}
 }
 
-func checkRateLimits(client *github.Client) {
-	limits, _, _ := client.RateLimits(context.TODO())
+func (ghe *GitHubExtractor) checkRateLimits() {
+	limits, _, _ := ghe.Client.client.RateLimits(context.TODO())
 	logging.SugaredLogger.Infof("rate limit:-> Core: %d Search: %d", limits.Core.Remaining, limits.Search.Remaining)
 }
 
@@ -75,7 +76,7 @@ func githubClient(config *configuration.Configuration) *github.Client {
 func (ghe *GitHubExtractor) Extract(dataModel *model.DataModel) {
 	logging.SugaredLogger.Infof("extracting repo '%s'", ghe.RepositoryURL)
 
-	checkRateLimits(ghe.Client.client)
+	ghe.checkRateLimits()
 
 	repositoryData := ghe.extractRepositoryData()
 
@@ -96,7 +97,7 @@ func (ghe *GitHubExtractor) Extract(dataModel *model.DataModel) {
 
 	dataModel.Repository = repository
 
-	checkRateLimits(ghe.Client.client)
+	ghe.checkRateLimits()
 }
 
 func (ghe *GitHubExtractor) extractRepositoryData() *model.RepositoryData {
@@ -108,7 +109,7 @@ func (ghe *GitHubExtractor) extractRepositoryData() *model.RepositoryData {
 
 	readme := ghe.extractReadMe()
 
-	org := repository.GetOrganization().GetLogin()
+	org := ghe.extractOrganization(repository.GetOrganization().GetLogin())
 
 	repositoryData := &model.RepositoryData{
 		Owner:              repository.GetOwner().GetLogin(),
@@ -140,6 +141,7 @@ func (ghe *GitHubExtractor) extractRepositoryData() *model.RepositoryData {
 func (ghe *GitHubExtractor) extractReadMe() string {
 	readme, err := ghe.Client.Repositories.GetReadMe(context.TODO(), ghe.Owner, ghe.Repository, &github.RepositoryContentGetOptions{})
 	if err != nil {
+		logging.SugaredLogger.Errorf("could not extract readme of '%s' : %s", ghe.RepositoryURL, err)
 		return ""
 	}
 
@@ -154,6 +156,7 @@ func (ghe *GitHubExtractor) extractReadMe() string {
 func (ghe *GitHubExtractor) extractCommits() []*model.Commit {
 	commits, err := ghe.Client.Repositories.ListCommits(context.TODO(), ghe.Owner, ghe.Repository, &github.CommitsListOptions{})
 	if err != nil {
+		logging.SugaredLogger.Errorf("could not extract commits of '%s' : %s", ghe.RepositoryURL, err)
 		return nil
 	}
 
@@ -191,27 +194,28 @@ func (ghe *GitHubExtractor) extractContributors() []*model.Contributor {
 
 	contributors, err := ghe.Client.Repositories.ListContributors(context.TODO(), ghe.Owner, ghe.Repository, &github.ListContributorsOptions{})
 	if err != nil {
-		return []*model.Contributor{}
+		logging.SugaredLogger.Errorf("could not extract contributors of '%s' : %s", ghe.RepositoryURL, err)
+		return nil
 	}
 
 	var result []*model.Contributor
+	contributorStats := ghe.listContributorStats()
 	for _, c := range contributors {
 
 		user := c.GetLogin()
 		projects := len(ghe.listContributorRepositories(user))
-		stats := ghe.listContributorStats(user)
-		firstContribution, lastContribution, total := siftContributorStats(stats)
+		firstContribution, lastContribution, total := ghe.siftContributorStats(contributorStats, user)
 
 		orgs := len(ghe.listContributorOrganizations(user))
 		contributor := model.Contributor{
-			Name:               c.GetLogin(),
-			Sponsors:           nil,
-			Organizations:      orgs,
-			Contributions:      c.GetContributions(),
-			Repositories:       projects,
-			FirstContribution:  firstContribution,
-			LastContribution:   lastContribution,
-			TotalContributions: total,
+			Name:                    c.GetLogin(),
+			Sponsors:                nil,
+			Organizations:           orgs,
+			Contributions:           c.GetContributions(),
+			Repositories:            projects,
+			FirstContribution:       firstContribution,
+			LastContribution:        lastContribution,
+			TotalStatsContributions: total,
 		}
 
 		result = append(result, &contributor)
@@ -220,21 +224,28 @@ func (ghe *GitHubExtractor) extractContributors() []*model.Contributor {
 	return result
 }
 
-func siftContributorStats(stats *github.ContributorStats) (string, string, int) {
-
-	if stats == nil {
-		return "", "", 0
+func (ghe *GitHubExtractor) siftContributorStats(contributorStats []*github.ContributorStats, user string) (time.Time, time.Time, int) {
+	var stats *github.ContributorStats
+	for _, cs := range contributorStats {
+		if user == cs.GetAuthor().GetLogin() {
+			stats = cs
+		}
 	}
 
-	var first, last string
+	if stats == nil {
+		logging.SugaredLogger.Errorf("could not find stats of contributor '%s' from repo '%s'", user, ghe.RepositoryURL)
+		return time.Time{}, time.Time{}, 0
+	}
+
+	var first, last time.Time
 	for i, week := range stats.Weeks {
 		if i == 0 {
-			tmp := week.GetWeek().String()
+			tmp := week.GetWeek().Time
 			first = tmp
 		}
 
 		if i == len(stats.Weeks)-1 {
-			tmp := week.Week.String()
+			tmp := week.Week.Time
 			last = tmp
 		}
 	}
@@ -242,27 +253,22 @@ func siftContributorStats(stats *github.ContributorStats) (string, string, int) 
 	return first, last, stats.GetTotal()
 }
 
-func (ghe *GitHubExtractor) listContributorStats(user string) *github.ContributorStats {
+func (ghe *GitHubExtractor) listContributorStats() []*github.ContributorStats {
 	contributorStats, err := ghe.Client.Repositories.ListContributorStats(context.TODO(), ghe.Owner, ghe.Repository)
 
 	if err != nil {
+		logging.SugaredLogger.Errorf("could not extract stats of contributors from repo '%s' : %s", ghe.RepositoryURL, err)
 		return nil
 	}
 
-	var result *github.ContributorStats
-	for _, stat := range contributorStats {
-		if user == stat.GetAuthor().GetLogin() {
-			result = stat
-		}
-	}
-
-	return result
+	return contributorStats
 }
 
 func (ghe *GitHubExtractor) listContributorRepositories(user string) []*github.Repository {
 
 	repos, err := ghe.Client.Repositories.List(context.TODO(), user, &github.RepositoryListOptions{})
 	if err != nil {
+		logging.SugaredLogger.Errorf("could not list repositories of contributor '%s' : %s", user, err)
 		return nil
 	}
 
@@ -273,8 +279,31 @@ func (ghe *GitHubExtractor) listContributorOrganizations(user string) []*github.
 
 	orgs, err := ghe.Client.Organizations.List(context.TODO(), user, &github.ListOptions{})
 	if err != nil {
+		logging.SugaredLogger.Errorf("could not list organizations of contributor '%s' : %s", user, err)
 		return nil
 	}
 
 	return orgs
+}
+
+func (ghe *GitHubExtractor) extractOrganization(o string) *model.Organization {
+
+	org, err := ghe.Client.Organizations.Get(context.TODO(), o)
+
+	if err != nil {
+		logging.SugaredLogger.Errorf("could not extract organization data of '%s' : %s", o, err)
+		return nil
+	}
+
+	organization := &model.Organization{
+		Login:             org.GetLogin(),
+		PublicRepos:       org.GetPublicRepos(),
+		Followers:         org.GetFollowers(),
+		Following:         org.GetFollowing(),
+		TotalPrivateRepos: org.GetTotalPrivateRepos(),
+		OwnedPrivateRepos: org.GetOwnedPrivateRepos(),
+		Collaborators:     org.GetCollaborators(),
+	}
+
+	return organization
 }

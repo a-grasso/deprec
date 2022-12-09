@@ -200,6 +200,421 @@
           "url": "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
         }
       ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:maven/us.springett/alpine@1.9.0?type=jar",
+      "group": "us.springett",
+      "name": "alpine",
+      "version": "1.9.0",
+      "description": "An opinionated scaffolding library that jumpstarts Java projects with an API-first design, secure defaults, and minimal dependencies.",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "MD5",
+          "content": "07880876251261952f4d4041266dbdf3"
+        },
+        {
+          "alg": "SHA-1",
+          "content": "3796e8a9fdaa502d1da37af043c7ff97e56b2908"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "ae05116535854ca642a41f527192035863d9d370ea56dbb1de14f79cdcacc346"
+        },
+        {
+          "alg": "SHA-384",
+          "content": "f12a4aa161c204e070d2b90f7e108ce235936ff1adad86bcfe103847524b604e260ccfd8139798d9859b855c22bb6927"
+        },
+        {
+          "alg": "SHA-512",
+          "content": "1d0b3f6441a875a105aba4a31778d4fe99eb9807ddca4253970a1991085f557feebaaf527cbe7b9b5fb5dd7b81d0662dc5ee236b08130952717ff3b67bb4d1fd"
+        },
+        {
+          "alg": "SHA3-256",
+          "content": "4e4aa00fc63d5216237f1b5a31bbc7a09c89e21fbd25df2a9e59cb71a0023f1e"
+        },
+        {
+          "alg": "SHA3-384",
+          "content": "b2ee1a616cc67f15d2b15e7e68a6d758f84c85d89eef98be6e580c2eb6dde9cf94e7ed371b7a09dd06a7534295dd149a"
+        },
+        {
+          "alg": "SHA3-512",
+          "content": "e9b6ff1b550b4b331083b2a97c0b66730bc6c4057a09363bfbcd9016df84125b0722cc7db21f6fdf34a067c9c75bf1673e55467ceac511554a506612224f48af"
+        }
+      ],
+      "licenses": [{"license": {
+        "id": "Apache-2.0",
+        "url": "http://www.apache.org/licenses/LICENSE-2.0"
+      }}],
+      "purl": "pkg:maven/us.springett/alpine@1.9.0?type=jar",
+      "externalReferences": [
+        {
+          "type": "build-system",
+          "url": "https://github.com/stevespringett/Alpine/actions"
+        },
+        {
+          "type": "distribution",
+          "url": "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/stevespringett/Alpine/issues"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/stevespringett/Alpine.git"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:maven/us.springett/cvss-calculator@1.4.0?type=jar",
+      "group": "us.springett",
+      "name": "cvss-calculator",
+      "version": "1.4.0",
+      "description": "A Java library for calculating CVSSv2, CVSSv3, and CVSSv3.1 scores and vectors",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "MD5",
+          "content": "186df5141a595d6032a68e5b6e215762"
+        },
+        {
+          "alg": "SHA-1",
+          "content": "8d9dfff9ca7d28073b255ccafb7cf9ac9b7ca0ae"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "3f649c67919fc22af3138328a4f61670c7f8cbf77f5f5985fde3f925a76ed36d"
+        },
+        {
+          "alg": "SHA-384",
+          "content": "fbc71653449622316e0163b147aa0adb95818892c762a546fd14d03a24f58508dc64eb675a5776a1a2a3d5f59b2a9f3a"
+        },
+        {
+          "alg": "SHA-512",
+          "content": "fd97a4a9314ef0ce0aa1a2f7da36ec5f4993f070a130f3843d8c4851417a2860274a11fd5ad7d5362f11e8e8830c28192cf10369e9c0a719bf6401207664269a"
+        },
+        {
+          "alg": "SHA3-256",
+          "content": "4e877227ec10af4bcb28426291a4259004776011cd1e12a40d29910e5b83aaa9"
+        },
+        {
+          "alg": "SHA3-384",
+          "content": "c98836d29f1ffa59a896bb293dabc6b1f0916a43cb098bf8ccddbfdf72ce99bb58ac10dfb81defd0cf359a6dfa563c7f"
+        },
+        {
+          "alg": "SHA3-512",
+          "content": "e8468d0dbe9745873d3986905cb9c517472f1e66b2a1a34477f2bf1ec71e7367d29173c17a156e4472cdabbda3ba2a149c3d0fade130904abafe4e77f20806d8"
+        }
+      ],
+      "licenses": [{"license": {
+        "id": "Apache-2.0",
+        "url": "http://www.apache.org/licenses/LICENSE-2.0"
+      }}],
+      "purl": "pkg:maven/us.springett/cvss-calculator@1.4.0?type=jar",
+      "externalReferences": [
+        {
+          "type": "build-system",
+          "url": "https://travis-ci.org/stevespringett/cvss-calculator"
+        },
+        {
+          "type": "distribution",
+          "url": "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/stevespringett/cvss-calculator/issues"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/stevespringett/cvss-calculator.git"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:maven/us.springett/cpe-parser@2.0.2?type=jar",
+      "group": "us.springett",
+      "name": "cpe-parser",
+      "version": "2.0.2",
+      "description": "A utility for validating and parsing Common Platform Enumeration (CPE) v2.2 and v2.3 as originally defined by MITRE and maintained by NIST.",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "MD5",
+          "content": "f07de5ae8549a93b912a223a83c30655"
+        },
+        {
+          "alg": "SHA-1",
+          "content": "677cff319cdc8bd9578a3d04c1fd9c366cc9ff6e"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "8fddc10cf23ad8d3329dd8343ea1e291e1eb39344dd6e61b676a0cde88cf6375"
+        },
+        {
+          "alg": "SHA-384",
+          "content": "99b53a6ebfe82a6e0b7e5b6b9648d6e871a4b015b26c503a921d0713ede738930c352aae77448202ccfe74d84008c88e"
+        },
+        {
+          "alg": "SHA-512",
+          "content": "2b546382f2747b2628a3f0169289ddee8639d8aeb26da119fc439db42b4518281509139126a6e6972ee5079ad34dc164c9d15e44cda1597900dc4b7429736889"
+        },
+        {
+          "alg": "SHA3-256",
+          "content": "e72269d096adf457cd78b931cd2a2902a5bee446f5c79e25fc4bb30e64d1d2cd"
+        },
+        {
+          "alg": "SHA3-384",
+          "content": "1f4e7d87d281a484edd8cd06a27ec58b664ac3f0ea747e622a32ddacd6728ff512cbf89c2003af76e4532c73ab13f4e3"
+        },
+        {
+          "alg": "SHA3-512",
+          "content": "8cc7471a8af3d0eaf226cc37317f40b9303b055a338a26efad89e7586eee6cb06f149c70eead9500b982f5b1318d1e5d806e7648823da69d0031fe4463d8c58e"
+        }
+      ],
+      "licenses": [{"license": {
+        "id": "Apache-2.0",
+        "url": "http://www.apache.org/licenses/LICENSE-2.0"
+      }}],
+      "purl": "pkg:maven/us.springett/cpe-parser@2.0.2?type=jar",
+      "externalReferences": [
+        {
+          "type": "build-system",
+          "url": "https://travis-ci.org/stevespringett/CPE-Parser"
+        },
+        {
+          "type": "distribution",
+          "url": "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/stevespringett/CPE-Parser/issues"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/stevespringett/CPE-Parser.git"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:maven/org.cyclonedx/cyclonedx-core-java@3.0.8?type=jar",
+      "publisher": "CycloneDX",
+      "group": "org.cyclonedx",
+      "name": "cyclonedx-core-java",
+      "version": "3.0.8",
+      "description": "The CycloneDX core module provides a model representation of the BOM along with utilities to assist in creating, parsing, and validating BOMs.",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "MD5",
+          "content": "37c02555a77e3c3f7aa20eef7cfff833"
+        },
+        {
+          "alg": "SHA-1",
+          "content": "83e35c383b106c539dee0954294274da4e3fedd8"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "4fbfc8af5655d492e3c8ffe36900acd0cce8891a9fbb28ccd5363e3817fe614e"
+        },
+        {
+          "alg": "SHA-384",
+          "content": "b39990411517e034a62c7488344a09c05ee23975cb4b720ea2a5dd07d564b6cfd7950e6a1724bae9a65945e9dd2677c2"
+        },
+        {
+          "alg": "SHA-512",
+          "content": "21c61372ab14aa042c6204b93095daa0d093becfb301c2ce7511b879c5f75bd8942a66b431631de9b0a0b6e091e18288e19c8e2dc2dfeb28193bc2149e44e684"
+        },
+        {
+          "alg": "SHA3-256",
+          "content": "28297aec184d42d3fda21a9b8ac145d4e20850046c0d543547863a976da2099c"
+        },
+        {
+          "alg": "SHA3-384",
+          "content": "f3c1fc3aeb6dbcf15395c361d4ab087decc2a17ffd4e9d1cf6ee4ea98b6398c642d91365f739fafbc553d0fc78d56c8f"
+        },
+        {
+          "alg": "SHA3-512",
+          "content": "dd8bfd9fdf61c65a25523e70e238f1c900593b03a58402cac7a1f876cfb8db1e4ce3876b8a83551dd9e4804da949c8722dc8b7c619a507ea9a2e3371232ce53b"
+        }
+      ],
+      "licenses": [{"license": {
+        "id": "Apache-2.0",
+        "url": "http://www.apache.org/licenses/LICENSE-2.0"
+      }}],
+      "purl": "pkg:maven/org.cyclonedx/cyclonedx-core-java@3.0.8?type=jar",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://cyclonedx.org"
+        },
+        {
+          "type": "build-system",
+          "url": "https://github.com/CycloneDX/cyclonedx-core-java/actions"
+        },
+        {
+          "type": "distribution",
+          "url": "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/CycloneDX/cyclonedx-core-java/issues"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/CycloneDX/cyclonedx-core-java.git"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:maven/commons-codec/commons-codec@1.15?type=jar",
+      "publisher": "The Apache Software Foundation",
+      "group": "commons-codec",
+      "name": "commons-codec",
+      "version": "1.15",
+      "description": "The Apache Commons Codec package contains simple encoder and decoders for various formats such as Base64 and Hexadecimal. In addition to these widely used encoders and decoders, the codec package also maintains a collection of phonetic encoding utilities.",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "MD5",
+          "content": "303baf002ce6d382198090aedd9d79a2"
+        },
+        {
+          "alg": "SHA-1",
+          "content": "49d94806b6e3dc933dacbd8acb0fdbab8ebd1e5d"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "b3e9f6d63a790109bf0d056611fbed1cf69055826defeb9894a71369d246ed63"
+        },
+        {
+          "alg": "SHA-384",
+          "content": "05d0506283716472175d44c2a4766523397bf8a007c18848f9c9a61718cc8aa437f9cb4b91771037ab29a960860b62a0"
+        },
+        {
+          "alg": "SHA-512",
+          "content": "da30a716770795fce390e4dd340a8b728f220c6572383ffef55bd5839655d5611fcc06128b2144f6cdcb36f53072a12ec80b04afee787665e7ad0b6e888a6787"
+        },
+        {
+          "alg": "SHA3-256",
+          "content": "87be248f33f241121f54aad61a9a460a79eabefbf1b5b0dd22aeb95b581f727e"
+        },
+        {
+          "alg": "SHA3-384",
+          "content": "12fad4ef78274b06f97b1243cea6f970088abde082d2de9377d915a34b44f7d7d67807c03e59c849b69f1544e2a9a1be"
+        },
+        {
+          "alg": "SHA3-512",
+          "content": "8c992c9c569ebaa0bf956a4c5b34fbf5e1ed1c212c2dd896fa216183ee0bcd341e96698af4b9cec7e8880762faa081a3d3a27f51349aa457cb8e373e4f57c788"
+        }
+      ],
+      "licenses": [{"license": {"id": "Apache-2.0"}}],
+      "purl": "pkg:maven/commons-codec/commons-codec@1.15?type=jar",
+      "externalReferences": [
+        {
+          "type": "issue-tracker",
+          "url": "https://issues.apache.org/jira/browse/CODEC"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/apache/commons-codec"
+        },
+        {
+          "type": "build-system",
+          "url": "https://builds.apache.org/"
+        },
+        {
+          "type": "mailing-list",
+          "url": "https://mail-archives.apache.org/mod_mbox/commons-user/"
+        },
+        {
+          "type": "website",
+          "url": "https://www.apache.org/"
+        },
+        {
+          "type": "distribution",
+          "url": "https://repository.apache.org/service/local/staging/deploy/maven2"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:maven/com.thoughtworks.xstream/xstream@1.4.14?type=jar",
+      "publisher": "XStream",
+      "group": "com.thoughtworks.xstream",
+      "name": "xstream",
+      "version": "1.4.14",
+      "description": "XStream is a serialization library from Java objects to XML and back.",
+      "hashes": [
+        {
+          "alg": "MD5",
+          "content": "77059f8fdd7f9c6dcb2d271030b92782"
+        },
+        {
+          "alg": "SHA-1",
+          "content": "205696d5c42809abca64f4d3df47d95c2b3af7b4"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "e6f2167d27cfa3a8ab87a5e415db97bc9647c7256cc8703a94209dc2279c1cf4"
+        },
+        {
+          "alg": "SHA-384",
+          "content": "71991abb49cb1e8c93d5f5ba84fe509e1c2007c6c8381e02db60f86cf46ac103cc3c5bf1704602b2a411fc49592b6f34"
+        },
+        {
+          "alg": "SHA-512",
+          "content": "3672f1a37d897bae077d16bb810bd9baf2f219e24920f8b29b5d9ebcfb9ebe0bb746ab0ddda8b1606a6fba47d36f0263fc61da9b2bdf2e3ba4574a03793874cd"
+        },
+        {
+          "alg": "SHA3-256",
+          "content": "e9e4465d8995011e30467be195e969239a4a330584296e1412b20d3b8f85e6d7"
+        },
+        {
+          "alg": "SHA3-384",
+          "content": "7be12a1b2ff05f426a48aedf4279a1e1e251fb0c33661a227035fdd5cf469e41c89c2ca5bf90f7e861e734c138703264"
+        },
+        {
+          "alg": "SHA3-512",
+          "content": "16baee3f157bab632e3780f187c950366b53ebd619988d9e530f6c23ef205a8d1d33381a8dee265acf3e278d6b3528e79cebca84d05430273ae870413cd512e1"
+        }
+      ],
+      "licenses": [{"license": {
+        "id": "BSD-3-Clause",
+        "url": "https://opensource.org/licenses/BSD-3-Clause"
+      }}],
+      "purl": "pkg:maven/com.thoughtworks.xstream/xstream@1.4.14?type=jar",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "http://x-stream.github.io"
+        },
+        {
+          "type": "build-system",
+          "url": "https://travis-ci.org/x-stream/xstream"
+        },
+        {
+          "type": "distribution",
+          "url": "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/x-stream/xstream/issues/"
+        },
+        {
+          "type": "mailing-list",
+          "url": "https://groups.google.com/forum/#!forum/xstream-user"
+        },
+        {
+          "type": "vcs",
+          "url": "http://github.com/x-stream/xstream"
+        }
+      ]
     }
   ]
 }

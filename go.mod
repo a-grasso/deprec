@@ -4,6 +4,7 @@ go 1.19
 
 require (
 	github.com/CycloneDX/cyclonedx-go v0.7.0
+	github.com/gocarina/gocsv v0.0.0-20221105105431-c8ef78125b99
 	github.com/google/go-github/v48 v48.1.0
 	github.com/stretchr/testify v1.8.0
 	go.mongodb.org/mongo-driver v1.11.0
@@ -13,7 +14,6 @@ require (
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/gocarina/gocsv v0.0.0-20221105105431-c8ef78125b99 // indirect
 	github.com/golang/protobuf v1.3.2 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect

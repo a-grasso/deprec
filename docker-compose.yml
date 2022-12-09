@@ -1,6 +1,6 @@
 version: '3.7'
 services:
-  mongodb_container:
+  mongodb:
     image: mongo:latest
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
@@ -10,7 +10,7 @@ services:
     volumes:
       - mongodb_data_container:/data/db
 
-  mongodb_test_container:
+  mongodb_ut:
     image: mongo:latest
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
@@ -18,8 +18,19 @@ services:
     ports:
       - "27027:27017"
     volumes:
-      - mongodb_test_data_container:/data/db
+      - mongodb_ut_data_container:/data/db
+
+  mongodb_it:
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+    ports:
+      - "27037:27017"
+    volumes:
+      - mongodb_it_data_container:/data/db
 
 volumes:
   mongodb_data_container:
-  mongodb_test_data_container:
+  mongodb_ut_data_container:
+  mongodb_it_data_container:

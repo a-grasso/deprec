@@ -4,13 +4,14 @@ import (
 	"deprec/configuration"
 	"deprec/logging"
 	"deprec/model"
+	"fmt"
 	"github.com/gocarina/gocsv"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
 )
 
-var config = configuration.Load("./../test.config.json")
+var config = configuration.Load("./../test.it.config.json")
 
 var testCSV = "./../agent.test.gh.csv"
 
@@ -60,6 +61,7 @@ func TestAgentGitHubRepository(t *testing.T) {
 
 		actual := agent.Start().Result
 
-		assert.Equal(t, row.Result, actual)
+		logging.SugaredLogger.Infof("Result: '%s' :-> expected: '%f' with comment: '%s' got: '%f'", row.Repository, row.Result, row.Comment, actual)
+		assert.Equal(t, row.Result, actual, fmt.Sprintf("Result: '%s' :-> expected: '%f' with comment: '%s' got: '%f'", row.Repository, row.Result, row.Comment, actual))
 	}
 }

@@ -1,3 +1,6 @@
 repository,comment,result,name,version
-https://github.com/apache/logging-log4j1,clear marking over readme,1,log4j1,
+https://github.com/apache/logging-log4j1,(readme) eol,1,log4j1,
 https://github.com/apache/logging-log4j2,,0,log4j2,
+https://github.com/findbugsproject/findbugs,"(readme) eol, but development continued on new project",1,findbugs,
+https://github.com/gleclaire/findbugs-maven-plugin,(archived) eol as findbugs eol,1,findbugs-maven-plugin,
+https://github.com/mojohaus/animal-sniffer,"(readme) maintenance mode, as now built-int",1,animal-sniffer,

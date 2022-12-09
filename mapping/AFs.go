@@ -6,24 +6,46 @@ import (
 )
 
 func Network(model *model.DataModel) float64 {
-
 	var result float64
+
+	// Repository
+	var repositoryNetwork float64
+
+	var contributorRepos int
+	var contributorOrgs int
+	var contributorSponsors int
+	var contributors int
+
 	if model.Repository == nil {
-		return 0
+		repositoryNetwork = 0
+	} else {
+
+		contributors += model.Repository.TotalContributors
+		for _, contributor := range model.Repository.Contributors {
+			contributorRepos += contributor.Repositories
+			contributorOrgs += contributor.Organizations
+			contributorSponsors += 0 //TODO
+		}
 	}
 
-	for _, contributor := range model.Repository.Contributors {
-		result += float64(contributor.Repositories)
-		result += float64(contributor.Organizations)
-	}
-
-	result += float64(len(model.Repository.Contributors))
+	result += repositoryNetwork
 
 	return result
 }
 
+func Popularity(model *model.DataModel) float64 {
+
+	stars := model.Repository.Stars
+	watchers := model.Repository.Watchers
+	forks := model.Repository.Forks
+
+	contributors := model.Repository.TotalContributors
+
+	return float64(stars + watchers + forks + contributors)
+}
+
 func Interconnectedness(model *model.DataModel) float64 {
-	return Network(model)*0.5 + 1
+	return Network(model)*0.3 + Popularity(model)*0.7
 }
 
 func DeityGiven(model *model.DataModel) float64 {
@@ -33,12 +55,15 @@ func DeityGiven(model *model.DataModel) float64 {
 		return 1
 	}
 
-	readme := model.Repository.ReadMe
+	readme := strings.ToLower(model.Repository.ReadMe)
+	if strings.Contains(readme, "deprecated") || strings.Contains(readme, "end-of-life") {
+		return 1
+	}
 
-	if strings.Contains(readme, "deprecated") || strings.Contains(strings.ToLower(readme), "end-of-life") {
+	about := strings.ToLower(model.Repository.About)
+	if strings.Contains(about, "deprecated") || strings.Contains(about, "end-of-life") {
 		return 1
 	}
 
 	return 0
-
 }
