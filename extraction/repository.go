@@ -78,11 +78,11 @@ func (ghe *GitHubExtractor) Extract(dataModel *model.DataModel) {
 
 	ghe.checkRateLimits()
 
-	repositoryData := ghe.extractRepositoryData()
+	repositoryData := ghe.extractRepositoryData(ghe.Owner, ghe.Repository)
 
-	contributors := ghe.extractContributors()
+	contributors := ghe.extractContributors(ghe.Owner, ghe.Repository)
 
-	commits := ghe.extractCommits()
+	commits := ghe.extractCommits(ghe.Owner, ghe.Repository)
 
 	repositoryData.TotalContributors = len(contributors)
 	repositoryData.TotalCommits = len(commits)
@@ -100,14 +100,14 @@ func (ghe *GitHubExtractor) Extract(dataModel *model.DataModel) {
 	ghe.checkRateLimits()
 }
 
-func (ghe *GitHubExtractor) extractRepositoryData() *model.RepositoryData {
-	repository, err := ghe.Client.Repositories.Get(context.TODO(), ghe.Owner, ghe.Repository)
+func (ghe *GitHubExtractor) extractRepositoryData(owner, repo string) *model.RepositoryData {
+	repository, err := ghe.Client.Repositories.Get(context.TODO(), owner, repo)
 	if err != nil {
 		logging.SugaredLogger.Errorf("could not extract repository data of '%s' : %s", ghe.RepositoryURL, err)
 		return nil
 	}
 
-	readme := ghe.extractReadMe()
+	readme := ghe.extractReadMe(owner, repo)
 
 	org := ghe.extractOrganization(repository.GetOrganization().GetLogin())
 
@@ -138,8 +138,8 @@ func (ghe *GitHubExtractor) extractRepositoryData() *model.RepositoryData {
 	return repositoryData
 }
 
-func (ghe *GitHubExtractor) extractReadMe() string {
-	readme, err := ghe.Client.Repositories.GetReadMe(context.TODO(), ghe.Owner, ghe.Repository, &github.RepositoryContentGetOptions{})
+func (ghe *GitHubExtractor) extractReadMe(owner, repo string) string {
+	readme, err := ghe.Client.Repositories.GetReadMe(context.TODO(), owner, repo, &github.RepositoryContentGetOptions{})
 	if err != nil {
 		logging.SugaredLogger.Errorf("could not extract readme of '%s' : %s", ghe.RepositoryURL, err)
 		return ""
@@ -153,8 +153,8 @@ func (ghe *GitHubExtractor) extractReadMe() string {
 	return readmeContent
 }
 
-func (ghe *GitHubExtractor) extractCommits() []*model.Commit {
-	commits, err := ghe.Client.Repositories.ListCommits(context.TODO(), ghe.Owner, ghe.Repository, &github.CommitsListOptions{})
+func (ghe *GitHubExtractor) extractCommits(owner, repo string) []*model.Commit {
+	commits, err := ghe.Client.Repositories.ListCommits(context.TODO(), owner, repo, &github.CommitsListOptions{})
 	if err != nil {
 		logging.SugaredLogger.Errorf("could not extract commits of '%s' : %s", ghe.RepositoryURL, err)
 		return nil
@@ -190,16 +190,16 @@ func (ghe *GitHubExtractor) extractCommits() []*model.Commit {
 	return result
 }
 
-func (ghe *GitHubExtractor) extractContributors() []*model.Contributor {
+func (ghe *GitHubExtractor) extractContributors(owner, repo string) []*model.Contributor {
 
-	contributors, err := ghe.Client.Repositories.ListContributors(context.TODO(), ghe.Owner, ghe.Repository, &github.ListContributorsOptions{})
+	contributors, err := ghe.Client.Repositories.ListContributors(context.TODO(), owner, repo, &github.ListContributorsOptions{})
 	if err != nil {
 		logging.SugaredLogger.Errorf("could not extract contributors of '%s' : %s", ghe.RepositoryURL, err)
 		return nil
 	}
 
 	var result []*model.Contributor
-	contributorStats := ghe.listContributorStats()
+	contributorStats := ghe.listContributorStats(owner, repo)
 	for _, c := range contributors {
 
 		user := c.GetLogin()
@@ -253,8 +253,8 @@ func (ghe *GitHubExtractor) siftContributorStats(contributorStats []*github.Cont
 	return first, last, stats.GetTotal()
 }
 
-func (ghe *GitHubExtractor) listContributorStats() []*github.ContributorStats {
-	contributorStats, err := ghe.Client.Repositories.ListContributorStats(context.TODO(), ghe.Owner, ghe.Repository)
+func (ghe *GitHubExtractor) listContributorStats(owner, repo string) []*github.ContributorStats {
+	contributorStats, err := ghe.Client.Repositories.ListContributorStats(context.TODO(), owner, repo)
 
 	if err != nil {
 		logging.SugaredLogger.Errorf("could not extract stats of contributors from repo '%s' : %s", ghe.RepositoryURL, err)

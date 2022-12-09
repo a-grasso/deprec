@@ -1,15 +1,10 @@
 package extraction
 
 import (
-	"context"
-	"deprec/configuration"
 	"deprec/model"
 	"github.com/stretchr/testify/assert"
-	"go.mongodb.org/mongo-driver/bson"
 	"testing"
 )
-
-var repositoryConfig = configuration.Load("./../test.ut.config.json")
 
 var testDependency = &model.Dependency{
 	Name:     "test-dependency",
@@ -17,31 +12,10 @@ var testDependency = &model.Dependency{
 	MetaData: map[string]string{"vcs": "https://github.com//.git"},
 }
 
-var ghe = NewGitHubExtractor(testDependency, repositoryConfig)
-
-func init() {
-	databases, err := cache.ListDatabases(context.TODO(), bson.D{})
-	if err != nil {
-		return
-	}
-
-	for _, database := range databases.Databases {
-		err := cache.Database(database.Name).Drop(context.TODO())
-		if err != nil {
-			continue
-		}
-	}
-}
-
-func checkNoDatabase(t *testing.T) {
-	databases, err := cache.ListDatabases(context.TODO(), bson.D{})
-	if err != nil {
-		assert.FailNow(t, "Could not fetch databases")
-	}
-	assert.True(t, len(databases.Databases) == 3) // 3 databases can not be dropped (admin, local, config)
-}
+var ghe = NewGitHubExtractor(testDependency, config)
 
 func TestExtractOrganizationNil(t *testing.T) {
+	t.Cleanup(cleanDatabase)
 
 	org := ghe.extractOrganization("")
 
@@ -51,11 +25,9 @@ func TestExtractOrganizationNil(t *testing.T) {
 }
 
 func TestExtractRepositoryDataNil(t *testing.T) {
+	t.Cleanup(cleanDatabase)
 
-	ghe.Owner = ""
-	ghe.Repository = ""
-
-	repoData := ghe.extractRepositoryData()
+	repoData := ghe.extractRepositoryData("", "")
 
 	assert.Nil(t, repoData)
 
@@ -63,11 +35,9 @@ func TestExtractRepositoryDataNil(t *testing.T) {
 }
 
 func TestExtractReadMeNil(t *testing.T) {
+	t.Cleanup(cleanDatabase)
 
-	ghe.Owner = ""
-	ghe.Repository = ""
-
-	readme := ghe.extractReadMe()
+	readme := ghe.extractReadMe("", "")
 
 	assert.Equal(t, "", readme)
 
@@ -75,11 +45,9 @@ func TestExtractReadMeNil(t *testing.T) {
 }
 
 func TestExtractContributorsNil(t *testing.T) {
+	t.Cleanup(cleanDatabase)
 
-	ghe.Owner = ""
-	ghe.Repository = ""
-
-	contributors := ghe.extractContributors()
+	contributors := ghe.extractContributors("", "")
 
 	assert.Nil(t, contributors)
 
@@ -87,11 +55,9 @@ func TestExtractContributorsNil(t *testing.T) {
 }
 
 func TestListContributorStatsNil(t *testing.T) {
+	t.Cleanup(cleanDatabase)
 
-	ghe.Owner = ""
-	ghe.Repository = ""
-
-	contributorStats := ghe.listContributorStats()
+	contributorStats := ghe.listContributorStats("", "")
 
 	assert.Nil(t, contributorStats)
 
@@ -99,6 +65,7 @@ func TestListContributorStatsNil(t *testing.T) {
 }
 
 func TestListContributorOrganizationsNil(t *testing.T) {
+	t.Cleanup(cleanDatabase)
 
 	contributorOrganizations := ghe.listContributorOrganizations("")
 
@@ -117,11 +84,9 @@ func TestListContributorRepositoriesNil(t *testing.T) {
 }
 
 func TestExtractCommitsNil(t *testing.T) {
+	t.Cleanup(cleanDatabase)
 
-	ghe.Owner = ""
-	ghe.Repository = ""
-
-	contributorStats := ghe.extractCommits()
+	contributorStats := ghe.extractCommits("", "")
 
 	assert.Nil(t, contributorStats)
 

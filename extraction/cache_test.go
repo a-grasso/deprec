@@ -2,28 +2,19 @@ package extraction
 
 import (
 	"context"
-	"deprec/configuration"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"log"
 	"testing"
 )
 
-var cacheConfig = configuration.Load("./../test.ut.config.json")
-
-var cache, _ = mongo.Connect(context.TODO(), options.Client().ApplyURI(cacheConfig.URI).SetAuth(options.Credential{
-	Username: cacheConfig.Username,
-	Password: cacheConfig.Password,
+var cache, _ = mongo.Connect(context.TODO(), options.Client().ApplyURI(config.URI).SetAuth(options.Credential{
+	Username: config.Username,
+	Password: config.Password,
 }))
 
-func init() {
-	err := cache.Database("test-collection").Drop(context.TODO())
-	if err != nil {
-		return
-	}
-}
 func TestCheckCacheSingle(t *testing.T) {
+	t.Cleanup(cleanDatabase)
 
 	collection := cache.Database("test-collection").Collection("test-check-cache-single")
 
@@ -41,7 +32,7 @@ func TestCheckCacheSingle(t *testing.T) {
 
 	_, err := collection.InsertOne(context.TODO(), testObject)
 	if err != nil {
-		log.Println("ERROR")
+		t.Fatalf("Error Inserting Into Cache")
 	}
 
 	cachedObject := checkCacheSingle[TestObject](collection)
@@ -50,6 +41,7 @@ func TestCheckCacheSingle(t *testing.T) {
 }
 
 func TestCheckCacheSingleMultiple(t *testing.T) {
+	t.Cleanup(cleanDatabase)
 
 	collection := cache.Database("test-collection").Collection("test-check-cache-single-multiple")
 
@@ -73,7 +65,7 @@ func TestCheckCacheSingleMultiple(t *testing.T) {
 
 	_, err := collection.InsertMany(context.TODO(), []interface{}{testObjects[0], testObjects[1]})
 	if err != nil {
-		log.Println("ERROR")
+		t.Fatalf("Error Inserting Into Cache")
 	}
 
 	cachedObjects := checkCacheSingle[TestObject](collection)
@@ -82,6 +74,7 @@ func TestCheckCacheSingleMultiple(t *testing.T) {
 }
 
 func TestCheckCacheSingleNil(t *testing.T) {
+	t.Cleanup(cleanDatabase)
 
 	collection := cache.Database("test-collection").Collection("test-check-cache-single-nil")
 
@@ -99,7 +92,7 @@ func TestCheckCacheSingleNil(t *testing.T) {
 
 	_, err := collection.InsertOne(context.TODO(), testObject)
 	if err != nil {
-		log.Println("ERROR")
+		t.Fatalf("Error Inserting Into Cache")
 	}
 
 	_ = collection.Drop(context.TODO())
@@ -110,6 +103,7 @@ func TestCheckCacheSingleNil(t *testing.T) {
 }
 
 func TestCheckCache(t *testing.T) {
+	t.Cleanup(cleanDatabase)
 
 	collection := cache.Database("test-collection").Collection("test-check-cache")
 
@@ -133,7 +127,7 @@ func TestCheckCache(t *testing.T) {
 
 	_, err := collection.InsertMany(context.TODO(), []interface{}{testObjects[0], testObjects[1]})
 	if err != nil {
-		log.Println("ERROR")
+		t.Fatalf("Error Inserting Into Cache")
 	}
 
 	cachedObjects := checkCache[TestObject](collection)
@@ -142,6 +136,7 @@ func TestCheckCache(t *testing.T) {
 }
 
 func TestUpdateCache(t *testing.T) {
+	t.Cleanup(cleanDatabase)
 
 	collection := cache.Database("test-collection").Collection("test-update-cache")
 
@@ -173,6 +168,7 @@ func TestUpdateCache(t *testing.T) {
 }
 
 func TestUpdateCacheSingleError(t *testing.T) {
+	t.Cleanup(cleanDatabase)
 
 	collection := cache.Database("test-collection").Collection("test-update-cache-error")
 
@@ -192,6 +188,7 @@ func TestUpdateCacheSingleError(t *testing.T) {
 }
 
 func TestUpdateCacheErrorFirst(t *testing.T) {
+	t.Cleanup(cleanDatabase)
 
 	collection := cache.Database("test-collection").Collection("test-update-cache-error-first")
 
@@ -211,6 +208,7 @@ func TestUpdateCacheErrorFirst(t *testing.T) {
 }
 
 func TestUpdateCacheErrorInbetween(t *testing.T) {
+	t.Cleanup(cleanDatabase)
 
 	collection := cache.Database("test-collection").Collection("test-update-cache-error-inbetween")
 
@@ -238,6 +236,7 @@ func TestUpdateCacheErrorInbetween(t *testing.T) {
 }
 
 func TestUpdateCacheSingle(t *testing.T) {
+	t.Cleanup(cleanDatabase)
 
 	collection := cache.Database("test-collection").Collection("test-update-cache-single")
 
@@ -264,6 +263,8 @@ func TestUpdateCacheSingle(t *testing.T) {
 }
 
 func TestPersistCollectionEmpty(t *testing.T) {
+	t.Cleanup(cleanDatabase)
+
 	collection := cache.Database("test-collection").Collection("test-persist-collection-empty")
 
 	assert.False(t, emptyCollectionExists(context.TODO(), collection))
@@ -277,6 +278,8 @@ func TestPersistCollectionEmpty(t *testing.T) {
 }
 
 func TestPersistCollectionNotEmpty(t *testing.T) {
+	t.Cleanup(cleanDatabase)
+
 	collection := cache.Database("test-collection").Collection("test-persist-collection-not-empty")
 
 	assert.False(t, emptyCollectionExists(context.TODO(), collection))
@@ -290,19 +293,19 @@ func TestPersistCollectionNotEmpty(t *testing.T) {
 }
 
 func TestEmptyCollectionExistsFalse(t *testing.T) {
+	t.Cleanup(cleanDatabase)
+
 	collection := cache.Database("test-collection").Collection("test-empty-collection-exists-false")
 
 	assert.False(t, emptyCollectionExists(context.TODO(), collection))
 }
 
 func TestEmptyCollectionExistsTrue(t *testing.T) {
+	t.Cleanup(cleanDatabase)
+
 	collection := cache.Database("test-collection").Collection("test-empty-collection-exists-true")
 
 	persistCollection(context.TODO(), collection, 0)
 
 	assert.True(t, emptyCollectionExists(context.TODO(), collection))
-}
-
-func TestFetchSingle(t *testing.T) {
-
 }
