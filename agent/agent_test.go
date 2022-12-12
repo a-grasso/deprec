@@ -37,6 +37,7 @@ type CSVRow struct {
 	Result     float64 `csv:"result"`
 	Comment    string  `csv:"comment"`
 	Version    string  `csv:"version"`
+	Ignore     bool    `csv:"ignore"`
 }
 
 func TestAgentGitHubRepository(t *testing.T) {
@@ -49,6 +50,10 @@ func TestAgentGitHubRepository(t *testing.T) {
 	csvRows := readCsvFile(testCSV)
 
 	for _, row := range csvRows {
+
+		if row.Ignore {
+			continue
+		}
 
 		dep := model.Dependency{
 			Name:     row.Name,

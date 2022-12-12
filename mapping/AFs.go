@@ -61,7 +61,7 @@ func DeityGiven(model *model.DataModel) float64 {
 	}
 
 	about := strings.ToLower(model.Repository.About)
-	if strings.Contains(about, "deprecated") || strings.Contains(about, "end-of-life") {
+	if strings.Contains(about, "deprecated") || strings.Contains(about, "end-of-life") || strings.Contains(about, "abandoned") {
 		return 1
 	}
 

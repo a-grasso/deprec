@@ -1,6 +1,8 @@
 package model
 
-import "time"
+import (
+	"time"
+)
 
 type Dependency struct {
 	Name     string
@@ -23,10 +25,10 @@ type DataModel struct {
 }
 
 type Repository struct {
-	Contributors []*Contributor
-	Issues       []*Issue
-	Commits      []*Commit
-	Releases     []*Release
+	Contributors []Contributor
+	Issues       []Issue
+	Commits      []Commit
+	Releases     []Release
 
 	*RepositoryData
 }
@@ -87,6 +89,19 @@ type Commit struct {
 	Deletions    int
 	Total        int
 }
+
+func (c Commit) GetTimeStamp() time.Time {
+	return c.Timestamp
+}
+
+func (i Issue) GetTimeStamp() time.Time {
+	return i.CreationTime
+}
+
+func (r Release) GetTimeStamp() time.Time {
+	return r.Date
+}
+
 type Release struct {
 	Author      string
 	Version     string
@@ -100,7 +115,7 @@ type Issue struct {
 	Author           string
 	Labels           []string
 	Contributions    []string
-	Contributors     []*Contributor
+	Contributors     []Contributor
 	CreationTime     time.Time
 	FirstResponse    string
 	LastContribution time.Time

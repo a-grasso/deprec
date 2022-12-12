@@ -159,7 +159,7 @@ func (ghe *GitHubExtractor) extractReadMe(owner, repo string) string {
 	return readmeContent
 }
 
-func (ghe *GitHubExtractor) extractReleases(owner, repo string) []*model.Release {
+func (ghe *GitHubExtractor) extractReleases(owner, repo string) []model.Release {
 	releases, err := ghe.Client.Repositories.ListReleases(context.TODO(), owner, repo, &github.ListOptions{})
 	if err != nil {
 		logging.SugaredLogger.Errorf("could not extract releases of '%s' : %s", ghe.RepositoryURL, err)
@@ -167,14 +167,14 @@ func (ghe *GitHubExtractor) extractReleases(owner, repo string) []*model.Release
 	}
 
 	if releases == nil {
-		//TODO switch to tags instead of releases (important for apache mirrors, though watch out for semantic versioning)
+		// TODO switch to tags instead of releases (important for apache mirrors, though watch out for semantic versioning)
 	}
 
-	var result []*model.Release
+	var result []model.Release
 
 	for _, release := range releases {
 
-		r := &model.Release{
+		r := model.Release{
 			Author:      release.GetAuthor().GetLogin(),
 			Version:     release.GetName(),
 			Description: release.GetBody(),
@@ -189,7 +189,7 @@ func (ghe *GitHubExtractor) extractReleases(owner, repo string) []*model.Release
 	return result
 }
 
-func (ghe *GitHubExtractor) extractIssues(owner, repo string) []*model.Issue {
+func (ghe *GitHubExtractor) extractIssues(owner, repo string) []model.Issue {
 	issues, err := ghe.Client.Issues.ListByRepo(context.TODO(), owner, repo, &github.IssueListByRepoOptions{
 		State: "all",
 	})
@@ -198,10 +198,10 @@ func (ghe *GitHubExtractor) extractIssues(owner, repo string) []*model.Issue {
 		return nil
 	}
 
-	var result []*model.Issue
+	var result []model.Issue
 
 	for _, issue := range issues {
-		i := &model.Issue{
+		i := model.Issue{
 			Number:           issue.GetNumber(),
 			Author:           "",
 			Labels:           nil,
@@ -220,14 +220,14 @@ func (ghe *GitHubExtractor) extractIssues(owner, repo string) []*model.Issue {
 	return result
 }
 
-func (ghe *GitHubExtractor) extractCommits(owner, repo string) []*model.Commit {
+func (ghe *GitHubExtractor) extractCommits(owner, repo string) []model.Commit {
 	commits, err := ghe.Client.Repositories.ListCommits(context.TODO(), owner, repo, &github.CommitsListOptions{})
 	if err != nil {
 		logging.SugaredLogger.Errorf("could not extract commits of '%s' : %s", ghe.RepositoryURL, err)
 		return nil
 	}
 
-	var result []*model.Commit
+	var result []model.Commit
 
 	for _, c := range commits {
 
@@ -237,7 +237,7 @@ func (ghe *GitHubExtractor) extractCommits(owner, repo string) []*model.Commit {
 			changedFiles = append(changedFiles, f.GetFilename())
 		}
 
-		commit := &model.Commit{
+		commit := model.Commit{
 			Author:       c.GetAuthor().GetLogin(),
 			Committer:    c.GetCommitter().GetLogin(),
 			Changes:      nil,
@@ -257,7 +257,7 @@ func (ghe *GitHubExtractor) extractCommits(owner, repo string) []*model.Commit {
 	return result
 }
 
-func (ghe *GitHubExtractor) extractContributors(owner, repo string) []*model.Contributor {
+func (ghe *GitHubExtractor) extractContributors(owner, repo string) []model.Contributor {
 
 	contributors, err := ghe.Client.Repositories.ListContributors(context.TODO(), owner, repo, &github.ListContributorsOptions{})
 	if err != nil {
@@ -265,7 +265,7 @@ func (ghe *GitHubExtractor) extractContributors(owner, repo string) []*model.Con
 		return nil
 	}
 
-	var result []*model.Contributor
+	var result []model.Contributor
 	contributorStats := ghe.listContributorStats(owner, repo)
 	for _, c := range contributors {
 
@@ -285,7 +285,7 @@ func (ghe *GitHubExtractor) extractContributors(owner, repo string) []*model.Con
 			TotalStatsContributions: total,
 		}
 
-		result = append(result, &contributor)
+		result = append(result, contributor)
 	}
 
 	return result

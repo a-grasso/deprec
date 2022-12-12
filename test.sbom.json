@@ -243,10 +243,14 @@
           "content": "e9b6ff1b550b4b331083b2a97c0b66730bc6c4057a09363bfbcd9016df84125b0722cc7db21f6fdf34a067c9c75bf1673e55467ceac511554a506612224f48af"
         }
       ],
-      "licenses": [{"license": {
-        "id": "Apache-2.0",
-        "url": "http://www.apache.org/licenses/LICENSE-2.0"
-      }}],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0"
+          }
+        }
+      ],
       "purl": "pkg:maven/us.springett/alpine@1.9.0?type=jar",
       "externalReferences": [
         {
@@ -309,10 +313,14 @@
           "content": "e8468d0dbe9745873d3986905cb9c517472f1e66b2a1a34477f2bf1ec71e7367d29173c17a156e4472cdabbda3ba2a149c3d0fade130904abafe4e77f20806d8"
         }
       ],
-      "licenses": [{"license": {
-        "id": "Apache-2.0",
-        "url": "http://www.apache.org/licenses/LICENSE-2.0"
-      }}],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0"
+          }
+        }
+      ],
       "purl": "pkg:maven/us.springett/cvss-calculator@1.4.0?type=jar",
       "externalReferences": [
         {
@@ -375,10 +383,14 @@
           "content": "8cc7471a8af3d0eaf226cc37317f40b9303b055a338a26efad89e7586eee6cb06f149c70eead9500b982f5b1318d1e5d806e7648823da69d0031fe4463d8c58e"
         }
       ],
-      "licenses": [{"license": {
-        "id": "Apache-2.0",
-        "url": "http://www.apache.org/licenses/LICENSE-2.0"
-      }}],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0"
+          }
+        }
+      ],
       "purl": "pkg:maven/us.springett/cpe-parser@2.0.2?type=jar",
       "externalReferences": [
         {
@@ -442,10 +454,14 @@
           "content": "dd8bfd9fdf61c65a25523e70e238f1c900593b03a58402cac7a1f876cfb8db1e4ce3876b8a83551dd9e4804da949c8722dc8b7c619a507ea9a2e3371232ce53b"
         }
       ],
-      "licenses": [{"license": {
-        "id": "Apache-2.0",
-        "url": "http://www.apache.org/licenses/LICENSE-2.0"
-      }}],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0"
+          }
+        }
+      ],
       "purl": "pkg:maven/org.cyclonedx/cyclonedx-core-java@3.0.8?type=jar",
       "externalReferences": [
         {
@@ -513,7 +529,13 @@
           "content": "8c992c9c569ebaa0bf956a4c5b34fbf5e1ed1c212c2dd896fa216183ee0bcd341e96698af4b9cec7e8880762faa081a3d3a27f51349aa457cb8e373e4f57c788"
         }
       ],
-      "licenses": [{"license": {"id": "Apache-2.0"}}],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
       "purl": "pkg:maven/commons-codec/commons-codec@1.15?type=jar",
       "externalReferences": [
         {
@@ -584,10 +606,14 @@
           "content": "16baee3f157bab632e3780f187c950366b53ebd619988d9e530f6c23ef205a8d1d33381a8dee265acf3e278d6b3528e79cebca84d05430273ae870413cd512e1"
         }
       ],
-      "licenses": [{"license": {
-        "id": "BSD-3-Clause",
-        "url": "https://opensource.org/licenses/BSD-3-Clause"
-      }}],
+      "licenses": [
+        {
+          "license": {
+            "id": "BSD-3-Clause",
+            "url": "https://opensource.org/licenses/BSD-3-Clause"
+          }
+        }
+      ],
       "purl": "pkg:maven/com.thoughtworks.xstream/xstream@1.4.14?type=jar",
       "externalReferences": [
         {
@@ -613,6 +639,637 @@
         {
           "type": "vcs",
           "url": "http://github.com/x-stream/xstream"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:maven/io.swagger/swagger-annotations@1.6.2?type=jar",
+      "group": "io.swagger",
+      "name": "swagger-annotations",
+      "version": "1.6.2",
+      "description": "Sonatype helps open source projects to set up Maven repositories on https://oss.sonatype.org/",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "MD5",
+          "content": "9bccafd7b6b7e8ad649639716bbc2aad"
+        },
+        {
+          "alg": "SHA-1",
+          "content": "313913e603eaf3bb2c3b05079046ec07bb61f8c6"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "68d68a3d0b55ab68372b90f9b8d93787a8ebcc368b7c4d8d7ee5fb92d57fb11b"
+        },
+        {
+          "alg": "SHA-384",
+          "content": "27ccc1c89511232aae78ffc04ae55b0232035237a6b0ad4c0c265f520031286b4ab4c5a8a5851780e36617d5c684511a"
+        },
+        {
+          "alg": "SHA-512",
+          "content": "3a8be7ae2581fb2ac4e5455e2c22171785c6d1d71a4d2e14fcb045105af43b8ae8bf4ed6c1ab11c046e727a6c787f8abc064a53d7f7636cd0d73c5c4cd564e44"
+        },
+        {
+          "alg": "SHA3-256",
+          "content": "2ce01ad52049979092067a888831fc39a81ef981fd0dee19ff9ddf7667af304f"
+        },
+        {
+          "alg": "SHA3-384",
+          "content": "0d984c79660194f4d4e747664261357981943d23a2e759d35d78ab8c07ffef387ed8a124a65a5043e051bd0edc58d2c1"
+        },
+        {
+          "alg": "SHA3-512",
+          "content": "3d93675d26e60a680ed73f50e08949c537089df38bc73688e941432c84ba57e54f758e54cb59826431076f4619f7b802dcbfafa892fb6069677105d9d65df507"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0"
+          }
+        }
+      ],
+      "purl": "pkg:maven/io.swagger/swagger-annotations@1.6.2?type=jar",
+      "externalReferences": [
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/swagger-api/swagger-core/issues"
+        },
+        {
+          "type": "mailing-list",
+          "url": "https://groups.google.com/forum/#!forum/swagger-swaggersocket"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/swagger-api/swagger-core"
+        },
+        {
+          "type": "distribution",
+          "url": "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+        },
+        {
+          "type": "library",
+          "bom-ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.12.1?type=jar",
+          "publisher": "FasterXML",
+          "group": "com.fasterxml.jackson.core",
+          "name": "jackson-databind",
+          "version": "2.12.1",
+          "description": "General data-binding functionality for Jackson: works on core streaming API",
+          "scope": "required",
+          "hashes": [
+            {
+              "alg": "MD5",
+              "content": "1925b6e2feac7e63e164f57e6fb42c9d"
+            },
+            {
+              "alg": "SHA-1",
+              "content": "8a97e00e429c42f74757b0a8cd1d39dddd41524f"
+            },
+            {
+              "alg": "SHA-256",
+              "content": "f2ca3c28ebded59c98447d51afe945323df961540af66a063c015597af936aa0"
+            },
+            {
+              "alg": "SHA-384",
+              "content": "2640a9394ab1a22dc89866ad5cd599710727f72f4a67e231f091cc1d24f463bf6f27ffa6af8cbd057f92be6683b5043d"
+            },
+            {
+              "alg": "SHA-512",
+              "content": "e189c27f9335c0df75c178bdf000fbee2a8246f0fbe3a750fdd877c961dcec669399cd4e1b8e9d0cc37a092ea532a7b7360fab4301703ee54dd357239d0bce9f"
+            },
+            {
+              "alg": "SHA3-256",
+              "content": "8280fdf69173efaa101c6e75d6ff6565b488a9cb199248a1e293e32cf928c9e5"
+            },
+            {
+              "alg": "SHA3-384",
+              "content": "94c7647002648ce1ea511651a212c15d5dedb40d4252dac4b5072bbf59856c7298d5eec0eba8b7da8f9d0950b20cb304"
+            },
+            {
+              "alg": "SHA3-512",
+              "content": "a047f63c2a4b56f674b8692b46d6d8b21b740327c8cc0d0dd7cc531daf0276f4f5002a6d7427ad3ed02c4c032f2bac65d71d1a46cc09f1d64f6e92662ec1064d"
+            }
+          ],
+          "licenses": [
+            {
+              "license": {
+                "id": "Apache-2.0"
+              }
+            }
+          ],
+          "purl": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.12.1?type=jar",
+          "externalReferences": [
+            {
+              "type": "vcs",
+              "url": "http://github.com/FasterXML/jackson-databind"
+            },
+            {
+              "type": "website",
+              "url": "http://fasterxml.com/"
+            },
+            {
+              "type": "distribution",
+              "url": "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            },
+            {
+              "type": "issue-tracker",
+              "url": "https://github.com/FasterXML/${project.artifactId}/issues"
+            }
+          ]
+        },
+        {
+          "type": "library",
+          "bom-ref": "pkg:maven/com.fasterxml.jackson.core/jackson-core@2.12.1?type=jar",
+          "publisher": "FasterXML",
+          "group": "com.fasterxml.jackson.core",
+          "name": "jackson-core",
+          "version": "2.12.1",
+          "description": "Core Jackson processing abstractions (aka Streaming API), implementation for JSON",
+          "scope": "required",
+          "hashes": [
+            {
+              "alg": "MD5",
+              "content": "6a65df7a5e62df2754726857b4ab0257"
+            },
+            {
+              "alg": "SHA-1",
+              "content": "7c5493930e439be6fcec80a9afd6516b8e5e8760"
+            },
+            {
+              "alg": "SHA-256",
+              "content": "cc899cb6eae0c80b87d590eea86528797369cc4feb7b79463207d6bb18f0c257"
+            },
+            {
+              "alg": "SHA-384",
+              "content": "8205d33f21a91ee119e578cb18fd4232911af7a23dc91cd2ba18b027524a6095b751bc60f84b69b773b47783b1779b5d"
+            },
+            {
+              "alg": "SHA-512",
+              "content": "98767e1bc305c866ce070e75d0db1719e5db8edf2303ba03489af43018c9d7872cf0a2109842f626097f0fa8828473a2641780ba9a8d6c1b224de3e888195905"
+            },
+            {
+              "alg": "SHA3-256",
+              "content": "49639d1640d726beecb2cd611cff1906bc5df75d6465d5583c58d0bfcfa43631"
+            },
+            {
+              "alg": "SHA3-384",
+              "content": "74ae4db750ed19bcee0fb72700be8c1d7176ec4c29c7fce17a2f31035bf13ad99dcc703776597a7f82ece1c24aa8f663"
+            },
+            {
+              "alg": "SHA3-512",
+              "content": "a8328c31b3d061c725354413833221362544278998820476c2fe497fd43c1283daff08cbbe593746d78bf1849f5748d2fd8c548a1f326e37f81e5b672f666166"
+            }
+          ],
+          "licenses": [
+            {
+              "license": {
+                "id": "Apache-2.0"
+              }
+            }
+          ],
+          "purl": "pkg:maven/com.fasterxml.jackson.core/jackson-core@2.12.1?type=jar",
+          "externalReferences": [
+            {
+              "type": "vcs",
+              "url": "http://github.com/FasterXML/jackson-core"
+            },
+            {
+              "type": "website",
+              "url": "http://fasterxml.com/"
+            },
+            {
+              "type": "distribution",
+              "url": "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            },
+            {
+              "type": "issue-tracker",
+              "url": "https://github.com/FasterXML/${project.artifactId}/issues"
+            }
+          ]
+        },
+        {
+          "type": "library",
+          "bom-ref": "pkg:maven/com.fasterxml.jackson.core/jackson-annotations@2.12.1?type=jar",
+          "publisher": "FasterXML",
+          "group": "com.fasterxml.jackson.core",
+          "name": "jackson-annotations",
+          "version": "2.12.1",
+          "description": "Core annotations used for value types, used by Jackson data binding package.",
+          "scope": "required",
+          "hashes": [
+            {
+              "alg": "MD5",
+              "content": "ac96cb6fdf09ba1e2c41f461047f1eb4"
+            },
+            {
+              "alg": "SHA-1",
+              "content": "aa079f822ddce5548018286d19ccb15c2fc202d7"
+            },
+            {
+              "alg": "SHA-256",
+              "content": "203cefdfa6c81e6aa84e11f292f29ca97344a3c3bc0293abea065cd837592873"
+            },
+            {
+              "alg": "SHA-384",
+              "content": "0d856fa75a547c3c71d50ddff2b70deb648527c2350f1b0138754deea7baa56a9fdc895edaae31d955dd05639eafd525"
+            },
+            {
+              "alg": "SHA-512",
+              "content": "9fa276692cd9964ec0b1857b617c3c1553e6a08dc0685f87a33d1d7151fe6168b0479780e7fba3bd4d93b95f09661e327a2ff468998dc9fd0dd6050a12e5c479"
+            },
+            {
+              "alg": "SHA3-256",
+              "content": "edd7401b52860121e4da9fd0a43aae9b9c58a3b08a63ec9dde92b1174c7c2390"
+            },
+            {
+              "alg": "SHA3-384",
+              "content": "a2adda981b01cd2a7e4576bf96bea052f41fffc483be8a0fb454dd288a164f27bf2a3d9c6a0a947a1ddaec6d56ce6903"
+            },
+            {
+              "alg": "SHA3-512",
+              "content": "045bdb05117a9521ff2b24e9c55ebdc0f64bf6141d84f615e9bb955c29d577690c8ddcd94ab1af35a53f06cbe2633afd4cf9a6bef19bc2f150dc151f2b2500b6"
+            }
+          ],
+          "licenses": [
+            {
+              "license": {
+                "id": "Apache-2.0"
+              }
+            }
+          ],
+          "purl": "pkg:maven/com.fasterxml.jackson.core/jackson-annotations@2.12.1?type=jar",
+          "externalReferences": [
+            {
+              "type": "vcs",
+              "url": "http://github.com/FasterXML/jackson-annotations"
+            },
+            {
+              "type": "website",
+              "url": "http://fasterxml.com/"
+            },
+            {
+              "type": "distribution",
+              "url": "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            },
+            {
+              "type": "issue-tracker",
+              "url": "https://github.com/FasterXML/${project.artifactId}/issues"
+            }
+          ]
+        },
+        {
+          "type": "library",
+          "bom-ref": "pkg:maven/com.fasterxml.jackson.jaxrs/jackson-jaxrs-base@2.12.1?type=jar",
+          "publisher": "FasterXML",
+          "group": "com.fasterxml.jackson.jaxrs",
+          "name": "jackson-jaxrs-base",
+          "version": "2.12.1",
+          "description": "Pile of code that is shared by all Jackson-based JAX-RS providers.",
+          "scope": "optional",
+          "hashes": [
+            {
+              "alg": "MD5",
+              "content": "df99a83eb2e4b55114d1dc991aa0ffe1"
+            },
+            {
+              "alg": "SHA-1",
+              "content": "2dcc2d2205a2cc05af33bcfe98727306884682fa"
+            },
+            {
+              "alg": "SHA-256",
+              "content": "86712f6810fb60ebc30d2744ea87f00fa3c3517c3a7dfd727bd5cd4a5192201f"
+            },
+            {
+              "alg": "SHA-384",
+              "content": "d8b4300e07420ef4e57f7359374c0f830efd46d4f3dc442e5ba459449e035c2f69dda98ba13191fd66462561ae7881a7"
+            },
+            {
+              "alg": "SHA-512",
+              "content": "50d0e5ca76b04d71c11134ebfe2eea127378ddd31df1195e9d3c1f2d3350e0e1675ac85b0a1fa988983119e29127dc8030fc5fdddd3df7aad54372694e5bed7b"
+            },
+            {
+              "alg": "SHA3-256",
+              "content": "69b40108f25706d31c3c3a1d31c156f22cbd402a65bdde250d9a2e88bc9cae4c"
+            },
+            {
+              "alg": "SHA3-384",
+              "content": "a648f2a8af3773c5358080a84f653a250bbf6346a7d17906352913b3ccf0e286ba5135be5d5bc1010d082ca862ed6997"
+            },
+            {
+              "alg": "SHA3-512",
+              "content": "056a6c9f2ce5cdcbc2f8031b821ad21131bfe0aefd9468b64d0f2ff5154ee323529bfea457c49d9a3b0b738ce62acc0e2b44bf45675821a36a7d1273febdc4f9"
+            }
+          ],
+          "licenses": [
+            {
+              "license": {
+                "id": "Apache-2.0"
+              }
+            }
+          ],
+          "purl": "pkg:maven/com.fasterxml.jackson.jaxrs/jackson-jaxrs-base@2.12.1?type=jar",
+          "externalReferences": [
+            {
+              "type": "vcs",
+              "url": "http://github.com/FasterXML/jackson-jaxrs-providers"
+            },
+            {
+              "type": "website",
+              "url": "http://fasterxml.com/"
+            },
+            {
+              "type": "distribution",
+              "url": "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            },
+            {
+              "type": "issue-tracker",
+              "url": "https://github.com/FasterXML/${project.artifactId}/issues"
+            }
+          ]
+        },
+        {
+          "type": "library",
+          "bom-ref": "pkg:maven/com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider@2.12.1?type=jar",
+          "publisher": "FasterXML",
+          "group": "com.fasterxml.jackson.jaxrs",
+          "name": "jackson-jaxrs-json-provider",
+          "version": "2.12.1",
+          "description": "Functionality to handle JSON input/output for JAX-RS implementations (like Jersey and RESTeasy) using standard Jackson data binding.",
+          "scope": "optional",
+          "hashes": [
+            {
+              "alg": "MD5",
+              "content": "10ac481534128456f3a0c7d2ab069201"
+            },
+            {
+              "alg": "SHA-1",
+              "content": "6702d7d4c7ecec57586d7c330aaec3e1a2797d9d"
+            },
+            {
+              "alg": "SHA-256",
+              "content": "a432f4486670a4755d6f0bab5366574164569b45f87595f1e947cf54bfd69cff"
+            },
+            {
+              "alg": "SHA-384",
+              "content": "df1455289d0d1dc4ca7b7d8c18a0e156b109ae20cbdf96f7ec9a34673cbe33cfbc4382457256e8bc32711d6d7e73936f"
+            },
+            {
+              "alg": "SHA-512",
+              "content": "c57d7f04a2e2eceb837427f3d262d410819c0caf1e0e77fb8373d95b41fe989f0d6ab10c6b701a96bf8424e2c2bd5ae93fbdc0798f22d3a7dc1375ace0bc57df"
+            },
+            {
+              "alg": "SHA3-256",
+              "content": "07b5dcef67e8f80330bb49f336e02ee40d49b6d1a2efe93a3d605ee4261bcd4c"
+            },
+            {
+              "alg": "SHA3-384",
+              "content": "3c90c11ca489d475a20f6fcf57c2605151ab9319ea71e9e94e19d460ee2c508e88de8961be91f98a8625ad94b03f1d8a"
+            },
+            {
+              "alg": "SHA3-512",
+              "content": "7fa6ee7c53acb975c759777acf77d599109d3c9cb469dc0deb44aa0dc422911787c88ff7fc0d18d508d3624cd210ee6f9d7a341f53355222d9479f06ec4d3b92"
+            }
+          ],
+          "licenses": [
+            {
+              "license": {
+                "id": "Apache-2.0"
+              }
+            }
+          ],
+          "purl": "pkg:maven/com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider@2.12.1?type=jar",
+          "externalReferences": [
+            {
+              "type": "vcs",
+              "url": "http://github.com/FasterXML/jackson-jaxrs-providers"
+            },
+            {
+              "type": "website",
+              "url": "http://fasterxml.com/"
+            },
+            {
+              "type": "distribution",
+              "url": "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            },
+            {
+              "type": "issue-tracker",
+              "url": "https://github.com/FasterXML/${project.artifactId}/issues"
+            }
+          ]
+        },
+        {
+          "type": "library",
+          "bom-ref": "pkg:maven/org.slf4j/slf4j-api@1.7.30?type=jar",
+          "publisher": "QOS.ch",
+          "group": "org.slf4j",
+          "name": "slf4j-api",
+          "version": "1.7.30",
+          "description": "The slf4j API",
+          "scope": "optional",
+          "hashes": [
+            {
+              "alg": "MD5",
+              "content": "f8be00da99bc4ab64c79ab1e2be7cb7c"
+            },
+            {
+              "alg": "SHA-1",
+              "content": "b5a4b6d16ab13e34a88fae84c35cd5d68cac922c"
+            },
+            {
+              "alg": "SHA-256",
+              "content": "cdba07964d1bb40a0761485c6b1e8c2f8fd9eb1d19c53928ac0d7f9510105c57"
+            },
+            {
+              "alg": "SHA-384",
+              "content": "d8061c2f86f33b813cb86d3d54c615d26aa89afb43cabf8d828ff6a3f4f8e63d4a3b27355033f67ba60c2cdf2558d9de"
+            },
+            {
+              "alg": "SHA-512",
+              "content": "e5435852569dda596ba46138af8ee9c4ecba8a7a43f4f1e7897aeb4430523a0f037088a7b63877df5734578f19d331f03d7b0f32d5ae6c425df211947b3e6173"
+            },
+            {
+              "alg": "SHA3-256",
+              "content": "7fd51c94b174d462a8c7ce103ea7b1858e2c0943da8d21b4407f71a250377c8e"
+            },
+            {
+              "alg": "SHA3-384",
+              "content": "9f0fcb3bab20dce3b4cd094145976ce7c9da8702c891ff6f3882072c5a0acc763aeb11c446ef08a80e1bec695b11cb60"
+            },
+            {
+              "alg": "SHA3-512",
+              "content": "a51d2d7d68a41e0ef1430c90d5b4f182d34be2233b92ad6fc32c1def5504b5089afcbda3349fd401df5d8accdbb0571096e91b2badadcec275bcf3bb0cacc7f7"
+            }
+          ],
+          "licenses": [
+            {
+              "license": {
+                "id": "MIT",
+                "url": "https://opensource.org/licenses/MIT"
+              }
+            }
+          ],
+          "purl": "pkg:maven/org.slf4j/slf4j-api@1.7.30?type=jar",
+          "externalReferences": [
+            {
+              "type": "website",
+              "url": "http://www.qos.ch"
+            },
+            {
+              "type": "distribution",
+              "url": "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            },
+            {
+              "type": "vcs",
+              "url": "https://github.com/qos-ch/slf4j"
+            }
+          ]
+        },
+        {
+          "type": "library",
+          "bom-ref": "pkg:maven/ch.qos.logback/logback-classic@1.2.3?type=jar",
+          "publisher": "QOS.ch",
+          "group": "ch.qos.logback",
+          "name": "logback-classic",
+          "version": "1.2.3",
+          "description": "logback-classic module",
+          "scope": "optional",
+          "hashes": [
+            {
+              "alg": "MD5",
+              "content": "64f7a68f931aed8e5ad8243470440f0b"
+            },
+            {
+              "alg": "SHA-1",
+              "content": "7c4f3c474fb2c041d8028740440937705ebb473a"
+            },
+            {
+              "alg": "SHA-256",
+              "content": "fb53f8539e7fcb8f093a56e138112056ec1dc809ebb020b59d8a36a5ebac37e0"
+            },
+            {
+              "alg": "SHA-384",
+              "content": "42a5975c9db68045fd2d662f5168df6b19e5e8b715401fd5786325a02f531b44f1cf4e64f69f5ef5bbef70929e1d6fd3"
+            },
+            {
+              "alg": "SHA-512",
+              "content": "9ad5df9055e74c1db67e10422774e740903477c821591702d2709a4c1f73e3fc3fa6b1a871b6985901817bc2bdeba916849035dc2bbf518f308637b0586e36f1"
+            },
+            {
+              "alg": "SHA3-256",
+              "content": "7d38586cfd6e1363970ac1811eb49dd9e535e2d2bf967118ce8f28592655ac24"
+            },
+            {
+              "alg": "SHA3-384",
+              "content": "5085a62b9616b811d2346c81aace07020cd7a8865046c4bffb0137f8120c46340741475d83a7c1b4fe1889cd83f774f5"
+            },
+            {
+              "alg": "SHA3-512",
+              "content": "0a47917a6adfaef45e1170ff419800a7c88771510c6d5744b081e0572f70d2e339a5bbdd9b0637c2ecfcdd49a095c856ec293e8a41bbd03ef9b5a67d42731e67"
+            }
+          ],
+          "licenses": [
+            {
+              "license": {
+                "id": "EPL-1.0"
+              }
+            },
+            {
+              "license": {
+                "name": "GNU Lesser General Public License",
+                "url": "http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html"
+              }
+            }
+          ],
+          "purl": "pkg:maven/ch.qos.logback/logback-classic@1.2.3?type=jar",
+          "externalReferences": [
+            {
+              "type": "website",
+              "url": "http://www.qos.ch"
+            },
+            {
+              "type": "distribution",
+              "url": "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            },
+            {
+              "type": "vcs",
+              "url": "https://github.com/ceki/logback"
+            }
+          ]
+        },
+        {
+          "type": "library",
+          "bom-ref": "pkg:maven/ch.qos.logback/logback-core@1.2.3?type=jar",
+          "publisher": "QOS.ch",
+          "group": "ch.qos.logback",
+          "name": "logback-core",
+          "version": "1.2.3",
+          "description": "logback-core module",
+          "scope": "optional",
+          "hashes": [
+            {
+              "alg": "MD5",
+              "content": "841fc80c6edff60d947a3872a2db4d45"
+            },
+            {
+              "alg": "SHA-1",
+              "content": "864344400c3d4d92dfeb0a305dc87d953677c03c"
+            },
+            {
+              "alg": "SHA-256",
+              "content": "5946d837fe6f960c02a53eda7a6926ecc3c758bbdd69aa453ee429f858217f22"
+            },
+            {
+              "alg": "SHA-384",
+              "content": "2c34d2bc4c85beee3d82b7aff9f351615a1de9a4f1e262c6e891136a621a3ea27296fbac399398aa8c1fd857fa38393d"
+            },
+            {
+              "alg": "SHA-512",
+              "content": "bd1a7512647fe61b90cfd18bedf2a33f3f16f334f8f8ce947cdd353c0b0b7a7cce203070f0d2183f6583e0f2b2fe6e0b12eb93bd5b2dc29076e7b466447f6dc5"
+            },
+            {
+              "alg": "SHA3-256",
+              "content": "7e43423025fc6ebe94b4cc641dc60a4507f93dd1445214847a069595f7cb728e"
+            },
+            {
+              "alg": "SHA3-384",
+              "content": "f511c84d1434e12c1c220d0ec3300a8c5fa3f23b2026c74f2d63be08af02e209ebfa28bd4ca18b0c0557c1e3dba77359"
+            },
+            {
+              "alg": "SHA3-512",
+              "content": "76a7f8df50903e80c5455da2307705f1ce08e098b75d02c1e36cb8b06eb3dc18c4e93fbf4ed1dea143d73645a652b52bb26e789d1fa111866c54a57c2025049e"
+            }
+          ],
+          "licenses": [
+            {
+              "license": {
+                "id": "EPL-1.0"
+              }
+            },
+            {
+              "license": {
+                "name": "GNU Lesser General Public License",
+                "url": "http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html"
+              }
+            }
+          ],
+          "purl": "pkg:maven/ch.qos.logback/logback-core@1.2.3?type=jar",
+          "externalReferences": [
+            {
+              "type": "website",
+              "url": "http://www.qos.ch"
+            },
+            {
+              "type": "distribution",
+              "url": "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            },
+            {
+              "type": "vcs",
+              "url": "https://github.com/ceki/logback"
+            }
+          ]
         }
       ]
     }

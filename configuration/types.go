@@ -10,7 +10,12 @@ type MongoDB struct {
 	URI      string `json:"URI"`
 }
 
+type AFConfig struct {
+	CommitThreshold int `json:"CommitThreshold"`
+}
+
 type Configuration struct {
-	GitHub  `json:"GitHub"`
-	MongoDB `json:"MongoDB"`
+	GitHub   `json:"GitHub"`
+	MongoDB  `json:"MongoDB"`
+	AFConfig `json:"AFConfig"`
 }

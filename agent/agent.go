@@ -40,7 +40,9 @@ func (agent *Agent) CombinationAndConclusion() *model.AgentResult {
 
 	deityGiven := mapping.DeityGiven(agent.DataModel)
 
-	result := 0.0
+	activity := mapping.Activity(agent.DataModel, agent.Config.AFConfig)
+
+	result := activity*0.8 + network*0.2
 
 	if deityGiven == 1 {
 		result = 1

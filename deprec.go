@@ -43,7 +43,7 @@ func main() {
 	var result []float64
 	for i, dep := range dependencies {
 
-		if i > 10 {
+		if i > 0 {
 			break
 		}
 
