@@ -48,59 +48,150 @@ func sortKeys(keys []Key) {
 	})
 }
 
-func statisticAnalysisPYM[T interface {
-	model.Commit | model.Issue | model.Release
+type HasTimeStamp interface {
 	GetTimeStamp() time.Time
-}](data []T) (avg, last, avgPercentage, lastPercentage float64, yearsSinceLast, monthsSinceLast int) {
+}
+
+type StatisticAnalysis struct {
+	Total             int
+	YearsSinceLast    int
+	MonthsSinceLast   int
+	LastCount         int
+	AvgCount          float64
+	AvgFirst20Count   float64
+	AvgLast20Count    float64
+	First20Count      int
+	Last20Count       int
+	AvgPercentage     float64
+	LastPercentage    float64
+	First20Percentage float64
+	Last20Percentage  float64
+}
+
+func statisticAnalysisPYM[T HasTimeStamp](data []T) StatisticAnalysis {
 
 	total := len(data)
 	if total == 0 {
-		return
+		return StatisticAnalysis{}
 	}
 
 	sortedKeys, groupedByYM := groupByYM[T](data)
-
-	lastKey := sortedKeys[len(sortedKeys)-1]
-	yearsSinceLast, monthsSinceLast = calculateDifferenceOfKeyFromNow(lastKey)
 
 	groupedCounts := funk.Map(groupedByYM, func(k Key, v []T) (Key, int) {
 		return k, len(v)
 	}).(map[Key]int)
 
-	groupedPercentages := funk.Map(groupedByYM, func(k Key, v []T) (Key, float64) {
-		return k, float64(len(v)) / float64(total) * 100
-	}).(map[Key]float64)
+	yearsSinceLast, monthsSinceLast := calcSinceLast(sortedKeys)
 
-	perMonth := make([]int, 0, len(sortedKeys))
-	percentagesPerMonth := make([]float64, 0, len(sortedKeys))
-	for _, key := range sortedKeys {
-		perMonth = append(perMonth, groupedCounts[key])
-		percentagesPerMonth = append(percentagesPerMonth, groupedPercentages[key])
+	avgCount, lastCount := calcOverall(sortedKeys, groupedCounts)
+
+	first20Count, last20Count, avgFirst20Count, avgLast20Count := calc20Percentile(sortedKeys, groupedCounts)
+	return StatisticAnalysis{
+		Total:             total,
+		YearsSinceLast:    yearsSinceLast,
+		MonthsSinceLast:   monthsSinceLast,
+		LastCount:         lastCount,
+		AvgCount:          avgCount,
+		AvgFirst20Count:   avgFirst20Count,
+		AvgLast20Count:    avgLast20Count,
+		First20Count:      first20Count,
+		Last20Count:       last20Count,
+		AvgPercentage:     toPercentage(avgCount, total),
+		LastPercentage:    toPercentage(lastCount, total),
+		First20Percentage: toPercentage(first20Count, total),
+		Last20Percentage:  toPercentage(last20Count, total),
 	}
+}
 
-	avg = float64(total) / float64(len(perMonth))
-	avgPercentage = 100.0 / float64(len(percentagesPerMonth))
+func toPercentage[T float64 | int](count T, total int) float64 {
+	return float64(count) / float64(total) * 100
+}
 
-	last = float64(groupedCounts[sortedKeys[len(sortedKeys)-1]])
-	lastPercentage = groupedPercentages[sortedKeys[len(sortedKeys)-1]]
+func calcSinceLast(sortedKeys []Key) (yearsSinceLast, monthsSinceLast int) {
+	lastKey := sortedKeys[len(sortedKeys)-1]
+	yearsSinceLast, monthsSinceLast = calculateDifferenceOfKeyFromNow(lastKey)
+	return
+}
+
+func calc20Percentile(sortedKeys []Key, groupedCounts map[Key]int) (first20Count, last20Count int, first20AvgCount, last20AvgCount float64) {
+
+	totalMonths := len(sortedKeys)
+
+	percentile := float64(totalMonths) / 5.0
+
+	p20 := int(percentile)
+	p80 := int(percentile * 4.0)
+
+	first20 := sortedKeys[:p20]
+	last20 := sortedKeys[p80:]
+
+	first20Count = int(funk.Sum(funk.Map(groupedCounts, func(k Key, v int) int {
+		if funk.Contains(first20, k) {
+			return v
+		}
+		return 0
+	})))
+
+	last20Count = int(funk.Sum(funk.Map(groupedCounts, func(k Key, v int) int {
+		if funk.Contains(last20, k) {
+			return v
+		}
+		return 0
+	})))
+
+	first20AvgCount, _ = calcOverall(first20, groupedCounts)
+	last20AvgCount, _ = calcOverall(last20, groupedCounts)
 
 	return
+}
+
+func calcOverall(sortedKeys []Key, groupedCounts map[Key]int) (avgCount float64, lastCount int) {
+
+	countPerMonth := make([]int, 0, len(sortedKeys))
+	for _, key := range sortedKeys {
+		countPerMonth = append(countPerMonth, groupedCounts[key])
+	}
+
+	total := funk.Sum(countPerMonth)
+
+	avgCount = total / float64(len(sortedKeys))
+	lastCount = groupedCounts[sortedKeys[len(sortedKeys)-1]]
+
+	return
+}
+
+type IssueContributions struct {
+	time time.Time
+}
+
+func (ic IssueContributions) GetTimeStamp() time.Time {
+	return ic.time
 }
 
 func Activity(m *model.DataModel, config configuration.AFConfig) float64 {
 
 	commits := m.Repository.Commits
-	avgCommits, lastCommits, avgPercentage, lastPercentage, yearsSinceLastCommit, monthsSinceLastcommit := statisticAnalysisPYM(commits)
-	log.Println(avgCommits, lastCommits, avgPercentage, lastPercentage, monthsSinceLastcommit)
-	//					13			3				0.39		0.09			11
-	if yearsSinceLastCommit > config.CommitThreshold {
+	commitAnalysis := statisticAnalysisPYM(commits)
+
+	log.Println(commitAnalysis)
+	if commitAnalysis.YearsSinceLast > config.CommitThreshold {
 		return 0
 	}
 
 	issues := m.Repository.Issues
 	log.Println(statisticAnalysisPYM(issues))
 
-	//	releases := m.Repository.Releases
+	issueContributions := funk.FlatMap(issues, func(issue model.Issue) []IssueContributions {
+		var result []IssueContributions
+		for i := 0; i < issue.Contributions; i++ {
+			result = append(result, IssueContributions{time: issue.CreationTime})
+		}
+		return result
+	}).([]IssueContributions)
+
+	log.Println(statisticAnalysisPYM(issueContributions))
+
+	//releases := m.Repository.Releases
 	//log.Println(statisticAnalysisPYM(releases))
 
 	return 0
@@ -131,10 +222,7 @@ func calculateDifferenceOfKeyFromNow(key Key) (year, month int) {
 	return
 }
 
-func groupByYM[T interface {
-	model.Commit | model.Issue | model.Release
-	GetTimeStamp() time.Time
-}](elements []T) ([]Key, map[Key][]T) {
+func groupByYM[T HasTimeStamp](elements []T) ([]Key, map[Key][]T) {
 	grouped := make(map[Key][]T)
 
 	for _, element := range elements {

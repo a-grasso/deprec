@@ -88,11 +88,6 @@ func (ghe *GitHubExtractor) Extract(dataModel *model.DataModel) {
 
 	issues := ghe.extractIssues(ghe.Owner, ghe.Repository)
 
-	repositoryData.TotalContributors = len(contributors)
-	repositoryData.TotalCommits = len(commits)
-	repositoryData.TotalReleases = len(releases)
-	repositoryData.TotalIssues = len(issues)
-
 	repository := &model.Repository{
 		Contributors:   contributors,
 		Issues:         issues,
@@ -129,10 +124,7 @@ func (ghe *GitHubExtractor) extractRepositoryData(owner, repo string) *model.Rep
 		Archivation:        repository.GetArchived(),
 		Disabled:           repository.GetDisabled(),
 		KLOC:               0,
-		TotalCommits:       0,
-		TotalIssues:        0,
 		TotalPRs:           0,
-		TotalContributors:  0,
 		Forks:              repository.GetForksCount(),
 		Watchers:           repository.GetSubscribersCount(),
 		Stars:              repository.GetStargazersCount(),
@@ -166,10 +158,6 @@ func (ghe *GitHubExtractor) extractReleases(owner, repo string) []model.Release 
 		return nil
 	}
 
-	if releases == nil {
-		// TODO switch to tags instead of releases (important for apache mirrors, though watch out for semantic versioning)
-	}
-
 	var result []model.Release
 
 	for _, release := range releases {
@@ -181,6 +169,30 @@ func (ghe *GitHubExtractor) extractReleases(owner, repo string) []model.Release 
 			Changes:     nil,
 			Type:        "",
 			Date:        release.GetPublishedAt().Time,
+		}
+
+		result = append(result, r)
+	}
+
+	return result
+}
+
+func (ghe *GitHubExtractor) extractTags(owner, repo string) []model.Tag {
+	tags, err := ghe.Client.Repositories.ListTags(context.TODO(), owner, repo, &github.ListOptions{})
+	if err != nil {
+		logging.SugaredLogger.Errorf("could not extract tags of '%s' : %s", ghe.RepositoryURL, err)
+		return nil
+	}
+
+	var result []model.Tag
+
+	for _, tag := range tags {
+
+		r := model.Tag{
+			Author:      tag.GetCommit().GetAuthor().GetLogin(),
+			Version:     tag.GetName(),
+			Description: tag.GetCommit().GetMessage(),
+			Date:        time.Time{},
 		}
 
 		result = append(result, r)
@@ -201,17 +213,41 @@ func (ghe *GitHubExtractor) extractIssues(owner, repo string) []model.Issue {
 	var result []model.Issue
 
 	for _, issue := range issues {
+
+		//var issueContributors []string
+		//var firstResponse time.Time
+		// if issue.GetComments() != 0 {
+		// 	sort := "created"
+		// 	comments, err := ghe.Client.Issues.ListComments(context.TODO(), owner, repo, issue.GetNumber(), &github.IssueListCommentsOptions{
+		// 		Sort: &sort,
+		// 	})
+		//
+		// 	if err != nil {
+		// 		logging.SugaredLogger.Errorf("could not extract comments of issue '%d' for repo '%s'", issue.Number, repo)
+		// 	}
+		//
+		// 	firstResponse = comments[0].GetCreatedAt()
+		//
+		// 	commentators := funk.Map(comments, func(comment *github.IssueComment) string { return comment.GetUser().GetLogin() })
+		//
+		// 	issueContributors = funk.Uniq(commentators).([]string)
+		// }
+
 		i := model.Issue{
-			Number:           issue.GetNumber(),
-			Author:           "",
-			Labels:           nil,
-			Contributions:    nil,
-			Contributors:     nil,
-			CreationTime:     issue.GetCreatedAt(),
-			FirstResponse:    "",
-			LastContribution: issue.GetUpdatedAt(),
-			ClosingTime:      issue.GetClosedAt(),
-			Content:          issue.GetBody(),
+			Number:            issue.GetNumber(),
+			Author:            issue.GetUser().GetLogin(),
+			AuthorAssociation: issue.GetAuthorAssociation(),
+			Labels:            nil,
+			State:             issue.GetState(),
+			Title:             issue.GetTitle(),
+			Content:           issue.GetBody(),
+			ClosedBy:          issue.GetClosedBy().GetLogin(),
+			Contributions:     issue.GetComments(),
+			Contributors:      nil,
+			CreationTime:      issue.GetCreatedAt(),
+			FirstResponse:     time.Time{},
+			LastContribution:  issue.GetUpdatedAt(),
+			ClosingTime:       issue.GetClosedAt(),
 		}
 
 		result = append(result, i)

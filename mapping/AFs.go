@@ -9,27 +9,48 @@ func Network(model *model.DataModel) float64 {
 	var result float64
 
 	// Repository
-	var repositoryNetwork float64
+	var repositoryNetwork int
 
 	var contributorRepos int
 	var contributorOrgs int
 	var contributorSponsors int
 	var contributors int
 
+	var orgRepos int
+	var orgSponsors int
+	var orgCollaborators int
+	var orgFollowers int
+
 	if model.Repository == nil {
 		repositoryNetwork = 0
 	} else {
 
-		contributors += model.Repository.TotalContributors
+		contributors += model.Repository.TotalContributors()
 		for _, contributor := range model.Repository.Contributors {
 			contributorRepos += contributor.Repositories
 			contributorOrgs += contributor.Organizations
 			contributorSponsors += 0 //TODO
 		}
+
+		if model.Repository.Org != nil {
+			org := model.Repository.Org
+			orgRepos = org.PublicRepos + org.OwnedPrivateRepos // TODO + org.TotalPrivateRepos ???
+			orgCollaborators = org.Collaborators
+			orgFollowers = org.Followers
+		}
 	}
 
-	result += repositoryNetwork
+	repositoryNetwork += contributorRepos
+	repositoryNetwork += contributorOrgs
+	repositoryNetwork += contributorSponsors
+	repositoryNetwork += contributors
 
+	repositoryNetwork += orgRepos
+	repositoryNetwork += orgSponsors
+	repositoryNetwork += orgCollaborators
+	repositoryNetwork += orgFollowers
+
+	result += float64(repositoryNetwork)
 	return result
 }
 
@@ -39,9 +60,9 @@ func Popularity(model *model.DataModel) float64 {
 	watchers := model.Repository.Watchers
 	forks := model.Repository.Forks
 
-	contributors := model.Repository.TotalContributors
+	// TODO users := TotalContributors - ContributorsThatContributed :-> does that work?
 
-	return float64(stars + watchers + forks + contributors)
+	return float64(stars + watchers + forks)
 }
 
 func Interconnectedness(model *model.DataModel) float64 {

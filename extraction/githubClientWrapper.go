@@ -151,6 +151,17 @@ func (s *IssuesServiceWrapper) ListByRepo(ctx context.Context, owner string, rep
 	return fetchPagination[*github.Issue](ctx, coll, f, &opts.ListOptions)
 }
 
+func (s *IssuesServiceWrapper) ListComments(ctx context.Context, owner string, repository string, number int, opts *github.IssueListCommentsOptions) ([]*github.IssueComment, error) {
+
+	coll := s.cache.Database("issues_list_comments").Collection(fmt.Sprintf("%s-%s-%d", owner, repository, number))
+
+	f := func() ([]*github.IssueComment, *github.Response, error) {
+		return s.client.Issues.ListComments(ctx, owner, repository, number, opts)
+	}
+
+	return fetchPagination[*github.IssueComment](ctx, coll, f, &opts.ListOptions)
+}
+
 func (s *RepositoriesServiceWrapper) ListTags(ctx context.Context, owner string, repository string, opts *github.ListOptions) ([]*github.RepositoryTag, error) {
 
 	coll := s.cache.Database("repositories_list_tags").Collection(fmt.Sprintf("%s-%s", owner, repository))

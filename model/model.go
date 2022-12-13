@@ -47,12 +47,8 @@ type RepositoryData struct {
 	Archivation bool
 	Disabled    bool
 
-	KLOC              int
-	TotalCommits      int
-	TotalIssues       int
-	TotalPRs          int
-	TotalContributors int
-	TotalReleases     int
+	KLOC     int
+	TotalPRs int
 
 	Forks    int
 	Watchers int
@@ -64,6 +60,22 @@ type RepositoryData struct {
 	OpenIssues int
 
 	CommunityStandards float64
+}
+
+func (r *Repository) TotalCommits() int {
+	return len(r.Commits)
+}
+
+func (r *Repository) TotalIssues() int {
+	return len(r.Issues)
+}
+
+func (r *Repository) TotalReleases() int {
+	return len(r.Releases)
+}
+
+func (r *Repository) TotalContributors() int {
+	return len(r.Contributors)
 }
 
 type Organization struct {
@@ -110,17 +122,29 @@ type Release struct {
 	Type        string
 	Date        time.Time
 }
+
+type Tag struct {
+	Name        string
+	Author      string
+	Version     string
+	Description string
+	Date        time.Time
+}
 type Issue struct {
-	Number           int
-	Author           string
-	Labels           []string
-	Contributions    []string
-	Contributors     []Contributor
-	CreationTime     time.Time
-	FirstResponse    string
-	LastContribution time.Time
-	ClosingTime      time.Time
-	Content          string
+	Number            int
+	Author            string
+	AuthorAssociation string
+	Labels            []string
+	State             string
+	Title             string
+	Content           string
+	ClosedBy          string
+	Contributions     int
+	Contributors      []string
+	CreationTime      time.Time
+	FirstResponse     time.Time
+	LastContribution  time.Time
+	ClosingTime       time.Time
 }
 
 type Contributor struct {

@@ -37,12 +37,12 @@ func (agent *Agent) Extraction() {
 func (agent *Agent) CombinationAndConclusion() *model.AgentResult {
 
 	network := mapping.Network(agent.DataModel)
+	popularity := mapping.Popularity(agent.DataModel)
+	activity := mapping.Activity(agent.DataModel, agent.Config.AFConfig)
 
 	deityGiven := mapping.DeityGiven(agent.DataModel)
 
-	activity := mapping.Activity(agent.DataModel, agent.Config.AFConfig)
-
-	result := activity*0.8 + network*0.2
+	result := activity*0.6 + network*0.12 + popularity*0.28
 
 	if deityGiven == 1 {
 		result = 1
