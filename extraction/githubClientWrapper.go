@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/google/go-github/v48/github"
+	"github.com/thoas/go-funk"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -60,7 +61,11 @@ func (s *RepositoriesServiceWrapper) ListContributors(ctx context.Context, owner
 		return s.client.Repositories.ListContributors(ctx, owner, repository, opts)
 	}
 
-	return fetchPagination[*github.Contributor](ctx, coll, f, &opts.ListOptions)
+	pagination, err := fetchPagination[*github.Contributor](ctx, coll, f, &opts.ListOptions)
+
+	pagination = funk.Filter(pagination, func(contributor *github.Contributor) bool { return contributor.GetLogin() != "gitter-badger" }).([]*github.Contributor)
+
+	return pagination, err
 }
 
 func (s *RepositoriesServiceWrapper) List(ctx context.Context, user string, opts *github.RepositoryListOptions) ([]*github.Repository, error) {

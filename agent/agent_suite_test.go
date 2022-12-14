@@ -69,8 +69,9 @@ var _ = Describe("Agent", func() {
 			}
 
 			config = &configuration.Configuration{
-				GitHub:  config.GitHub,
-				MongoDB: config.MongoDB,
+				GitHub:   config.GitHub,
+				MongoDB:  config.MongoDB,
+				AFConfig: config.AFConfig,
 			}
 
 			dep := model.Dependency{

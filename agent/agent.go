@@ -38,7 +38,7 @@ func (agent *Agent) CombinationAndConclusion() *model.AgentResult {
 
 	network := mapping.Network(agent.DataModel)
 	popularity := mapping.Popularity(agent.DataModel)
-	activity := mapping.Activity(agent.DataModel, agent.Config.AFConfig)
+	activity := mapping.Activity(agent.DataModel, agent.Config.AFConfig.Activity)
 
 	deityGiven := mapping.DeityGiven(agent.DataModel)
 

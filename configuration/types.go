@@ -11,6 +11,11 @@ type MongoDB struct {
 }
 
 type AFConfig struct {
+	Activity Activity `json:"Activity"`
+}
+
+type Activity struct {
+	Percentile      int `json:"Percentile"`
 	CommitThreshold int `json:"CommitThreshold"`
 }
 

@@ -3,6 +3,7 @@ package mapping
 import (
 	"deprec/configuration"
 	"deprec/model"
+	"fmt"
 	"github.com/thoas/go-funk"
 	"log"
 	"sort"
@@ -35,6 +36,37 @@ func (key *Key) Before(other Key) bool {
 	return key.Year < other.Year
 }
 
+func (key *Key) CalculateTimeDifference(to *Key) int {
+	var years, months int
+
+	a := customNow()
+
+	if to != nil {
+		a = to.ToTime()
+	}
+
+	b := key.ToTime()
+
+	if a.Location() != b.Location() {
+		b = b.In(a.Location())
+	}
+	if a.After(b) {
+		a, b = b, a
+	}
+	y1, M1, _ := a.Date()
+	y2, M2, _ := b.Date()
+
+	years = y2 - y1
+	months = int(M2 - M1)
+
+	if months < 0 {
+		months += 12
+		years--
+	}
+
+	return (years * 12) + months
+}
+
 func (key *Key) ToTime() time.Time {
 	return time.Date(key.Year, key.Month, 1, 0, 0, 0, 0, time.UTC)
 }
@@ -53,22 +85,28 @@ type HasTimeStamp interface {
 }
 
 type StatisticAnalysis struct {
-	Total             int
-	YearsSinceLast    int
-	MonthsSinceLast   int
-	LastCount         int
-	AvgCount          float64
-	AvgFirst20Count   float64
-	AvgLast20Count    float64
-	First20Count      int
-	Last20Count       int
-	AvgPercentage     float64
-	LastPercentage    float64
-	First20Percentage float64
-	Last20Percentage  float64
+	Unit                      string
+	Percentile                int
+	TotalCount                int
+	TotalMonths               int
+	MonthsSinceLast           int
+	LastCount                 int
+	AvgCount                  float64
+	AvgFirstPercentileCount   float64
+	AvgLastPercentileCount    float64
+	FirstPercentileCount      int
+	LastPercentileCount       int
+	AvgPercentage             float64
+	LastPercentage            float64
+	FirstPercentilePercentage float64
+	LastPercentilePercentage  float64
 }
 
-func statisticAnalysisPYM[T HasTimeStamp](data []T) StatisticAnalysis {
+func (sa StatisticAnalysis) String() string {
+	return fmt.Sprintf("StatisticAnalysis: %s\n\nTotalCount: %d\nTotalMonths: %d\nMonthsSinceLast: %d\nLastCount: %d\nAvgCount: %.3f\nAvgFirstPercentileCount: %.3f\nAvgLastPercentileCount: %.3f\nFirstPercentileCount: %d\nLastPercentileCount: %d\nAvgPercentage: %.3f\nLastPercentage: %.3f\nFirstPercentilePercentage: %.3f\nLastPercentilePercentage: %.3f\n\n", sa.Unit, sa.TotalCount, sa.TotalMonths, sa.MonthsSinceLast, sa.LastCount, sa.AvgCount, sa.AvgFirstPercentileCount, sa.AvgLastPercentileCount, sa.FirstPercentileCount, sa.LastPercentileCount, sa.AvgPercentage, sa.LastPercentage, sa.FirstPercentilePercentage, sa.LastPercentilePercentage)
+}
+
+func statisticAnalysis[T HasTimeStamp](data []T, percentile int) StatisticAnalysis {
 
 	total := len(data)
 	if total == 0 {
@@ -81,25 +119,27 @@ func statisticAnalysisPYM[T HasTimeStamp](data []T) StatisticAnalysis {
 		return k, len(v)
 	}).(map[Key]int)
 
-	yearsSinceLast, monthsSinceLast := calcSinceLast(sortedKeys)
+	monthsSinceLast := calcSinceLast(sortedKeys)
 
 	avgCount, lastCount := calcOverall(sortedKeys, groupedCounts)
 
-	first20Count, last20Count, avgFirst20Count, avgLast20Count := calc20Percentile(sortedKeys, groupedCounts)
+	firstPercentileCount, lastPercentileCount, avgFirstPercentileCount, avgLastPercentileCount := calcPercentile(percentile, sortedKeys, groupedCounts)
 	return StatisticAnalysis{
-		Total:             total,
-		YearsSinceLast:    yearsSinceLast,
-		MonthsSinceLast:   monthsSinceLast,
-		LastCount:         lastCount,
-		AvgCount:          avgCount,
-		AvgFirst20Count:   avgFirst20Count,
-		AvgLast20Count:    avgLast20Count,
-		First20Count:      first20Count,
-		Last20Count:       last20Count,
-		AvgPercentage:     toPercentage(avgCount, total),
-		LastPercentage:    toPercentage(lastCount, total),
-		First20Percentage: toPercentage(first20Count, total),
-		Last20Percentage:  toPercentage(last20Count, total),
+		Unit:                      "Per Month",
+		Percentile:                len(sortedKeys) / 5,
+		TotalCount:                total,
+		TotalMonths:               len(sortedKeys),
+		MonthsSinceLast:           monthsSinceLast,
+		LastCount:                 lastCount,
+		AvgCount:                  avgCount,
+		AvgFirstPercentileCount:   avgFirstPercentileCount,
+		AvgLastPercentileCount:    avgLastPercentileCount,
+		FirstPercentileCount:      firstPercentileCount,
+		LastPercentileCount:       lastPercentileCount,
+		AvgPercentage:             toPercentage(avgCount, total),
+		LastPercentage:            toPercentage(lastCount, total),
+		FirstPercentilePercentage: toPercentage(firstPercentileCount, total),
+		LastPercentilePercentage:  toPercentage(lastPercentileCount, total),
 	}
 }
 
@@ -107,40 +147,41 @@ func toPercentage[T float64 | int](count T, total int) float64 {
 	return float64(count) / float64(total) * 100
 }
 
-func calcSinceLast(sortedKeys []Key) (yearsSinceLast, monthsSinceLast int) {
+func calcSinceLast(sortedKeys []Key) (monthsSinceLast int) {
 	lastKey := sortedKeys[len(sortedKeys)-1]
-	yearsSinceLast, monthsSinceLast = calculateDifferenceOfKeyFromNow(lastKey)
+	monthsSinceLast = lastKey.CalculateTimeDifference(nil)
 	return
 }
 
-func calc20Percentile(sortedKeys []Key, groupedCounts map[Key]int) (first20Count, last20Count int, first20AvgCount, last20AvgCount float64) {
+func calcPercentile(p int, sortedKeys []Key, groupedCounts map[Key]int) (firstPercentileCount, lastPercentileCount int, firstPercentileAvgCount, lastPercentileAvgCount float64) {
 
 	totalMonths := len(sortedKeys)
 
-	percentile := float64(totalMonths) / 5.0
+	p = 100 / p
+	percentile := float64(totalMonths) / float64(p)
 
 	p20 := int(percentile)
 	p80 := int(percentile * 4.0)
 
-	first20 := sortedKeys[:p20]
-	last20 := sortedKeys[p80:]
+	firstPercentile := sortedKeys[:p20]
+	lastPercentile := sortedKeys[p80:]
 
-	first20Count = int(funk.Sum(funk.Map(groupedCounts, func(k Key, v int) int {
-		if funk.Contains(first20, k) {
+	firstPercentileCount = int(funk.Sum(funk.Map(groupedCounts, func(k Key, v int) int {
+		if funk.Contains(firstPercentile, k) {
 			return v
 		}
 		return 0
 	})))
 
-	last20Count = int(funk.Sum(funk.Map(groupedCounts, func(k Key, v int) int {
-		if funk.Contains(last20, k) {
+	lastPercentileCount = int(funk.Sum(funk.Map(groupedCounts, func(k Key, v int) int {
+		if funk.Contains(lastPercentile, k) {
 			return v
 		}
 		return 0
 	})))
 
-	first20AvgCount, _ = calcOverall(first20, groupedCounts)
-	last20AvgCount, _ = calcOverall(last20, groupedCounts)
+	firstPercentileAvgCount, _ = calcOverall(firstPercentile, groupedCounts)
+	lastPercentileAvgCount, _ = calcOverall(lastPercentile, groupedCounts)
 
 	return
 }
@@ -168,18 +209,18 @@ func (ic IssueContributions) GetTimeStamp() time.Time {
 	return ic.time
 }
 
-func Activity(m *model.DataModel, config configuration.AFConfig) float64 {
+func Activity(m *model.DataModel, config configuration.Activity) float64 {
 
 	commits := m.Repository.Commits
-	commitAnalysis := statisticAnalysisPYM(commits)
+	commitAnalysis := statisticAnalysis(commits, config.Percentile)
 
-	log.Println(commitAnalysis)
-	if commitAnalysis.YearsSinceLast > config.CommitThreshold {
+	log.Println(commitAnalysis.String())
+	if commitAnalysis.MonthsSinceLast > config.CommitThreshold {
 		return 0
 	}
 
 	issues := m.Repository.Issues
-	log.Println(statisticAnalysisPYM(issues))
+	log.Println(statisticAnalysis(issues, config.Percentile).String())
 
 	issueContributions := funk.FlatMap(issues, func(issue model.Issue) []IssueContributions {
 		var result []IssueContributions
@@ -189,37 +230,12 @@ func Activity(m *model.DataModel, config configuration.AFConfig) float64 {
 		return result
 	}).([]IssueContributions)
 
-	log.Println(statisticAnalysisPYM(issueContributions))
+	log.Println(statisticAnalysis(issueContributions, config.Percentile).String())
 
 	//releases := m.Repository.Releases
-	//log.Println(statisticAnalysisPYM(releases))
+	//log.Println(statisticAnalysis(releases))
 
 	return 0
-}
-
-func calculateDifferenceOfKeyFromNow(key Key) (year, month int) {
-	a := customNow()
-
-	b := key.ToTime()
-
-	if a.Location() != b.Location() {
-		b = b.In(a.Location())
-	}
-	if a.After(b) {
-		a, b = b, a
-	}
-	y1, M1, _ := a.Date()
-	y2, M2, _ := b.Date()
-
-	year = y2 - y1
-	month = int(M2 - M1)
-
-	if month < 0 {
-		month += 12
-		year--
-	}
-
-	return
 }
 
 func groupByYM[T HasTimeStamp](elements []T) ([]Key, map[Key][]T) {
