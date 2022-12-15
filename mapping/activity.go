@@ -103,7 +103,7 @@ type StatisticAnalysis struct {
 }
 
 func (sa StatisticAnalysis) String() string {
-	return fmt.Sprintf("StatisticAnalysis: %s\n\nTotalCount: %d\nTotalMonths: %d\nMonthsSinceLast: %d\nLastCount: %d\nAvgCount: %.3f\nAvgFirstPercentileCount: %.3f\nAvgLastPercentileCount: %.3f\nFirstPercentileCount: %d\nLastPercentileCount: %d\nAvgPercentage: %.3f\nLastPercentage: %.3f\nFirstPercentilePercentage: %.3f\nLastPercentilePercentage: %.3f\n\n", sa.Unit, sa.TotalCount, sa.TotalMonths, sa.MonthsSinceLast, sa.LastCount, sa.AvgCount, sa.AvgFirstPercentileCount, sa.AvgLastPercentileCount, sa.FirstPercentileCount, sa.LastPercentileCount, sa.AvgPercentage, sa.LastPercentage, sa.FirstPercentilePercentage, sa.LastPercentilePercentage)
+	return fmt.Sprintf("StatisticAnalysis: %s\nPercentile: %d %%\n\nTotalCount: %d\nTotalMonths: %d\nMonthsSinceLast: %d\nLastCount: %d\nAvgCount: %.3f\nAvgFirstPercentileCount: %.3f\nAvgLastPercentileCount: %.3f\nFirstPercentileCount: %d\nLastPercentileCount: %d\nAvgPercentage: %.3f\nLastPercentage: %.3f\nFirstPercentilePercentage: %.3f\nLastPercentilePercentage: %.3f\n\n", sa.Unit, sa.Percentile, sa.TotalCount, sa.TotalMonths, sa.MonthsSinceLast, sa.LastCount, sa.AvgCount, sa.AvgFirstPercentileCount, sa.AvgLastPercentileCount, sa.FirstPercentileCount, sa.LastPercentileCount, sa.AvgPercentage, sa.LastPercentage, sa.FirstPercentilePercentage, sa.LastPercentilePercentage)
 }
 
 func statisticAnalysis[T HasTimeStamp](data []T, percentile int) StatisticAnalysis {
@@ -126,7 +126,7 @@ func statisticAnalysis[T HasTimeStamp](data []T, percentile int) StatisticAnalys
 	firstPercentileCount, lastPercentileCount, avgFirstPercentileCount, avgLastPercentileCount := calcPercentile(percentile, sortedKeys, groupedCounts)
 	return StatisticAnalysis{
 		Unit:                      "Per Month",
-		Percentile:                len(sortedKeys) / 5,
+		Percentile:                percentile,
 		TotalCount:                total,
 		TotalMonths:               len(sortedKeys),
 		MonthsSinceLast:           monthsSinceLast,

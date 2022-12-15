@@ -316,7 +316,7 @@ func (ghe *GitHubExtractor) extractContributors(owner, repo string) []model.Cont
 
 		orgs := len(ghe.listContributorOrganizations(user))
 		contributor := model.Contributor{
-			Name:                    c.GetLogin(),
+			Name:                    user,
 			Sponsors:                nil,
 			Organizations:           orgs,
 			Contributions:           c.GetContributions(),
