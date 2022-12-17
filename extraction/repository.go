@@ -242,7 +242,7 @@ func (ghe *GitHubExtractor) extractIssues(owner, repo string) []model.Issue {
 			Author:            issue.GetUser().GetLogin(),
 			AuthorAssociation: issue.GetAuthorAssociation(),
 			Labels:            nil,
-			State:             issue.GetState(),
+			State:             model.ToIssueState(issue.GetState()),
 			Title:             issue.GetTitle(),
 			Content:           issue.GetBody(),
 			ClosedBy:          issue.GetClosedBy().GetLogin(),
@@ -317,7 +317,7 @@ func (ghe *GitHubExtractor) extractContributors(owner, repo string) []model.Cont
 		orgs := len(ghe.listContributorOrganizations(user))
 		contributor := model.Contributor{
 			Name:                    user,
-			Sponsors:                nil,
+			Sponsors:                0,
 			Organizations:           orgs,
 			Contributions:           c.GetContributions(),
 			Repositories:            repos,

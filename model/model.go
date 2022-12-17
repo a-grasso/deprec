@@ -57,8 +57,6 @@ type RepositoryData struct {
 	Dependencies []string
 	Dependents   []string
 
-	OpenIssues int
-
 	CommunityStandards float64
 }
 
@@ -130,12 +128,32 @@ type Tag struct {
 	Description string
 	Date        time.Time
 }
+
+type IssueState string
+
+func ToIssueState(s string) IssueState {
+	switch s {
+	case "open":
+		return IssueStateOpen
+	case "closed":
+		return IssueStateClosed
+	default:
+		return IssueStateOther
+	}
+}
+
+const (
+	IssueStateOpen   IssueState = "open"
+	IssueStateClosed IssueState = "closed"
+	IssueStateOther  IssueState = "other"
+)
+
 type Issue struct {
 	Number            int
 	Author            string
 	AuthorAssociation string
 	Labels            []string
-	State             string
+	State             IssueState
 	Title             string
 	Content           string
 	ClosedBy          string
@@ -149,7 +167,7 @@ type Issue struct {
 
 type Contributor struct {
 	Name                    string
-	Sponsors                []string
+	Sponsors                int
 	Organizations           int
 	Contributions           int
 	Repositories            int

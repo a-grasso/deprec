@@ -92,3 +92,13 @@ func TestExtractCommitsNil(t *testing.T) {
 
 	checkNoDatabase(t)
 }
+
+func TestExtractTagsNil(t *testing.T) {
+	t.Cleanup(cleanDatabase)
+
+	tags := ghe.extractTags("", "")
+
+	assert.Nil(t, tags)
+
+	checkNoDatabase(t)
+}

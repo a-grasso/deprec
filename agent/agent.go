@@ -42,6 +42,8 @@ func (agent *Agent) CombinationAndConclusion() *model.AgentResult {
 
 	deityGiven := mapping.DeityGiven(agent.DataModel)
 
+	_ = mapping.Processing(agent.DataModel)
+
 	coreTeam := mapping.CoreTeam(agent.DataModel)
 
 	result := activity*0.55 + network*0.12 + popularity*0.28 + coreTeam*0.05
