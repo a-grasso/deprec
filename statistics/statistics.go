@@ -119,9 +119,10 @@ type HasTimestamp interface {
 func Analyze(sortedKeys []Key, grouped map[Key]float64, percentile int) *Result {
 	SortKeys(sortedKeys)
 
-	monthsSinceLast := CalcSinceLast(sortedKeys)
+	lastKey, monthsSinceLast := CalcSinceLast(sortedKeys, grouped)
+	last := grouped[lastKey]
 
-	avg, last := CalcOverall(sortedKeys, grouped)
+	avg := CalcOverall(sortedKeys, grouped)
 
 	firstPercentileAverage, lastPercentileAverage := CalcPercentileAverage(percentile, sortedKeys, grouped)
 
@@ -176,15 +177,26 @@ func ToPercentage[T float64 | int](count T, total int) float64 {
 	return float64(count) / float64(total) * 100
 }
 
-func CalcSinceLast(sortedKeys []Key) (monthsSinceLast int) {
+func CalcSinceLast(sortedKeys []Key, grouped map[Key]float64) (lastKey Key, monthsSinceLast int) {
 	SortKeys(sortedKeys)
 
-	lastKey := sortedKeys[len(sortedKeys)-1]
+	lastKey = sortedKeys[len(sortedKeys)-1]
+
+	reverseKeys := sortedKeys
+	funk.Reverse(reverseKeys)
+
+	for _, key := range reverseKeys {
+		if grouped[key] == 0 {
+			continue
+		}
+		lastKey = key
+	}
+
 	monthsSinceLast = lastKey.TimeDifferenceTo(nil)
 	return
 }
 
-func CalcOverall(keys []Key, groupedCounts map[Key]float64) (avg float64, last float64) {
+func CalcOverall(keys []Key, groupedCounts map[Key]float64) (avg float64) {
 	countPerMonth := make([]float64, 0, len(keys))
 	for _, key := range keys {
 		countPerMonth = append(countPerMonth, groupedCounts[key])
@@ -193,8 +205,6 @@ func CalcOverall(keys []Key, groupedCounts map[Key]float64) (avg float64, last f
 	total := funk.Sum(countPerMonth)
 
 	avg = total / float64(len(keys))
-	last = groupedCounts[keys[len(keys)-1]]
-
 	return
 }
 
@@ -212,8 +222,8 @@ func CalcPercentileAverage(p int, sortedKeys []Key, groupedCounts map[Key]float6
 	firstPercentile := sortedKeys[p20 : 2*p20+1]
 	lastPercentile := sortedKeys[p80:]
 
-	firstPercentileAvgCount, _ = CalcOverall(firstPercentile, groupedCounts)
-	lastPercentileAvgCount, _ = CalcOverall(lastPercentile, groupedCounts)
+	firstPercentileAvgCount = CalcOverall(firstPercentile, groupedCounts)
+	lastPercentileAvgCount = CalcOverall(lastPercentile, groupedCounts)
 
 	return
 }
@@ -229,7 +239,7 @@ func CalcPercentileCount(p int, sortedKeys []Key, groupedCounts map[Key]float64)
 	p20 := int(percentile)
 	p80 := int(percentile * 4.0)
 
-	firstPercentile := sortedKeys[:p20+1]
+	firstPercentile := sortedKeys[p20 : 2*p20+1]
 	lastPercentile := sortedKeys[p80:]
 
 	firstPercentileCount = int(funk.Sum(funk.Map(groupedCounts, func(k Key, v float64) float64 {
@@ -264,7 +274,7 @@ func GroupBy[T any](elements []T, getTime func(T) time.Time) ([]Key, map[Key][]T
 	}
 
 	keys := make([]Key, 0)
-	for key, _ := range grouped {
+	for key := range grouped {
 		keys = append(keys, key)
 	}
 
@@ -283,10 +293,9 @@ func FillInMissingKeysAndSort(keys *[]Key) {
 	SortKeys(*keys)
 
 	firstKey := (*keys)[0]
-	lastKey := (*keys)[len(*keys)-1]
 
 	first := firstKey.ToTime()
-	last := lastKey.ToTime()
+	last := CustomNow()
 
 	tmp := first
 	for {

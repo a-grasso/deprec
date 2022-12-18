@@ -1,7 +1,7 @@
 package model
 
 import (
-	"time"
+	"fmt"
 )
 
 type Dependency struct {
@@ -15,188 +15,26 @@ type SBOM struct {
 }
 
 type AgentResult struct {
-	Dependency *Dependency
-	Result     float64
+	Dependency    *Dependency
+	CombConResult CoreResult
+	Result        RecommendationResult
 }
 
-type DataModel struct {
-	Repository   *Repository
-	Distribution *Distribution
+func (ar *AgentResult) ToString() string {
+
+	header := fmt.Sprintf("Result %s: ", ar.Dependency.Name)
+	core := ar.CombConResult.ToStringDeep()
+
+	return header + core
 }
 
-type Repository struct {
-	Contributors []Contributor
-	Issues       []Issue
-	Commits      []Commit
-	Releases     []Release
+type RecommendationResult map[Recommendation]float64
 
-	*RepositoryData
-}
-
-type RepositoryData struct {
-	Owner     string
-	Org       *Organization
-	CreatedAt time.Time
-	Size      int
-
-	License      string
-	AllowForking bool
-
-	ReadMe      string
-	About       string
-	Archivation bool
-	Disabled    bool
-
-	KLOC     int
-	TotalPRs int
-
-	Forks    int
-	Watchers int
-	Stars    int
-
-	Dependencies []string
-	Dependents   []string
-
-	CommunityStandards float64
-}
-
-func (r *Repository) TotalCommits() int {
-	return len(r.Commits)
-}
-
-func (r *Repository) TotalIssues() int {
-	return len(r.Issues)
-}
-
-func (r *Repository) TotalReleases() int {
-	return len(r.Releases)
-}
-
-func (r *Repository) TotalContributors() int {
-	return len(r.Contributors)
-}
-
-type Organization struct {
-	Login             string
-	PublicRepos       int
-	Followers         int
-	Following         int
-	TotalPrivateRepos int
-	OwnedPrivateRepos int
-	Collaborators     int
-}
-
-type Commit struct {
-	Author       string
-	Committer    string
-	Changes      []string
-	ChangedFiles []string
-	Type         string
-	Message      string
-	Branch       string
-	Timestamp    time.Time
-	Additions    int
-	Deletions    int
-	Total        int
-}
-
-func (c Commit) GetTimeStamp() time.Time {
-	return c.Timestamp
-}
-
-func (i Issue) GetTimeStamp() time.Time {
-	return i.CreationTime
-}
-
-func (r Release) GetTimeStamp() time.Time {
-	return r.Date
-}
-
-type Release struct {
-	Author      string
-	Version     string
-	Description string
-	Changes     []string
-	Type        string
-	Date        time.Time
-}
-
-type Tag struct {
-	Name        string
-	Author      string
-	Version     string
-	Description string
-	Date        time.Time
-}
-
-type IssueState string
-
-func ToIssueState(s string) IssueState {
-	switch s {
-	case "open":
-		return IssueStateOpen
-	case "closed":
-		return IssueStateClosed
-	default:
-		return IssueStateOther
-	}
-}
+type Recommendation string
 
 const (
-	IssueStateOpen   IssueState = "open"
-	IssueStateClosed IssueState = "closed"
-	IssueStateOther  IssueState = "other"
+	NoConcerns        Recommendation = "No Concerns"
+	NoImmediateAction Recommendation = "No Immediate Action"
+	Watchlist         Recommendation = "Watchlist"
+	DecisionMaking    Recommendation = "Decision Making"
 )
-
-type Issue struct {
-	Number            int
-	Author            string
-	AuthorAssociation string
-	Labels            []string
-	State             IssueState
-	Title             string
-	Content           string
-	ClosedBy          string
-	Contributions     int
-	Contributors      []string
-	CreationTime      time.Time
-	FirstResponse     time.Time
-	LastContribution  time.Time
-	ClosingTime       time.Time
-}
-
-type Contributor struct {
-	Name                    string
-	Sponsors                int
-	Organizations           int
-	Contributions           int
-	Repositories            int
-	FirstContribution       time.Time
-	LastContribution        time.Time
-	TotalStatsContributions int
-}
-
-type Distribution struct {
-	Library  *Library
-	Artifact *Artifact
-}
-
-type Artifact struct {
-	NewVersionAvailable  bool
-	ArtifactRepositories []string
-	Date                 time.Time
-	Vulnerabilities      []string
-	Dependents           []string
-	Dependencies         []string
-	DeprecationWarning   bool
-}
-
-type Library struct {
-	Ranking       int
-	License       string
-	UsedBy        int
-	Moved         bool
-	Versions      []*map[string]float64
-	Description   string
-	LastPublished string
-}

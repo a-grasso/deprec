@@ -13,6 +13,7 @@ require (
 	go.mongodb.org/mongo-driver v1.11.0
 	go.uber.org/zap v1.24.0
 	golang.org/x/oauth2 v0.0.0-20180821212333-d2e6202438be
+	gonum.org/v1/gonum v0.12.0
 )
 
 require (

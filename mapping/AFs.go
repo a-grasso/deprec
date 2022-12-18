@@ -69,24 +69,26 @@ func Interconnectedness(model *model.DataModel) float64 {
 	return Network(model)*0.3 + Popularity(model)*0.7
 }
 
-func DeityGiven(model *model.DataModel) float64 {
+func DeityGiven(m *model.DataModel) model.CoreResult {
 
-	archived := model.Repository.Archivation
+	cr := model.CoreResult{Core: model.DeityGiven}
+
+	archived := m.Repository.Archivation
 	if archived {
-		return 1
+		cr.Intake(0, 1)
 	}
 
-	readme := strings.ToLower(model.Repository.ReadMe)
+	readme := strings.ToLower(m.Repository.ReadMe)
 	if strings.Contains(readme, "deprecated") || strings.Contains(readme, "end-of-life") {
-		return 1
+		cr.Intake(0, 1)
 	}
 
-	about := strings.ToLower(model.Repository.About)
+	about := strings.ToLower(m.Repository.About)
 	if strings.Contains(about, "deprecated") || strings.Contains(about, "end-of-life") || strings.Contains(about, "abandoned") {
-		return 1
+		cr.Intake(0, 1)
 	}
 
-	return 0
+	return cr
 }
 
 func OrganizationalBackup(m *model.DataModel) float64 {

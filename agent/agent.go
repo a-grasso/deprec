@@ -36,26 +36,18 @@ func (agent *Agent) Extraction() {
 
 func (agent *Agent) CombinationAndConclusion() *model.AgentResult {
 
-	network := mapping.Network(agent.DataModel)
-	popularity := mapping.Popularity(agent.DataModel)
+	cr := model.CoreResult{Core: model.CombCon}
+
 	activity := mapping.Activity(agent.DataModel, agent.Config.AFConfig.Activity)
 
 	deityGiven := mapping.DeityGiven(agent.DataModel)
 
-	_ = mapping.Processing(agent.DataModel)
-
-	coreTeam := mapping.CoreTeam(agent.DataModel)
-
-	result := activity*0.55 + network*0.12 + popularity*0.28 + coreTeam*0.05
-
-	if deityGiven == 1 {
-		result = 1
-	} else {
-		result = network
-	}
+	cr.Overtake(deityGiven, 1)
+	cr.Overtake(activity, 2)
 
 	return &model.AgentResult{
-		Dependency: agent.Dependency,
-		Result:     result,
+		Dependency:    agent.Dependency,
+		CombConResult: cr,
+		Result:        cr.Softmax(),
 	}
 }

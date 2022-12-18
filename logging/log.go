@@ -13,5 +13,4 @@ func init() {
 	Logger = zapLogger
 
 	SugaredLogger = zapLogger.Sugar()
-
 }

@@ -117,7 +117,7 @@
       "externalReferences": [
         {
           "type": "vcs",
-          "url": "https://github.com/apache/logging-log4j1"
+          "url": "https://github.com/ben-manes/caffeine"
         },
         {
           "type": "website",

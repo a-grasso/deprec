@@ -15,8 +15,9 @@ type AFConfig struct {
 }
 
 type Activity struct {
-	Percentile      int `json:"Percentile"`
-	CommitThreshold int `json:"CommitThreshold"`
+	Percentile       int `json:"Percentile"`
+	CommitThreshold  int `json:"CommitThreshold"`
+	ReleaseThreshold int `json:"ReleaseThreshold"`
 }
 
 type Configuration struct {

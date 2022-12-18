@@ -59,6 +59,7 @@ func mongoDBClient(config *configuration.Configuration) *mongo.Client {
 
 	clientOpts := options.Client().ApplyURI(config.URI).SetAuth(credentials)
 	cache, err := mongo.Connect(context.TODO(), clientOpts)
+	// TODO: Check connection (Ping)
 	if err != nil {
 		logging.SugaredLogger.Fatalf("connecting to mongodb database at '%s': %s", config.URI, err)
 		log.Fatal(err)
@@ -90,6 +91,11 @@ func (ghe *GitHubExtractor) Extract(dataModel *model.DataModel) {
 
 	releases := ghe.extractReleases(ghe.Owner, ghe.Repository)
 
+	var tags []model.Tag
+	if releases == nil {
+		tags = ghe.extractTags(ghe.Owner, ghe.Repository)
+	}
+
 	issues := ghe.extractIssues(ghe.Owner, ghe.Repository)
 
 	repository := &model.Repository{
@@ -97,6 +103,7 @@ func (ghe *GitHubExtractor) Extract(dataModel *model.DataModel) {
 		Issues:         issues,
 		Commits:        commits,
 		Releases:       releases,
+		Tags:           tags,
 		RepositoryData: repositoryData,
 	}
 
@@ -192,16 +199,35 @@ func (ghe *GitHubExtractor) extractTags(owner, repo string) []model.Tag {
 
 	for _, tag := range tags {
 
-		r := model.Tag{
-			Author:      tag.GetCommit().GetAuthor().GetLogin(),
-			Version:     tag.GetName(),
-			Description: tag.GetCommit().GetMessage(),
-			Date:        time.Time{},
+		if tag.GetCommit().GetCommitter() == nil {
+
+			tagCommit, err := ghe.Client.Repositories.GetCommit(context.TODO(), owner, repo, tag.GetCommit().GetSHA(), &github.ListOptions{})
+
+			if err != nil {
+				continue
+			}
+
+			r := model.Tag{
+				Author:      tagCommit.GetCommit().GetAuthor().GetEmail(),
+				Version:     tag.GetName(),
+				Description: tagCommit.GetCommit().GetMessage(),
+				Date:        tagCommit.GetCommit().GetCommitter().GetDate(),
+			}
+
+			result = append(result, r)
+
+		} else {
+
+			r := model.Tag{
+				Author:      tag.GetCommit().GetAuthor().GetLogin(),
+				Version:     tag.GetName(),
+				Description: tag.GetCommit().GetMessage(),
+				Date:        tag.GetCommit().GetCommitter().GetDate(),
+			}
+
+			result = append(result, r)
 		}
-
-		result = append(result, r)
 	}
-
 	return result
 }
 
@@ -237,6 +263,11 @@ func (ghe *GitHubExtractor) extractIssues(owner, repo string) []model.Issue {
 		// 	issueContributors = funk.Uniq(commentators).([]string)
 		// }
 
+		var contributions []model.IssueContribution
+		for i := 0; i < issue.GetComments(); i++ {
+			contributions = append(contributions, model.IssueContribution{Time: issue.GetCreatedAt()})
+		}
+
 		i := model.Issue{
 			Number:            issue.GetNumber(),
 			Author:            issue.GetUser().GetLogin(),
@@ -246,7 +277,7 @@ func (ghe *GitHubExtractor) extractIssues(owner, repo string) []model.Issue {
 			Title:             issue.GetTitle(),
 			Content:           issue.GetBody(),
 			ClosedBy:          issue.GetClosedBy().GetLogin(),
-			Contributions:     issue.GetComments(),
+			Contributions:     contributions,
 			Contributors:      nil,
 			CreationTime:      issue.GetCreatedAt(),
 			FirstResponse:     time.Time{},

@@ -177,3 +177,14 @@ func (s *RepositoriesServiceWrapper) ListTags(ctx context.Context, owner string,
 
 	return fetchPagination[*github.RepositoryTag](ctx, coll, f, opts)
 }
+
+func (s *RepositoriesServiceWrapper) GetCommit(ctx context.Context, owner string, repository string, sha string, opts *github.ListOptions) (*github.RepositoryCommit, error) {
+
+	coll := s.cache.Database("repositories_get_commit").Collection(fmt.Sprintf("%s-%s-%s", owner, repository, sha))
+
+	f := func() (*github.RepositoryCommit, *github.Response, error) {
+		return s.client.Repositories.GetCommit(ctx, owner, repository, sha, opts)
+	}
+
+	return fetchSingle(ctx, coll, f)
+}
