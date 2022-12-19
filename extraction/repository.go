@@ -128,7 +128,7 @@ func (ghe *GitHubExtractor) extractRepositoryData(owner, repo string) *model.Rep
 		Org:                org,
 		CreatedAt:          repository.GetCreatedAt().Time,
 		Size:               repository.GetSize(),
-		License:            repository.GetLicense().GetName(),
+		License:            repository.GetLicense().GetKey(),
 		AllowForking:       repository.GetAllowForking(),
 		ReadMe:             readme,
 		About:              repository.GetDescription(),

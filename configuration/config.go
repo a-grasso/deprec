@@ -1,23 +1,23 @@
 package configuration
 
 import (
-	"deprec/logging"
 	"encoding/json"
+	"fmt"
 	"os"
 )
 
-func Load(configFilePath string) *Configuration {
+func Load(configFilePath string) (*Configuration, error) {
 	content, err := os.ReadFile(configFilePath)
 	if err != nil {
-		logging.SugaredLogger.Fatalf("could not read configuration file '%s': %s", configFilePath, err)
+		return nil, fmt.Errorf("could not read configuration file '%s': %s", configFilePath, err)
 	}
 
 	var config Configuration
 	err = json.Unmarshal(content, &config)
 
 	if err != nil {
-		logging.SugaredLogger.Fatalf("could not parse configuration file '%s': %s", configFilePath, err)
+		return nil, fmt.Errorf("could not parse configuration file '%s': %s", configFilePath, err)
 	}
 
-	return &config
+	return &config, nil
 }

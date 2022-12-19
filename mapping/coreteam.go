@@ -7,16 +7,30 @@ import (
 	"sort"
 )
 
-func CoreTeam(m *model.DataModel) float64 {
+func CoreTeam(m *model.DataModel) model.CoreResult {
 
-	percentage := coreTeamPercentage(m.Repository.Contributors)
-	coreTeamStrength := math.Min(3*percentage, 100) / 100
+	cr := model.CoreResult{Core: model.CoreTeam}
 
-	activeContributors := activeContributors(m.Repository.Commits, m.Repository.Contributors)
+	contributors := m.Repository.Contributors
+	commits := m.Repository.Commits
+
+	if contributors != nil {
+		percentage := coreTeamPercentage(contributors)
+
+		coreTeamStrength := math.Min(3*percentage, 100) / 100
+
+		cr.Intake(coreTeamStrength, 1)
+
+		if commits != nil {
+			activeContributors := activeContributors(m.Repository.Commits, m.Repository.Contributors)
+
+			cr.Intake(activeContributors, 2)
+		}
+	}
 
 	// TODO: in relation zu timeline setzen?
 
-	return coreTeamStrength*0.4 + activeContributors*0.6
+	return cr
 }
 
 func activeContributors(commits []model.Commit, contributors []model.Contributor) float64 {
@@ -72,5 +86,6 @@ func findBiggestJump(contributors []int) (index int) {
 			max = curJump
 		}
 	}
+
 	return
 }

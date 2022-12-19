@@ -24,7 +24,11 @@ func (agent *Agent) Start() model.AgentResult {
 
 	result := agent.CombinationAndConclusion()
 
-	return *result
+	return model.AgentResult{
+		Dependency:    agent.Dependency,
+		CombConResult: result,
+		Result:        result.Softmax(),
+	}
 }
 
 func (agent *Agent) Extraction() {
@@ -34,20 +38,19 @@ func (agent *Agent) Extraction() {
 	}
 }
 
-func (agent *Agent) CombinationAndConclusion() *model.AgentResult {
+func (agent *Agent) CombinationAndConclusion() model.CoreResult {
 
 	cr := model.CoreResult{Core: model.CombCon}
 
-	activity := mapping.Activity(agent.DataModel, agent.Config.AFConfig.Activity)
-
 	deityGiven := mapping.DeityGiven(agent.DataModel)
 
+	activity := mapping.Activity(agent.DataModel, agent.Config.AFConfig.Activity)
+
+	coreTeam := mapping.CoreTeam(agent.DataModel)
+
 	cr.Overtake(deityGiven, 1)
+	cr.Overtake(coreTeam, 1)
 	cr.Overtake(activity, 2)
 
-	return &model.AgentResult{
-		Dependency:    agent.Dependency,
-		CombConResult: cr,
-		Result:        cr.Softmax(),
-	}
+	return cr
 }

@@ -23,9 +23,9 @@ type AgentResult struct {
 func (ar *AgentResult) ToString() string {
 
 	header := fmt.Sprintf("Result %s: ", ar.Dependency.Name)
-	core := ar.CombConResult.ToStringDeep()
+	body := ar.CombConResult.ToStringDeep()
 
-	return header + core
+	return header + body
 }
 
 type RecommendationResult map[Recommendation]float64

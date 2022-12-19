@@ -12,7 +12,9 @@ type Core string
 const (
 	CombCon    Core = "Combination And Conclusion"
 	Activity   Core = "Activity"
+	CoreTeam   Core = "Core Team"
 	DeityGiven Core = "Deity-Given"
+	Recentness Core = "Recentness"
 )
 
 type CoreResult struct {
@@ -32,7 +34,7 @@ func (cr *CoreResult) ToString() string {
 
 	rec := cr.Softmax()
 	topCore := fmt.Sprintf("Top Core: %v", cr.Core)
-	softmaxResult := fmt.Sprintf("%s -> %f | %s -> %f | %s -> %f | %s -> %f", NoConcerns, rec[NoConcerns], NoImmediateAction, rec[NoImmediateAction], Watchlist, rec[Watchlist], DecisionMaking, rec[DecisionMaking])
+	softmaxResult := fmt.Sprintf("%s -> %.3f | %s -> %.3f | %s -> %.3f | %s -> %.3f", NoConcerns, rec[NoConcerns], NoImmediateAction, rec[NoImmediateAction], Watchlist, rec[Watchlist], DecisionMaking, rec[DecisionMaking])
 	underlyingCores := fmt.Sprintf("Underlying Cores: %v", funk.Map(cr.UnderlyingCores, func(cr CoreResult) Core { return cr.Core }))
 
 	return topCore + Separator + softmaxResult + Separator + underlyingCores
@@ -42,7 +44,7 @@ func (cr *CoreResult) ToStringDeep() string {
 
 	rec := cr.Softmax()
 	topCore := fmt.Sprintf("Top Core: %v", cr.Core)
-	softmaxResult := fmt.Sprintf("%s -> %f | %s -> %f | %s -> %f | %s -> %f", NoConcerns, rec[NoConcerns], NoImmediateAction, rec[NoImmediateAction], Watchlist, rec[Watchlist], DecisionMaking, rec[DecisionMaking])
+	softmaxResult := fmt.Sprintf("%s -> %.3f | %s -> %.3f | %s -> %.3f | %s -> %.3f", NoConcerns, rec[NoConcerns], NoImmediateAction, rec[NoImmediateAction], Watchlist, rec[Watchlist], DecisionMaking, rec[DecisionMaking])
 	underlyingCores := fmt.Sprintf("Underlying Cores: %v", funk.Map(cr.UnderlyingCores, func(cr CoreResult) string { return fmt.Sprintf("\n{\n%v\n}\n", cr.ToString()) }))
 
 	return topCore + Separator + softmaxResult + Separator + underlyingCores

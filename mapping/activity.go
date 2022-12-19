@@ -12,49 +12,38 @@ func Activity(m *model.DataModel, config configuration.Activity) model.CoreResul
 
 	cr := model.CoreResult{Core: model.Activity}
 
-	releases := m.Repository.Releases
-	//tags := m.Repository.Tags
-	issues := m.Repository.Issues
-	issueContributions := funk.FlatMap(issues, func(issue model.Issue) []model.IssueContribution {
+	issueContributions := funk.FlatMap(m.Repository.Issues, func(issue model.Issue) []model.IssueContribution {
 		return issue.Contributions
 	}).([]model.IssueContribution)
 
-	commitAnalysis := statistics.AnalyzeCount(m.Repository.Commits, config.Percentile)
-	releaseAnalysis := statistics.AnalyzeCount(releases, config.Percentile)
-	//if releaseAnalysis == nil {
-	//	releaseAnalysis = statistics.AnalyzeCount(tags, config.Percentile)
-	//}
-	issueAnalysis := statistics.AnalyzeCount(issues, config.Percentile)
-	issueContributionAnalysis := statistics.AnalyzeCount(issueContributions, config.Percentile)
-
-	evalC := evaluate(commitAnalysis, config.CommitThreshold)
-	evalR := evaluate(releaseAnalysis, config.ReleaseThreshold)
-	evalI := evaluate(issueAnalysis, math.MaxInt)
-	evalIC := evaluate(issueContributionAnalysis, math.MaxInt)
-
-	// result := evalC*0.325 + evalR*0.325 + evalI*0.175 + evalIC*0.175
-	cr.Intake(evalC, 2)
-	cr.Intake(evalR, 2)
-	cr.Intake(evalI, 1)
-	cr.Intake(evalIC, 1)
+	p := config.Percentile
+	handle(m.Repository.Commits, 2, p, &cr)
+	handle(m.Repository.Releases, 2, p, &cr)
+	handle(m.Repository.Tags, 2, p, &cr)
+	handle(m.Repository.Issues, 1, p, &cr)
+	handle(issueContributions, 1, p, &cr)
 
 	return cr
 }
 
-func evaluate(ca *statistics.Result, threshold int) float64 {
+func handle[T statistics.HasTimestamp](count []T, weight float64, percentile int, cr *model.CoreResult) {
 
-	if ca == nil {
-		return 0
+	if count == nil {
+		return
 	}
 
-	percentileAverageDiff := math.Min(1, ca.LastPercentileAverage/ca.FirstPercentileAverage)
+	analysis := statistics.AnalyzeCount(count, percentile)
 
-	lpaAverageDiff := math.Min(1, ca.LastPercentileAverage/ca.Average)
+	eval := evaluate(analysis)
 
-	_ = 1.0
-	if ca.MonthsSinceLast > threshold {
-		return 0.0
-	}
+	cr.Intake(eval, weight)
+}
+
+func evaluate(r statistics.Result) float64 {
+
+	percentileAverageDiff := math.Min(1, r.LastPercentileAverage/r.FirstPercentileAverage)
+
+	lpaAverageDiff := math.Min(1, r.LastPercentileAverage/r.Average)
 
 	return (percentileAverageDiff + lpaAverageDiff) / 2
 }

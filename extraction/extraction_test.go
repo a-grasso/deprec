@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-var config = configuration.Load("./../test.ut.config.json")
+var config, _ = configuration.Load("./../test.ut.config.json")
 
 func TestMain(m *testing.M) {
 	cleanDatabase()

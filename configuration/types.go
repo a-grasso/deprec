@@ -11,11 +11,15 @@ type MongoDB struct {
 }
 
 type AFConfig struct {
-	Activity Activity `json:"Activity"`
+	Activity   Activity   `json:"Activity"`
+	Recentness Recentness `json:"Recentness"`
 }
 
 type Activity struct {
-	Percentile       int `json:"Percentile"`
+	Percentile int `json:"Percentile"`
+}
+
+type Recentness struct {
 	CommitThreshold  int `json:"CommitThreshold"`
 	ReleaseThreshold int `json:"ReleaseThreshold"`
 }

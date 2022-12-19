@@ -34,9 +34,15 @@ func main() {
 		exitGracefully(err)
 	}
 
-	config := configuration.Load(input.configPath)
+	config, err := configuration.Load(input.configPath)
+	if err != nil {
+		exitGracefully(err)
+	}
 
-	cdxBom := decodeSBOM(input.sbomPath)
+	cdxBom, err := decodeSBOM(input.sbomPath)
+	if err != nil {
+		exitGracefully(err)
+	}
 
 	dependencies := parseSBOM(cdxBom)
 
@@ -87,24 +93,23 @@ func getSBOMFromURL(url string) (io.ReadCloser, error) {
 	return res.Body, nil
 }
 
-func decodeSBOM(sbomPath string) *cdx.BOM {
+func decodeSBOM(sbomPath string) (*cdx.BOM, error) {
 
 	json, err := os.ReadFile(sbomPath)
 	if err != nil {
-		logging.SugaredLogger.Fatalf("could not read sbom file '%s': %s", sbomPath, err)
+		return nil, fmt.Errorf("could not read sbom file '%s': %s", sbomPath, err)
 	}
 	reader := bytes.NewReader(json)
 
 	bom := new(cdx.BOM)
 	decoder := cdx.NewBOMDecoder(reader, cdx.BOMFileFormatJSON)
 	if err = decoder.Decode(bom); err != nil {
-		logging.SugaredLogger.Fatalf("could not decode SBOM: %s", err)
-		panic(err)
+		return nil, fmt.Errorf("could not decode SBOM: %s", err)
 	}
 
 	calcSBOMStats(bom)
 
-	return bom
+	return bom, nil
 }
 
 func calcSBOMStats(bom *cdx.BOM) {

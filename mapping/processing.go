@@ -39,7 +39,7 @@ func Processing(m *model.DataModel) float64 {
 	return 0
 }
 
-func calcAvgBurnUp(closed []model.Issue) *statistics.Result {
+func calcAvgBurnUp(closed []model.Issue) statistics.Result {
 
 	sortedKeys, grouped := statistics.GroupBy(closed, func(i model.Issue) time.Time {
 		return i.ClosingTime
@@ -55,7 +55,7 @@ func calcAvgBurnUp(closed []model.Issue) *statistics.Result {
 
 }
 
-func calcAvgBurnDown(opened []model.Issue) *statistics.Result {
+func calcAvgBurnDown(opened []model.Issue) statistics.Result {
 
 	sortedKeys, grouped := statistics.GroupBy(opened, func(i model.Issue) time.Time {
 		return i.CreationTime
@@ -70,7 +70,7 @@ func calcAvgBurnDown(opened []model.Issue) *statistics.Result {
 	return statistics.Analyze(sortedKeys, burnDown, 20)
 }
 
-func calcAvgBurn(issues []model.Issue, closedIssues []model.Issue) *statistics.Result {
+func calcAvgBurn(issues []model.Issue, closedIssues []model.Issue) statistics.Result {
 
 	sortedKeysOpen, opened := statistics.GroupBy(issues, func(i model.Issue) time.Time {
 		return i.CreationTime

@@ -116,7 +116,7 @@ type HasTimestamp interface {
 	GetTimeStamp() time.Time
 }
 
-func Analyze(sortedKeys []Key, grouped map[Key]float64, percentile int) *Result {
+func Analyze(sortedKeys []Key, grouped map[Key]float64, percentile int) Result {
 	SortKeys(sortedKeys)
 
 	lastKey, monthsSinceLast := CalcSinceLast(sortedKeys, grouped)
@@ -126,7 +126,7 @@ func Analyze(sortedKeys []Key, grouped map[Key]float64, percentile int) *Result 
 
 	firstPercentileAverage, lastPercentileAverage := CalcPercentileAverage(percentile, sortedKeys, grouped)
 
-	return &Result{
+	return Result{
 		Unit:                   "Per Month",
 		Percentile:             percentile,
 		TotalMonths:            len(sortedKeys),
@@ -138,12 +138,9 @@ func Analyze(sortedKeys []Key, grouped map[Key]float64, percentile int) *Result 
 	}
 }
 
-func AnalyzeCount[T HasTimestamp](data []T, percentile int) *Result {
+func AnalyzeCount[T HasTimestamp](data []T, percentile int) Result {
 
 	total := len(data)
-	if total == 0 {
-		return nil
-	}
 
 	sortedKeys, grouped := GroupByTimestamp(data)
 

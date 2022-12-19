@@ -1,10 +1,65 @@
 package mapping
 
 import (
+	"deprec/configuration"
 	"deprec/model"
+	"deprec/statistics"
 	"github.com/thoas/go-funk"
+	"sort"
 	"strings"
 )
+
+func LicenseRestrictiveness(model *model.DataModel) {
+
+	//license := model.Repository.License
+
+}
+
+func Recentness(m *model.DataModel, config configuration.Configuration) model.CoreResult {
+
+	cr := model.CoreResult{Core: model.Recentness}
+
+	commits := m.Repository.Commits
+	if commits != nil {
+		sort.Slice(commits, func(i, j int) bool {
+			return commits[i].Timestamp.Before(commits[j].Timestamp)
+		})
+
+		lastCommit := statistics.CalculateTimeDifference(commits[0].GetTimeStamp(), statistics.CustomNow())
+
+		if lastCommit > config.Recentness.CommitThreshold {
+			cr.Intake(0, 1)
+		}
+	}
+
+	releases := m.Repository.Releases
+	if releases != nil {
+		sort.Slice(releases, func(i, j int) bool {
+			return releases[i].Date.Before(releases[j].Date)
+		})
+
+		lastRelease := statistics.CalculateTimeDifference(releases[0].GetTimeStamp(), statistics.CustomNow())
+
+		if lastRelease > config.Recentness.ReleaseThreshold {
+			cr.Intake(0, 1)
+		}
+	}
+
+	tags := m.Repository.Tags
+	if tags != nil {
+		sort.Slice(tags, func(i, j int) bool {
+			return tags[i].Date.Before(tags[j].Date)
+		})
+
+		lastTag := statistics.CalculateTimeDifference(tags[0].GetTimeStamp(), statistics.CustomNow())
+
+		if lastTag > config.Recentness.ReleaseThreshold {
+			cr.Intake(0, 1)
+		}
+	}
+
+	return cr
+}
 
 func Network(model *model.DataModel) float64 {
 	var result float64
@@ -75,17 +130,17 @@ func DeityGiven(m *model.DataModel) model.CoreResult {
 
 	archived := m.Repository.Archivation
 	if archived {
-		cr.Intake(0, 1)
+		cr.Intake(0, 100)
 	}
 
 	readme := strings.ToLower(m.Repository.ReadMe)
 	if strings.Contains(readme, "deprecated") || strings.Contains(readme, "end-of-life") {
-		cr.Intake(0, 1)
+		cr.Intake(0, 100)
 	}
 
 	about := strings.ToLower(m.Repository.About)
 	if strings.Contains(about, "deprecated") || strings.Contains(about, "end-of-life") || strings.Contains(about, "abandoned") {
-		cr.Intake(0, 1)
+		cr.Intake(0, 100)
 	}
 
 	return cr

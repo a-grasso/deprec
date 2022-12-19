@@ -47,7 +47,7 @@ func readCsvFile(filePath string) []*CSVRow {
 	return rows
 }
 
-var config = configuration.Load(testConfig)
+var config, _ = configuration.Load(testConfig)
 var csvRows = readCsvFile(testCSV)
 
 func tableEntries() []TableEntry {
