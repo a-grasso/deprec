@@ -23,12 +23,12 @@ func TestAgent(t *testing.T) {
 }
 
 type CSVRow struct {
-	Repository string  `csv:"repository"` // .csv column headers
-	Name       string  `csv:"name"`
-	Result     float64 `csv:"result"`
-	Comment    string  `csv:"comment"`
-	Version    string  `csv:"version"`
-	Ignore     bool    `csv:"ignore"`
+	Repository     string `csv:"repository"` // .csv column headers
+	Name           string `csv:"name"`
+	Recommendation string `csv:"recommendation"`
+	Comment        string `csv:"comment"`
+	Version        string `csv:"version"`
+	Ignore         bool   `csv:"ignore"`
 }
 
 func readCsvFile(filePath string) []*CSVRow {
@@ -82,12 +82,16 @@ var _ = Describe("Agent", func() {
 
 			agent := agent.NewAgent(&dep, config)
 
-			actual := agent.Start().Result
-			expected := row.Result
+			agentResult := agent.Start()
+
+			recommendation := agentResult.TopRecommendation()
+			actual := recommendation.ToAbbreviation()
+
+			expected := row.Recommendation
 
 			Expect(actual).To(Equal(expected))
 		},
 		func(row *CSVRow) string {
-			return fmt.Sprintf("should result in '%.2f' when running for dependency '%s', comment: '%s'", row.Result, row.Name, row.Comment)
+			return fmt.Sprintf("should result in '%s' when running for dependency '%s', comment: '%s'", row.Recommendation, row.Name, row.Comment)
 		}, tableEntries())
 })

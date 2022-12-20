@@ -6,6 +6,7 @@ import (
 	"deprec/logging"
 	"deprec/model"
 	"github.com/google/go-github/v48/github"
+	"github.com/thoas/go-funk"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/oauth2"
@@ -112,6 +113,20 @@ func (ghe *GitHubExtractor) Extract(dataModel *model.DataModel) {
 	ghe.checkRateLimits()
 }
 
+func (ghe *GitHubExtractor) calculateLinesOfCode(stats []*github.ContributorStats) int {
+	loc := 0
+
+	for _, stat := range stats {
+
+		for _, week := range stat.Weeks {
+
+			loc += week.GetAdditions()
+			loc += week.GetDeletions()
+		}
+	}
+	return loc
+}
+
 func (ghe *GitHubExtractor) extractRepositoryData(owner, repo string) *model.RepositoryData {
 	repository, err := ghe.Client.Repositories.Get(context.TODO(), owner, repo)
 	if err != nil {
@@ -121,20 +136,23 @@ func (ghe *GitHubExtractor) extractRepositoryData(owner, repo string) *model.Rep
 
 	readme := ghe.extractReadMe(owner, repo)
 
+	contributorStats := ghe.listContributorStats(owner, repo)
+	loc := ghe.calculateLinesOfCode(contributorStats)
+
 	org := ghe.extractOrganization(repository.GetOrganization().GetLogin())
 
 	repositoryData := &model.RepositoryData{
 		Owner:              repository.GetOwner().GetLogin(),
-		Org:                org,
 		CreatedAt:          repository.GetCreatedAt().Time,
 		Size:               repository.GetSize(),
+		Org:                org,
 		License:            repository.GetLicense().GetKey(),
 		AllowForking:       repository.GetAllowForking(),
 		ReadMe:             readme,
 		About:              repository.GetDescription(),
 		Archivation:        repository.GetArchived(),
 		Disabled:           repository.GetDisabled(),
-		KLOC:               0,
+		LOC:                loc,
 		TotalPRs:           0,
 		Forks:              repository.GetForksCount(),
 		Watchers:           repository.GetSubscribersCount(),
@@ -363,7 +381,7 @@ func (ghe *GitHubExtractor) extractContributors(owner, repo string) []model.Cont
 	return result
 }
 
-func (ghe *GitHubExtractor) siftContributorStats(contributorStats []*github.ContributorStats, user string) (time.Time, time.Time, int) {
+func (ghe *GitHubExtractor) siftContributorStats(contributorStats []*github.ContributorStats, user string) (first *time.Time, last *time.Time, total int) {
 	var stats *github.ContributorStats
 	for _, cs := range contributorStats {
 		if user == cs.GetAuthor().GetLogin() {
@@ -373,23 +391,25 @@ func (ghe *GitHubExtractor) siftContributorStats(contributorStats []*github.Cont
 
 	if stats == nil {
 		logging.SugaredLogger.Debugf("could not find stats of contributor '%s' from repo '%s'", user, ghe.RepositoryURL)
-		return time.Time{}, time.Time{}, 0
+		return nil, nil, 0
 	}
 
-	var first, last time.Time
-	for i, week := range stats.Weeks {
-		if i == 0 {
-			tmp := week.GetWeek().Time
-			first = tmp
-		}
+	total = stats.GetTotal()
 
-		if i == len(stats.Weeks)-1 {
-			tmp := week.Week.Time
-			last = tmp
+	activeWeeks := funk.Filter(stats.Weeks, func(w *github.WeeklyStats) bool {
+		if w.GetCommits() == 0 && w.GetAdditions() == 0 && w.GetDeletions() == 0 {
+			return false
 		}
-	}
+		return true
+	}).([]*github.WeeklyStats)
 
-	return first, last, stats.GetTotal()
+	f := activeWeeks[0].GetWeek().Time
+	l := activeWeeks[len(activeWeeks)-1].GetWeek().Time
+
+	first = &f
+	last = &l
+
+	return
 }
 
 func (ghe *GitHubExtractor) listContributorStats(owner, repo string) []*github.ContributorStats {

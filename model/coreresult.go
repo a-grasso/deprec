@@ -10,11 +10,12 @@ import (
 type Core string
 
 const (
-	CombCon    Core = "Combination And Conclusion"
-	Activity   Core = "Activity"
-	CoreTeam   Core = "Core Team"
-	DeityGiven Core = "Deity-Given"
-	Recentness Core = "Recentness"
+	CombCon              Core = "Combination And Conclusion"
+	Activity             Core = "Activity"
+	CoreTeam             Core = "Core Team"
+	DeityGiven           Core = "Deity-Given"
+	Recentness           Core = "Recentness"
+	OrganizationalBackup Core = "Organizational Backup"
 )
 
 type CoreResult struct {
@@ -95,10 +96,7 @@ func (cr *CoreResult) Intake(value float64, weight float64) {
 		return
 	}
 
-	if value >= 0 {
-		cr.DecisionMaking += weight
-		return
-	}
+	cr.DecisionMaking += weight
 
 	return
 }

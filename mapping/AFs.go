@@ -15,7 +15,7 @@ func LicenseRestrictiveness(model *model.DataModel) {
 
 }
 
-func Recentness(m *model.DataModel, config configuration.Configuration) model.CoreResult {
+func Recentness(m *model.DataModel, config configuration.Recentness) model.CoreResult {
 
 	cr := model.CoreResult{Core: model.Recentness}
 
@@ -27,7 +27,7 @@ func Recentness(m *model.DataModel, config configuration.Configuration) model.Co
 
 		lastCommit := statistics.CalculateTimeDifference(commits[0].GetTimeStamp(), statistics.CustomNow())
 
-		if lastCommit > config.Recentness.CommitThreshold {
+		if lastCommit > config.CommitThreshold {
 			cr.Intake(0, 1)
 		}
 	}
@@ -40,7 +40,7 @@ func Recentness(m *model.DataModel, config configuration.Configuration) model.Co
 
 		lastRelease := statistics.CalculateTimeDifference(releases[0].GetTimeStamp(), statistics.CustomNow())
 
-		if lastRelease > config.Recentness.ReleaseThreshold {
+		if lastRelease > config.ReleaseThreshold {
 			cr.Intake(0, 1)
 		}
 	}
@@ -53,7 +53,7 @@ func Recentness(m *model.DataModel, config configuration.Configuration) model.Co
 
 		lastTag := statistics.CalculateTimeDifference(tags[0].GetTimeStamp(), statistics.CustomNow())
 
-		if lastTag > config.Recentness.ReleaseThreshold {
+		if lastTag > config.ReleaseThreshold {
 			cr.Intake(0, 1)
 		}
 	}
@@ -109,6 +109,10 @@ func Network(model *model.DataModel) float64 {
 	return result
 }
 
+func ProjectSize(m *model.DataModel) float64 {
+	return float64(m.Repository.LOC + m.Repository.TotalCommits() + m.Repository.TotalIssues() + m.Repository.TotalContributors() + m.Repository.TotalReleases())
+}
+
 func Popularity(model *model.DataModel) float64 {
 
 	stars := model.Repository.Stars
@@ -130,32 +134,105 @@ func DeityGiven(m *model.DataModel) model.CoreResult {
 
 	archived := m.Repository.Archivation
 	if archived {
-		cr.Intake(0, 100)
+		cr.Intake(0, 1)
 	}
 
 	readme := strings.ToLower(m.Repository.ReadMe)
 	if strings.Contains(readme, "deprecated") || strings.Contains(readme, "end-of-life") {
-		cr.Intake(0, 100)
+		cr.Intake(0, 1)
 	}
 
 	about := strings.ToLower(m.Repository.About)
 	if strings.Contains(about, "deprecated") || strings.Contains(about, "end-of-life") || strings.Contains(about, "abandoned") {
-		cr.Intake(0, 100)
+		cr.Intake(0, 1)
 	}
 
 	return cr
 }
 
-func OrganizationalBackup(m *model.DataModel) float64 {
+func OrganizationalBackup(m *model.DataModel) model.CoreResult {
 
-	contOrgs := funk.Sum(funk.Map(m.Repository.Contributors, func(c model.Contributor) int { return c.Organizations }))
+	cr := model.CoreResult{Core: model.OrganizationalBackup}
 
-	contSpons := funk.Sum(funk.Map(m.Repository.Contributors, func(c model.Contributor) int { return c.Sponsors }))
+	contributors := m.Repository.Contributors
 
-	organization := 0.0
-	if m.Repository.Org != nil {
-		organization = 1.0
+	sort.Slice(contributors, func(i, j int) bool {
+		return contributors[i].Contributions > contributors[j].Contributions
+	})
+
+	total := 0.0
+	for i, contributor := range contributors {
+
+		weight := float64(i) / float64(len(contributors))
+
+		sponsors := float64(contributor.Sponsors) * weight
+
+		orgs := float64(contributor.Organizations) * weight
+
+		total += sponsors + orgs
 	}
 
-	return organization*0.5 + contOrgs*0.25 + contSpons*0.25
+	total /= float64(len(contributors))
+
+	cr.Intake(total, 1)
+
+	if m.Repository.Org != nil {
+		cr.Intake(1, 3)
+	} else {
+		cr.Intake(0, 3)
+
+	}
+
+	return cr
+}
+
+func ThirdPartyParticipation(m *model.DataModel) {
+
+	_ = m.Repository.Issues
+
+	contributors := m.Repository.Contributors
+
+	noContUser := funk.Filter(contributors, func(c model.Contributor) bool {
+		return c.FirstContribution == nil
+	}).([]model.Contributor)
+
+	_ = float64(len(noContUser)) / float64(len(contributors))
+
+}
+
+func ContributorPrestige(m *model.DataModel) float64 {
+
+	contributors := m.Repository.Contributors
+
+	commits := m.Repository.Commits
+
+	sort.Slice(commits, func(i, j int) bool {
+		return commits[i].Timestamp.Before(commits[j].Timestamp)
+	})
+
+	firstCommit := commits[0]
+	lastCommit := commits[len(commits)-1]
+
+	repoMonthSpan := statistics.CalculateTimeDifference(firstCommit.Timestamp, lastCommit.Timestamp)
+
+	var prestiges []float64
+
+	for _, c := range contributors {
+
+		var diff float64
+		if c.FirstContribution != nil {
+
+			contributionMonthSpan := statistics.CalculateTimeDifference(*c.FirstContribution, *c.LastContribution)
+
+			diff = float64(contributionMonthSpan) / float64(repoMonthSpan)
+		}
+
+		prestige := float64(c.Sponsors+c.Organizations+c.Repositories) + diff*10
+
+		prestiges = append(prestiges, prestige)
+	}
+
+	result := funk.Sum(prestiges) / float64(len(prestiges))
+	return result
+
 }

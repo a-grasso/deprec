@@ -46,11 +46,20 @@ func (agent *Agent) CombinationAndConclusion() model.CoreResult {
 
 	activity := mapping.Activity(agent.DataModel, agent.Config.AFConfig.Activity)
 
+	recentness := mapping.Recentness(agent.DataModel, agent.Config.AFConfig.Recentness)
+
 	coreTeam := mapping.CoreTeam(agent.DataModel)
 
-	cr.Overtake(deityGiven, 1)
-	cr.Overtake(coreTeam, 1)
-	cr.Overtake(activity, 2)
+	orgBackup := mapping.OrganizationalBackup(agent.DataModel)
+
+	mapping.ThirdPartyParticipation(agent.DataModel)
+	mapping.ContributorPrestige(agent.DataModel)
+
+	cr.Overtake(deityGiven, 100)
+	cr.Overtake(activity, 3)
+	cr.Overtake(coreTeam, 2)
+	cr.Overtake(recentness, 2)
+	cr.Overtake(orgBackup, 1)
 
 	return cr
 }

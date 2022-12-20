@@ -53,7 +53,7 @@ type RepositoryData struct {
 	Archivation bool
 	Disabled    bool
 
-	KLOC     int
+	LOC      int
 	TotalPRs int
 
 	Forks    int
@@ -172,8 +172,8 @@ type Contributor struct {
 	Organizations           int
 	Contributions           int
 	Repositories            int
-	FirstContribution       time.Time
-	LastContribution        time.Time
+	FirstContribution       *time.Time
+	LastContribution        *time.Time
 	TotalStatsContributions int
 }
 
