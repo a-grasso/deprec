@@ -10,7 +10,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/oauth2"
-	"log"
 	"strings"
 	"time"
 )
@@ -63,7 +62,6 @@ func mongoDBClient(config *configuration.Configuration) *mongo.Client {
 	// TODO: Check connection (Ping)
 	if err != nil {
 		logging.SugaredLogger.Fatalf("connecting to mongodb database at '%s': %s", config.URI, err)
-		log.Fatal(err)
 	}
 	return cache
 }
@@ -85,6 +83,10 @@ func (ghe *GitHubExtractor) Extract(dataModel *model.DataModel) {
 	ghe.checkRateLimits()
 
 	repositoryData := ghe.extractRepositoryData(ghe.Owner, ghe.Repository)
+
+	if repositoryData == nil {
+		return
+	}
 
 	contributors := ghe.extractContributors(ghe.Owner, ghe.Repository)
 
@@ -209,7 +211,7 @@ func (ghe *GitHubExtractor) extractReleases(owner, repo string) []model.Release 
 func (ghe *GitHubExtractor) extractTags(owner, repo string) []model.Tag {
 	tags, err := ghe.Client.Repositories.ListTags(context.TODO(), owner, repo, &github.ListOptions{})
 	if err != nil {
-		logging.SugaredLogger.Warnf("could not extract tags of '%s' : %s", ghe.RepositoryURL, err)
+		logging.SugaredLogger.Debugf("could not extract tags of '%s' : %s", ghe.RepositoryURL, err)
 		return nil
 	}
 

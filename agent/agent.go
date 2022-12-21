@@ -42,6 +42,10 @@ func (agent *Agent) CombinationAndConclusion() model.CoreResult {
 
 	cr := model.CoreResult{Core: model.CombCon}
 
+	if agent.DataModel.Repository == nil /*&& agent.DataModel.Distribution == nil*/ {
+		return cr
+	}
+
 	deityGiven := mapping.DeityGiven(agent.DataModel)
 
 	activity := mapping.Activity(agent.DataModel, agent.Config.AFConfig.Activity)

@@ -77,7 +77,7 @@ func (key *Key) ToTime() time.Time {
 	return time.Date(key.Year, key.Month, 1, 0, 0, 0, 0, time.UTC)
 }
 
-func ToKey(t time.Time) Key {
+func TimeToKey(t time.Time) Key {
 	return Key{
 		Year:  t.Year(),
 		Month: t.Month(),
@@ -113,16 +113,15 @@ func (sa *Result) String() string {
 }
 
 type HasTimestamp interface {
-	GetTimeStamp() time.Time
+	GetTimestamp() time.Time
 }
 
 func Analyze(sortedKeys []Key, grouped map[Key]float64, percentile int) Result {
-	SortKeys(sortedKeys)
 
 	lastKey, monthsSinceLast := CalcSinceLast(sortedKeys, grouped)
 	last := grouped[lastKey]
 
-	avg := CalcOverall(sortedKeys, grouped)
+	avg := CalcOver(sortedKeys, grouped)
 
 	firstPercentileAverage, lastPercentileAverage := CalcPercentileAverage(percentile, sortedKeys, grouped)
 
@@ -138,11 +137,13 @@ func Analyze(sortedKeys []Key, grouped map[Key]float64, percentile int) Result {
 	}
 }
 
-func AnalyzeCount[T HasTimestamp](data []T, percentile int) Result {
+func AnalyzeForActivity[T HasTimestamp](data []T, percentile int) Result {
 
 	total := len(data)
 
 	sortedKeys, grouped := GroupByTimestamp(data)
+
+	FillInMissingKeys(&sortedKeys)
 
 	mapped := funk.Map(grouped, func(k Key, v []T) (Key, float64) {
 		return k, float64(len(v))
@@ -170,12 +171,11 @@ func AnalyzeCount[T HasTimestamp](data []T, percentile int) Result {
 	return result
 }
 
-func ToPercentage[T float64 | int](count T, total int) float64 {
-	return float64(count) / float64(total) * 100
+func ToPercentage[T float64 | int](value T, total int) float64 {
+	return float64(value) / float64(total) * 100
 }
 
 func CalcSinceLast(sortedKeys []Key, grouped map[Key]float64) (lastKey Key, monthsSinceLast int) {
-	SortKeys(sortedKeys)
 
 	lastKey = sortedKeys[len(sortedKeys)-1]
 
@@ -193,20 +193,20 @@ func CalcSinceLast(sortedKeys []Key, grouped map[Key]float64) (lastKey Key, mont
 	return
 }
 
-func CalcOverall(keys []Key, groupedCounts map[Key]float64) (avg float64) {
-	countPerMonth := make([]float64, 0, len(keys))
+func CalcOver(keys []Key, grouped map[Key]float64) (avg float64) {
+
+	perMonth := make([]float64, 0, len(keys))
 	for _, key := range keys {
-		countPerMonth = append(countPerMonth, groupedCounts[key])
+		perMonth = append(perMonth, grouped[key])
 	}
 
-	total := funk.Sum(countPerMonth)
+	total := funk.Sum(perMonth)
 
 	avg = total / float64(len(keys))
 	return
 }
 
-func CalcPercentileAverage(p int, sortedKeys []Key, groupedCounts map[Key]float64) (firstPercentileAvgCount, lastPercentileAvgCount float64) {
-	SortKeys(sortedKeys)
+func CalcPercentileAverage(p int, sortedKeys []Key, grouped map[Key]float64) (firstPercentileAvg, lastPercentileAvg float64) {
 
 	totalMonths := len(sortedKeys)
 
@@ -219,14 +219,13 @@ func CalcPercentileAverage(p int, sortedKeys []Key, groupedCounts map[Key]float6
 	firstPercentile := sortedKeys[p20 : 2*p20+1]
 	lastPercentile := sortedKeys[p80:]
 
-	firstPercentileAvgCount = CalcOverall(firstPercentile, groupedCounts)
-	lastPercentileAvgCount = CalcOverall(lastPercentile, groupedCounts)
+	firstPercentileAvg = CalcOver(firstPercentile, grouped)
+	lastPercentileAvg = CalcOver(lastPercentile, grouped)
 
 	return
 }
 
 func CalcPercentileCount(p int, sortedKeys []Key, groupedCounts map[Key]float64) (firstPercentileCount, lastPercentileCount int) {
-	SortKeys(sortedKeys)
 
 	totalMonths := len(sortedKeys)
 
@@ -256,12 +255,12 @@ func CalcPercentileCount(p int, sortedKeys []Key, groupedCounts map[Key]float64)
 	return
 }
 
-func GroupBy[T any](elements []T, getTime func(T) time.Time) ([]Key, map[Key][]T) {
-	grouped := make(map[Key][]T, 300)
+func GroupBy[T any](elements []T, toKey func(T) Key) ([]Key, map[Key][]T) {
+	grouped := make(map[Key][]T)
 
 	for _, element := range elements {
 
-		key := ToKey(getTime(element))
+		key := toKey(element)
 
 		if _, exists := grouped[key]; !exists {
 			grouped[key] = []T{}
@@ -275,18 +274,18 @@ func GroupBy[T any](elements []T, getTime func(T) time.Time) ([]Key, map[Key][]T
 		keys = append(keys, key)
 	}
 
-	FillInMissingKeysAndSort(&keys)
+	SortKeys(keys)
 
 	return keys, grouped
 }
 
 func GroupByTimestamp[T HasTimestamp](elements []T) ([]Key, map[Key][]T) {
-	return GroupBy(elements, func(hts T) time.Time {
-		return hts.GetTimeStamp()
+	return GroupBy(elements, func(hts T) Key {
+		return TimeToKey(hts.GetTimestamp())
 	})
 }
 
-func FillInMissingKeysAndSort(keys *[]Key) {
+func FillInMissingKeys(keys *[]Key) {
 	SortKeys(*keys)
 
 	firstKey := (*keys)[0]

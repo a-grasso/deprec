@@ -28,11 +28,11 @@ func Activity(m *model.DataModel, config configuration.Activity) model.CoreResul
 
 func handle[T statistics.HasTimestamp](count []T, weight float64, percentile int, cr *model.CoreResult) {
 
-	if count == nil {
+	if len(count) == 0 {
 		return
 	}
 
-	analysis := statistics.AnalyzeCount(count, percentile)
+	analysis := statistics.AnalyzeForActivity(count, percentile)
 
 	eval := evaluate(analysis)
 

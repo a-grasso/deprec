@@ -16,6 +16,7 @@ const (
 	DeityGiven           Core = "Deity-Given"
 	Recentness           Core = "Recentness"
 	OrganizationalBackup Core = "Organizational Backup"
+	Processing           Core = "Processing"
 )
 
 type CoreResult struct {

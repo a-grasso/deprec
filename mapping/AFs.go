@@ -25,7 +25,7 @@ func Recentness(m *model.DataModel, config configuration.Recentness) model.CoreR
 			return commits[i].Timestamp.Before(commits[j].Timestamp)
 		})
 
-		lastCommit := statistics.CalculateTimeDifference(commits[0].GetTimeStamp(), statistics.CustomNow())
+		lastCommit := statistics.CalculateTimeDifference(commits[0].GetTimestamp(), statistics.CustomNow())
 
 		if lastCommit > config.CommitThreshold {
 			cr.Intake(0, 1)
@@ -38,7 +38,7 @@ func Recentness(m *model.DataModel, config configuration.Recentness) model.CoreR
 			return releases[i].Date.Before(releases[j].Date)
 		})
 
-		lastRelease := statistics.CalculateTimeDifference(releases[0].GetTimeStamp(), statistics.CustomNow())
+		lastRelease := statistics.CalculateTimeDifference(releases[0].GetTimestamp(), statistics.CustomNow())
 
 		if lastRelease > config.ReleaseThreshold {
 			cr.Intake(0, 1)
@@ -51,7 +51,7 @@ func Recentness(m *model.DataModel, config configuration.Recentness) model.CoreR
 			return tags[i].Date.Before(tags[j].Date)
 		})
 
-		lastTag := statistics.CalculateTimeDifference(tags[0].GetTimeStamp(), statistics.CustomNow())
+		lastTag := statistics.CalculateTimeDifference(tags[0].GetTimestamp(), statistics.CustomNow())
 
 		if lastTag > config.ReleaseThreshold {
 			cr.Intake(0, 1)
@@ -180,7 +180,6 @@ func OrganizationalBackup(m *model.DataModel) model.CoreResult {
 		cr.Intake(1, 3)
 	} else {
 		cr.Intake(0, 3)
-
 	}
 
 	return cr
@@ -197,12 +196,15 @@ func ThirdPartyParticipation(m *model.DataModel) {
 	}).([]model.Contributor)
 
 	_ = float64(len(noContUser)) / float64(len(contributors))
-
 }
 
 func ContributorPrestige(m *model.DataModel) float64 {
 
 	contributors := m.Repository.Contributors
+
+	sort.Slice(contributors, func(i, j int) bool {
+		return contributors[i].Contributions > contributors[j].Contributions
+	})
 
 	commits := m.Repository.Commits
 
@@ -217,7 +219,7 @@ func ContributorPrestige(m *model.DataModel) float64 {
 
 	var prestiges []float64
 
-	for _, c := range contributors {
+	for i, c := range contributors {
 
 		var diff float64
 		if c.FirstContribution != nil {
@@ -229,10 +231,11 @@ func ContributorPrestige(m *model.DataModel) float64 {
 
 		prestige := float64(c.Sponsors+c.Organizations+c.Repositories) + diff*10
 
+		prestige *= float64(len(contributors)-i) / float64(len(contributors))
+
 		prestiges = append(prestiges, prestige)
 	}
 
 	result := funk.Sum(prestiges) / float64(len(prestiges))
 	return result
-
 }

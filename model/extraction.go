@@ -90,7 +90,7 @@ type Commit struct {
 	Total        int
 }
 
-func (c Commit) GetTimeStamp() time.Time {
+func (c Commit) GetTimestamp() time.Time {
 	return c.Timestamp
 }
 
@@ -103,7 +103,7 @@ type Release struct {
 	Date        time.Time
 }
 
-func (r Release) GetTimeStamp() time.Time {
+func (r Release) GetTimestamp() time.Time {
 	return r.Date
 }
 
@@ -114,7 +114,7 @@ type Tag struct {
 	Date        time.Time
 }
 
-func (c Tag) GetTimeStamp() time.Time {
+func (c Tag) GetTimestamp() time.Time {
 	return c.Date
 }
 
@@ -141,11 +141,11 @@ type IssueContribution struct {
 	Time time.Time
 }
 
-func (ic IssueContribution) GetTimeStamp() time.Time {
+func (ic IssueContribution) GetTimestamp() time.Time {
 	return ic.Time
 }
 
-func (i Issue) GetTimeStamp() time.Time {
+func (i Issue) GetTimestamp() time.Time {
 	return i.CreationTime
 }
 

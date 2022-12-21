@@ -47,13 +47,14 @@ func main() {
 	dependencies := parseSBOM(cdxBom)
 
 	var agentResults []model.AgentResult
+	totalDependencies := len(dependencies)
 	for i, dep := range dependencies {
 
-		if i > 0 {
-			break
-		}
+		//if i > 0 {
+		//	break
+		//}
 
-		logging.SugaredLogger.Infof("running agent for dependency '%s:%s'", dep.Name, dep.Version)
+		logging.SugaredLogger.Infof("running agent for dependency '%s:%s' %d/%d", dep.Name, dep.Version, i, totalDependencies)
 
 		a := agent.NewAgent(dep, config)
 		agentResult := a.Start()
@@ -62,7 +63,7 @@ func main() {
 
 	logging.Logger.Info("...DepRec run done")
 	for _, ar := range agentResults {
-		logging.SugaredLogger.Info(ar.ToString())
+		logging.SugaredLogger.Infof("%s --->> %s", ar.Dependency.Name, ar.TopRecommendation())
 	}
 }
 
