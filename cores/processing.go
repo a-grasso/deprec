@@ -1,19 +1,20 @@
-package mapping
+package cores
 
 import (
+	"deprec/configuration"
 	"deprec/model"
 	"deprec/statistics"
 	"github.com/thoas/go-funk"
 	"math"
 	"sort"
-	"strings"
 )
 
-func Processing(m *model.DataModel) model.CoreResult {
+func Processing(m *model.DataModel, c configuration.Processing) model.CoreResult {
 
-	cr := model.CoreResult{Core: model.Processing}
+	cr := model.NewCoreResult(model.Processing)
 
-	issues := funk.Filter(m.Repository.Issues, func(i model.Issue) bool { return !strings.Contains(i.Author, "[bot]") }).([]model.Issue)
+	//issues := funk.Filter(m.Repository.Issues, func(i model.Issue) bool { return !strings.Contains(i.Author, "[bot]") }).([]model.Issue)
+	issues := m.Repository.Issues
 
 	if len(issues) == 0 {
 		return cr
@@ -28,28 +29,32 @@ func Processing(m *model.DataModel) model.CoreResult {
 
 	avgClosingTime := calcAvgClosingTime(closedIssues)
 
-	cr.Intake(1-avgClosingTime, 2)
+	cr.IntakeLimit(avgClosingTime, float64(c.ClosingTimeLimit), 2)
+
+	dep := m.Repository.Name
+	dep = dep + ""
 
 	if len(closedIssues) != 0 {
-		cr.Intake(averageBurnUp(closedIssues), 1)
+		//burnUp := averageBurnUp(issues, closedIssues)
+		//cr.Intake(burnUp, 1)
 
-		cr.Intake(averageBurn(issues, closedIssues), 1)
+		burn := averageBurn(issues, closedIssues)
+		cr.Intake(burn, 2)
 	}
 
 	if len(openedIssues) != 0 {
-		cr.Intake(averageBurnDown(openedIssues), 1)
+		//burnDown := averageBurnDown(openedIssues)
+		//cr.Intake(burnDown, 1)
 	}
 
 	return cr
 }
 
-func evaluate2(r statistics.Result) float64 {
-	return 0
-}
+func averageBurnUp(issues []model.Issue, closed []model.Issue) float64 {
 
-func averageBurnUp(closed []model.Issue) float64 {
+	sortedKeys, _ := statistics.GroupByTimestamp(issues)
 
-	sortedKeys, grouped := statistics.GroupBy(closed, func(i model.Issue) statistics.Key {
+	_, grouped := statistics.GroupBy(closed, func(i model.Issue) statistics.Key {
 		return statistics.TimeToKey(i.ClosingTime)
 	})
 
@@ -72,6 +77,8 @@ func averageBurnDown(opened []model.Issue) float64 {
 		return statistics.TimeToKey(i.CreationTime)
 	})
 
+	statistics.FillInMissingKeys(&sortedKeys)
+
 	mapper := func(k statistics.Key, closed []model.Issue) (statistics.Key, float64) {
 		return k, float64(len(closed))
 	}
@@ -93,27 +100,54 @@ func averageBurn(issues []model.Issue, closedIssues []model.Issue) float64 {
 
 	sortedKeysClosed, closed := statistics.GroupBy(closedIssues, func(i model.Issue) statistics.Key {
 		return statistics.TimeToKey(i.ClosingTime)
-
 	})
 
 	sortedKeys := append(sortedKeysOpen, sortedKeysClosed...)
 	statistics.SortKeys(funk.Uniq(sortedKeys).([]statistics.Key))
 
+	statistics.FillInMissingKeys(&sortedKeys)
+
 	burn := make(map[statistics.Key]float64, 0)
 
+	runningBalance := 0.0
 	for _, key := range sortedKeys {
 
 		c := float64(len(closed[key]))
-		o := math.Max(1, float64(len(opened[key])))
+		o := float64(len(opened[key]))
 
-		burn[key] = c / o
+		runningBalance += o
+		runningBalance -= c
+
+		if c == 0 && runningBalance == 0 {
+			continue
+		}
+
+		if o == 0 {
+			o = 1
+		}
+
+		f := c / o
+		burn[key] = f
 	}
 
 	analysis := statistics.Analyze(sortedKeys, burn, 20)
 
-	eval := evaluate2(analysis)
+	eval := evaluateBurnAnalysis(analysis)
 
 	return eval
+}
+
+func evaluateBurnAnalysis(burn statistics.Result) float64 {
+
+	average := math.Min(1.0, burn.Average)
+
+	percentileAverageDiff := math.Min(1, burn.LastPercentileAverage/burn.SecondPercentileAverage)
+
+	lpaAverageDiff := math.Min(1, burn.LastPercentileAverage/burn.Average)
+
+	result := (average*2 + percentileAverageDiff + lpaAverageDiff) / 4
+	result = (average*2 + lpaAverageDiff) / 3
+	return result
 }
 
 func calcAvgClosingTime(closedIssues []model.Issue) (months float64) {

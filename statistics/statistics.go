@@ -99,17 +99,17 @@ type Result struct {
 	LastCountPercentage    *float64 // Count
 	AverageCountPercentage *float64 // Count
 
-	FirstPercentileAverage float64 // Basics
-	LastPercentileAverage  float64 // Basics
+	SecondPercentileAverage float64 // Basics
+	LastPercentileAverage   float64 // Basics
 
-	FirstPercentileCount           *int     // Count
-	LastPercentileCount            *int     // Count
-	FirstPercentileCountPercentage *float64 // Count
-	LastPercentileCountPercentage  *float64 // Count
+	SecondPercentileCount           *int     // Count
+	LastPercentileCount             *int     // Count
+	SecondPercentileCountPercentage *float64 // Count
+	LastPercentileCountPercentage   *float64 // Count
 }
 
 func (sa *Result) String() string {
-	return fmt.Sprintf("Statistic Analysis Result: %s\nPercentile: %d %%\n\nTotal: %d\nTotalMonths: %d\nMonthsSinceLast: %d\nLast: %f\nAverage: %.3f\nAvgFirstPercentileCount: %.3f\nAvgLastPercentileCount: %.3f\nFirstPercentileCount: %d\nLastPercentileCount: %d\nAvgPercentage: %.3f\nLastPercentage: %.3f\nFirstPercentilePercentage: %.3f\nLastPercentilePercentage: %.3f\n\n", sa.Unit, sa.Percentile, *sa.TotalCount, sa.TotalMonths, sa.MonthsSinceLast, sa.Last, sa.Average, sa.FirstPercentileAverage, sa.LastPercentileAverage, *sa.FirstPercentileCount, *sa.LastPercentileCount, *sa.AverageCountPercentage, *sa.LastCountPercentage, *sa.FirstPercentileCountPercentage, *sa.LastPercentileCountPercentage)
+	return fmt.Sprintf("Statistic Analysis Result: %s\nPercentile: %d %%\n\nTotal: %d\nTotalMonths: %d\nMonthsSinceLast: %d\nLast: %f\nAverage: %.3f\nAvgSecondPercentileCount: %.3f\nAvgLastPercentileCount: %.3f\nSecondPercentileCount: %d\nLastPercentileCount: %d\nAvgPercentage: %.3f\nLastPercentage: %.3f\nSecondPercentilePercentage: %.3f\nLastPercentilePercentage: %.3f\n\n", sa.Unit, sa.Percentile, *sa.TotalCount, sa.TotalMonths, sa.MonthsSinceLast, sa.Last, sa.Average, sa.SecondPercentileAverage, sa.LastPercentileAverage, *sa.SecondPercentileCount, *sa.LastPercentileCount, *sa.AverageCountPercentage, *sa.LastCountPercentage, *sa.SecondPercentileCountPercentage, *sa.LastPercentileCountPercentage)
 }
 
 type HasTimestamp interface {
@@ -123,17 +123,17 @@ func Analyze(sortedKeys []Key, grouped map[Key]float64, percentile int) Result {
 
 	avg := CalcOver(sortedKeys, grouped)
 
-	firstPercentileAverage, lastPercentileAverage := CalcPercentileAverage(percentile, sortedKeys, grouped)
+	secondPercentileAverage, lastPercentileAverage := CalcPercentileAverage(percentile, sortedKeys, grouped)
 
 	return Result{
-		Unit:                   "Per Month",
-		Percentile:             percentile,
-		TotalMonths:            len(sortedKeys),
-		MonthsSinceLast:        monthsSinceLast,
-		Last:                   last,
-		Average:                avg,
-		FirstPercentileAverage: firstPercentileAverage,
-		LastPercentileAverage:  lastPercentileAverage,
+		Unit:                    "Per Month",
+		Percentile:              percentile,
+		TotalMonths:             len(sortedKeys),
+		MonthsSinceLast:         monthsSinceLast,
+		Last:                    last,
+		Average:                 avg,
+		SecondPercentileAverage: secondPercentileAverage,
+		LastPercentileAverage:   lastPercentileAverage,
 	}
 }
 
@@ -149,23 +149,23 @@ func AnalyzeForActivity[T HasTimestamp](data []T, percentile int) Result {
 		return k, float64(len(v))
 	}).(map[Key]float64)
 
-	firstPercentileCount, lastPercentileCount := CalcPercentileCount(percentile, sortedKeys, mapped)
+	secondPercentileCount, lastPercentileCount := CalcPercentileCount(percentile, sortedKeys, mapped)
 
 	result := Analyze(sortedKeys, mapped, percentile)
 
-	result.FirstPercentileCount = &firstPercentileCount
+	result.SecondPercentileCount = &secondPercentileCount
 	result.LastPercentileCount = &lastPercentileCount
 
 	result.TotalCount = &total
 
 	avgCountP := ToPercentage(result.Average, total)
 	lastCountP := ToPercentage(result.Last, total)
-	firstPercentileCountP := ToPercentage(firstPercentileCount, total)
+	secondPercentileCountP := ToPercentage(secondPercentileCount, total)
 	lastPercentileCountP := ToPercentage(lastPercentileCount, total)
 
 	result.AverageCountPercentage = &avgCountP
 	result.LastCountPercentage = &lastCountP
-	result.FirstPercentileCountPercentage = &firstPercentileCountP
+	result.SecondPercentileCountPercentage = &secondPercentileCountP
 	result.LastPercentileCountPercentage = &lastPercentileCountP
 
 	return result
@@ -206,40 +206,22 @@ func CalcOver(keys []Key, grouped map[Key]float64) (avg float64) {
 	return
 }
 
-func CalcPercentileAverage(p int, sortedKeys []Key, grouped map[Key]float64) (firstPercentileAvg, lastPercentileAvg float64) {
+func CalcPercentileAverage(p int, sortedKeys []Key, grouped map[Key]float64) (secondPercentileAvg, lastPercentileAvg float64) {
 
-	totalMonths := len(sortedKeys)
+	_, secondPercentile, lastPercentile := GetPercentilesOf(sortedKeys, p)
 
-	p = 100 / p
-	percentile := float64(totalMonths) / float64(p)
-
-	p20 := int(percentile)
-	p80 := int(percentile * 4.0)
-
-	firstPercentile := sortedKeys[p20 : 2*p20+1]
-	lastPercentile := sortedKeys[p80:]
-
-	firstPercentileAvg = CalcOver(firstPercentile, grouped)
+	secondPercentileAvg = CalcOver(secondPercentile, grouped)
 	lastPercentileAvg = CalcOver(lastPercentile, grouped)
 
 	return
 }
 
-func CalcPercentileCount(p int, sortedKeys []Key, groupedCounts map[Key]float64) (firstPercentileCount, lastPercentileCount int) {
+func CalcPercentileCount(p int, sortedKeys []Key, groupedCounts map[Key]float64) (secondPercentileCount, lastPercentileCount int) {
 
-	totalMonths := len(sortedKeys)
+	_, secondPercentile, lastPercentile := GetPercentilesOf(sortedKeys, p)
 
-	p = 100 / p
-	percentile := float64(totalMonths) / float64(p)
-
-	p20 := int(percentile)
-	p80 := int(percentile * 4.0)
-
-	firstPercentile := sortedKeys[p20 : 2*p20+1]
-	lastPercentile := sortedKeys[p80:]
-
-	firstPercentileCount = int(funk.Sum(funk.Map(groupedCounts, func(k Key, v float64) float64 {
-		if funk.Contains(firstPercentile, k) {
+	secondPercentileCount = int(funk.Sum(funk.Map(groupedCounts, func(k Key, v float64) float64 {
+		if funk.Contains(secondPercentile, k) {
 			return v
 		}
 		return 0
@@ -251,6 +233,25 @@ func CalcPercentileCount(p int, sortedKeys []Key, groupedCounts map[Key]float64)
 		}
 		return 0
 	})))
+
+	return
+}
+
+func GetPercentilesOf[T any](elements []T, p int) (first, second, last []T) {
+
+	// e.g. total = 1000
+	total := len(elements)
+
+	// e.g. p = 20
+	p = 100 / p                               // p = 5
+	percentile := float64(total) / float64(p) // percentile = 200
+
+	pFirst := int(percentile)                 // = 200
+	pLast := int(percentile * float64(p-1.0)) // = 800
+
+	first = elements[0:pFirst]             // [0 : 200]
+	second = elements[pFirst : 2*pFirst+1] // [200 : 401]
+	last = elements[pLast:]                // [800 : max]
 
 	return
 }

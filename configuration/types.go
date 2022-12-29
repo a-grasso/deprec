@@ -10,22 +10,36 @@ type MongoDB struct {
 	URI      string `json:"URI"`
 }
 
-type AFConfig struct {
+type CoresConfig struct {
 	Activity   Activity   `json:"Activity"`
 	Recentness Recentness `json:"Recentness"`
+	Processing Processing `json:"Processing"`
+	Network    Network    `json:"Network"`
+	Popularity Popularity `json:"Popularity"`
 }
 
 type Activity struct {
 	Percentile int `json:"Percentile"`
 }
+type Network struct {
+	Threshold int `json:"Threshold"`
+}
+type Popularity struct {
+	Threshold int `json:"Threshold"`
+}
 
 type Recentness struct {
-	CommitThreshold  int `json:"CommitThreshold"`
-	ReleaseThreshold int `json:"ReleaseThreshold"`
+	CommitLimit         int `json:"CommitLimit"`
+	ReleaseLimit        int `json:"ReleaseLimit"`
+	TimeframePercentile int `json:"TimeframePercentile"`
+}
+
+type Processing struct {
+	ClosingTimeLimit int `json:"ClosingTimeLimit"`
 }
 
 type Configuration struct {
-	GitHub   `json:"GitHub"`
-	MongoDB  `json:"MongoDB"`
-	AFConfig `json:"AFConfig"`
+	GitHub      `json:"GitHub"`
+	MongoDB     `json:"MongoDB"`
+	CoresConfig `json:"CoresConfig"`
 }

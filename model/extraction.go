@@ -40,6 +40,7 @@ func (r *Repository) TotalContributors() int {
 }
 
 type RepositoryData struct {
+	Name      string
 	Owner     string
 	Org       *Organization
 	CreatedAt time.Time

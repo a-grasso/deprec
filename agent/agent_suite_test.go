@@ -69,9 +69,9 @@ var _ = Describe("Agent", func() {
 			}
 
 			config = &configuration.Configuration{
-				GitHub:   config.GitHub,
-				MongoDB:  config.MongoDB,
-				AFConfig: config.AFConfig,
+				GitHub:      config.GitHub,
+				MongoDB:     config.MongoDB,
+				CoresConfig: config.CoresConfig,
 			}
 
 			dep := model.Dependency{
@@ -89,7 +89,7 @@ var _ = Describe("Agent", func() {
 
 			expected := row.Recommendation
 
-			Expect(actual).To(Equal(expected))
+			Expect(actual).To(Equal(expected), "Expected: '%s', Was: '%s' | %s", expected, actual, agentResult.CombConResult.ToString())
 		},
 		func(row *CSVRow) string {
 			return fmt.Sprintf("should result in '%s' when running for dependency '%s', comment: '%s'", row.Recommendation, row.Name, row.Comment)

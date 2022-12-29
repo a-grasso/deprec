@@ -144,10 +144,11 @@ func (ghe *GitHubExtractor) extractRepositoryData(owner, repo string) *model.Rep
 	org := ghe.extractOrganization(repository.GetOrganization().GetLogin())
 
 	repositoryData := &model.RepositoryData{
+		Name:               repository.GetName(),
 		Owner:              repository.GetOwner().GetLogin(),
+		Org:                org,
 		CreatedAt:          repository.GetCreatedAt().Time,
 		Size:               repository.GetSize(),
-		Org:                org,
 		License:            repository.GetLicense().GetKey(),
 		AllowForking:       repository.GetAllowForking(),
 		ReadMe:             readme,

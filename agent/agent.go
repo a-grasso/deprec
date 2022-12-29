@@ -2,8 +2,8 @@ package agent
 
 import (
 	"deprec/configuration"
+	"deprec/cores"
 	"deprec/extraction"
-	"deprec/mapping"
 	"deprec/model"
 	"strings"
 )
@@ -40,30 +40,30 @@ func (agent *Agent) Extraction() {
 
 func (agent *Agent) CombinationAndConclusion() model.CoreResult {
 
-	cr := model.CoreResult{Core: model.CombCon}
+	cr := model.NewCoreResult(model.CombCon)
 
 	if agent.DataModel.Repository == nil /*&& agent.DataModel.Distribution == nil*/ {
 		return cr
 	}
 
-	deityGiven := mapping.DeityGiven(agent.DataModel)
+	deityGiven := cores.DeityGiven(agent.DataModel)
 
-	activity := mapping.Activity(agent.DataModel, agent.Config.AFConfig.Activity)
+	effort := cores.Effort(agent.DataModel, agent.Config.CoresConfig)
 
-	recentness := mapping.Recentness(agent.DataModel, agent.Config.AFConfig.Recentness)
+	interconnectedness := cores.Interconnectedness(agent.DataModel, agent.Config.CoresConfig)
 
-	coreTeam := mapping.CoreTeam(agent.DataModel)
+	community := cores.Community(agent.DataModel)
 
-	orgBackup := mapping.OrganizationalBackup(agent.DataModel)
+	support := cores.Support(agent.DataModel, agent.Config.CoresConfig)
 
-	mapping.ThirdPartyParticipation(agent.DataModel)
-	mapping.ContributorPrestige(agent.DataModel)
+	circumstances := cores.Circumstances(agent.DataModel, agent.Config.CoresConfig)
 
 	cr.Overtake(deityGiven, 100)
-	cr.Overtake(activity, 3)
-	cr.Overtake(coreTeam, 2)
-	cr.Overtake(recentness, 2)
-	cr.Overtake(orgBackup, 1)
+	cr.Overtake(effort, 2)
+	cr.Overtake(support, 1)
+	cr.Overtake(circumstances, 1)
+	cr.Overtake(community, 0)
+	cr.Overtake(interconnectedness, 0)
 
 	return cr
 }

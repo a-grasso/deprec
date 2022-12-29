@@ -1,4 +1,4 @@
-package mapping
+package cores
 
 import (
 	"deprec/configuration"
@@ -10,7 +10,7 @@ import (
 
 func Activity(m *model.DataModel, config configuration.Activity) model.CoreResult {
 
-	cr := model.CoreResult{Core: model.Activity}
+	cr := model.NewCoreResult(model.Activity)
 
 	issueContributions := funk.FlatMap(m.Repository.Issues, func(issue model.Issue) []model.IssueContribution {
 		return issue.Contributions
@@ -41,7 +41,7 @@ func handle[T statistics.HasTimestamp](count []T, weight float64, percentile int
 
 func evaluate(r statistics.Result) float64 {
 
-	percentileAverageDiff := math.Min(1, r.LastPercentileAverage/r.FirstPercentileAverage)
+	percentileAverageDiff := math.Min(1, r.LastPercentileAverage/r.SecondPercentileAverage)
 
 	lpaAverageDiff := math.Min(1, r.LastPercentileAverage/r.Average)
 

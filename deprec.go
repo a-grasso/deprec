@@ -50,9 +50,9 @@ func main() {
 	totalDependencies := len(dependencies)
 	for i, dep := range dependencies {
 
-		//if i > 0 {
-		//	break
-		//}
+		if i > 50 {
+			break
+		}
 
 		logging.SugaredLogger.Infof("running agent for dependency '%s:%s' %d/%d", dep.Name, dep.Version, i, totalDependencies)
 

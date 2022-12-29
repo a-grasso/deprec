@@ -1,4 +1,4 @@
-package mapping
+package cores
 
 import (
 	"deprec/model"
@@ -9,7 +9,7 @@ import (
 
 func CoreTeam(m *model.DataModel) model.CoreResult {
 
-	cr := model.CoreResult{Core: model.CoreTeam}
+	cr := model.NewCoreResult(model.CoreTeam)
 
 	contributors := m.Repository.Contributors
 	commits := m.Repository.Commits

@@ -16,7 +16,15 @@ const (
 	DeityGiven           Core = "Deity-Given"
 	Recentness           Core = "Recentness"
 	OrganizationalBackup Core = "Organizational Backup"
+	ContributorPrestige  Core = "ContributorPrestige"
 	Processing           Core = "Processing"
+	Effort               Core = "Effort"
+	Interconnectedness   Core = "Interconnectedness"
+	Network              Core = "Network"
+	Popularity           Core = "Popularity"
+	Community            Core = "Community"
+	Support              Core = "Support"
+	Circumstances        Core = "Circumstances"
 )
 
 type CoreResult struct {
@@ -27,7 +35,11 @@ type CoreResult struct {
 	Watchlist      float64
 	DecisionMaking float64
 
-	UnderlyingCores []CoreResult
+	UnderlyingCores map[float64][]CoreResult
+}
+
+func NewCoreResult(core Core) CoreResult {
+	return CoreResult{Core: core, UnderlyingCores: make(map[float64][]CoreResult)}
 }
 
 const Separator string = " <---> "
@@ -37,7 +49,12 @@ func (cr *CoreResult) ToString() string {
 	rec := cr.Softmax()
 	topCore := fmt.Sprintf("Top Core: %v", cr.Core)
 	softmaxResult := fmt.Sprintf("%s -> %.3f | %s -> %.3f | %s -> %.3f | %s -> %.3f", NoConcerns, rec[NoConcerns], NoImmediateAction, rec[NoImmediateAction], Watchlist, rec[Watchlist], DecisionMaking, rec[DecisionMaking])
-	underlyingCores := fmt.Sprintf("Underlying Cores: %v", funk.Map(cr.UnderlyingCores, func(cr CoreResult) Core { return cr.Core }))
+	underlyingCores := fmt.Sprintf("Underlying Cores: %v", funk.Map(cr.UnderlyingCores, func(weight float64, cr []CoreResult) (float64, []Core) {
+		ads := funk.Map(cr, func(cr CoreResult) Core {
+			return cr.Core
+		}).([]Core)
+		return weight, ads
+	}))
 
 	return topCore + Separator + softmaxResult + Separator + underlyingCores
 }
@@ -50,6 +67,28 @@ func (cr *CoreResult) ToStringDeep() string {
 	underlyingCores := fmt.Sprintf("Underlying Cores: %v", funk.Map(cr.UnderlyingCores, func(cr CoreResult) string { return fmt.Sprintf("\n{\n%v\n}\n", cr.ToString()) }))
 
 	return topCore + Separator + softmaxResult + Separator + underlyingCores
+}
+
+func (cr *CoreResult) Normalized() CoreResult {
+
+	var total float64
+	total += cr.NoConcerns
+	total += cr.NoImmediateAction
+	total += cr.Watchlist
+	total += cr.DecisionMaking
+
+	if total == 0 {
+		total = 1
+	}
+
+	return CoreResult{
+		Core:              cr.Core,
+		NoConcerns:        cr.NoConcerns / total,
+		NoImmediateAction: cr.NoImmediateAction / total,
+		Watchlist:         cr.Watchlist / total,
+		DecisionMaking:    cr.DecisionMaking / total,
+		UnderlyingCores:   cr.UnderlyingCores,
+	}
 }
 
 func (cr *CoreResult) Softmax() RecommendationResult {
@@ -80,6 +119,20 @@ func (cr *CoreResult) Softmax() RecommendationResult {
 	return result
 }
 
+func (cr *CoreResult) IntakeThreshold(value, threshold, weight float64) {
+
+	v := math.Min(1, value/threshold)
+
+	cr.Intake(v, weight)
+}
+
+func (cr *CoreResult) IntakeLimit(value, limit, weight float64) {
+
+	v := math.Max(0, 1-value/limit)
+
+	cr.Intake(v, weight)
+}
+
 func (cr *CoreResult) Intake(value float64, weight float64) {
 
 	if value >= 0.75 {
@@ -103,10 +156,14 @@ func (cr *CoreResult) Intake(value float64, weight float64) {
 }
 
 func (cr *CoreResult) Overtake(from CoreResult, weight float64) {
-	cr.NoConcerns += from.NoConcerns * weight
-	cr.NoImmediateAction += from.NoImmediateAction * weight
-	cr.Watchlist += from.Watchlist * weight
-	cr.DecisionMaking += from.DecisionMaking * weight
 
-	cr.UnderlyingCores = append(cr.UnderlyingCores, from)
+	normalized := from
+	//normalized := from.Normalized()
+
+	cr.NoConcerns += normalized.NoConcerns * weight
+	cr.NoImmediateAction += normalized.NoImmediateAction * weight
+	cr.Watchlist += normalized.Watchlist * weight
+	cr.DecisionMaking += normalized.DecisionMaking * weight
+
+	cr.UnderlyingCores[weight] = append(cr.UnderlyingCores[weight], normalized)
 }
