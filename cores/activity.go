@@ -5,7 +5,6 @@ import (
 	"deprec/model"
 	"deprec/statistics"
 	"github.com/thoas/go-funk"
-	"math"
 )
 
 func Activity(m *model.DataModel, config configuration.Activity) model.CoreResult {
@@ -16,17 +15,17 @@ func Activity(m *model.DataModel, config configuration.Activity) model.CoreResul
 		return issue.Contributions
 	}).([]model.IssueContribution)
 
-	p := config.Percentile
-	handle(m.Repository.Commits, 2, p, &cr)
-	handle(m.Repository.Releases, 2, p, &cr)
-	handle(m.Repository.Tags, 2, p, &cr)
-	handle(m.Repository.Issues, 1, p, &cr)
-	handle(issueContributions, 1, p, &cr)
+	percentile := config.Percentile
+	handle(m.Repository.Commits, 2, percentile, &cr)
+	handle(m.Repository.Releases, 2, percentile, &cr)
+	handle(m.Repository.Tags, 2, percentile, &cr)
+	handle(m.Repository.Issues, 1, percentile, &cr)
+	handle(issueContributions, 1, percentile, &cr)
 
 	return cr
 }
 
-func handle[T statistics.HasTimestamp](count []T, weight float64, percentile int, cr *model.CoreResult) {
+func handle[T statistics.HasTimestamp](count []T, weight float64, percentile float64, cr *model.CoreResult) {
 
 	if len(count) == 0 {
 		return
@@ -34,16 +33,16 @@ func handle[T statistics.HasTimestamp](count []T, weight float64, percentile int
 
 	analysis := statistics.AnalyzeForActivity(count, percentile)
 
-	eval := evaluate(analysis)
+	eval := evaluateActivityAnalysis(analysis)
 
 	cr.Intake(eval, weight)
 }
 
-func evaluate(r statistics.Result) float64 {
+func evaluateActivityAnalysis(r statistics.Result) float64 {
 
-	percentileAverageDiff := math.Min(1, r.LastPercentileAverage/r.SecondPercentileAverage)
+	percentileAverageDiff := r.LPAOverSPA()
 
-	lpaAverageDiff := math.Min(1, r.LastPercentileAverage/r.Average)
+	lpaAverageDiff := r.LPAOverAVG()
 
 	return (percentileAverageDiff + lpaAverageDiff) / 2
 }

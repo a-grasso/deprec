@@ -37,10 +37,10 @@ func Effort(m *model.DataModel, c configuration.CoresConfig) model.CoreResult {
 
 	activity := Activity(m, c.Activity)
 
-	coreTeam := CoreTeam(m)
+	coreTeam := CoreTeam(m, c.CoreTeam)
 
 	cr.Overtake(activity, 3)
-	cr.Overtake(coreTeam, 2)
+	cr.Overtake(coreTeam, 1)
 
 	return cr
 }

@@ -64,6 +64,10 @@ var _ = Describe("Agent", func() {
 	DescribeTable("using only repository data",
 		func(row *CSVRow) {
 
+			if row.Name == "" {
+				return
+			}
+
 			if row.Ignore {
 				return
 			}

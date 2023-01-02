@@ -3,6 +3,7 @@ package statistics
 import (
 	"fmt"
 	"github.com/thoas/go-funk"
+	"math"
 	"sort"
 	"time"
 )
@@ -85,8 +86,8 @@ func TimeToKey(t time.Time) Key {
 }
 
 type Result struct {
-	Unit       string // Basics
-	Percentile int    // Basics
+	Unit       string  // Basics
+	Percentile float64 // Basics
 
 	TotalMonths     int // Basics
 	MonthsSinceLast int // Basics
@@ -108,6 +109,32 @@ type Result struct {
 	LastPercentileCountPercentage   *float64 // Count
 }
 
+func (sa *Result) Ratio(numerator, denominator float64) float64 {
+	if denominator == 0 {
+		denominator = 1
+	}
+
+	f := numerator / denominator
+
+	return math.Min(1, f)
+}
+
+func (sa *Result) LPAOverAVG() float64 {
+
+	lpa := sa.LastPercentileAverage
+	avg := sa.Average
+
+	return sa.Ratio(lpa, avg)
+}
+
+func (sa *Result) LPAOverSPA() float64 {
+
+	lpa := sa.LastPercentileAverage
+	spa := sa.SecondPercentileAverage
+
+	return sa.Ratio(lpa, spa)
+}
+
 func (sa *Result) String() string {
 	return fmt.Sprintf("Statistic Analysis Result: %s\nPercentile: %d %%\n\nTotal: %d\nTotalMonths: %d\nMonthsSinceLast: %d\nLast: %f\nAverage: %.3f\nAvgSecondPercentileCount: %.3f\nAvgLastPercentileCount: %.3f\nSecondPercentileCount: %d\nLastPercentileCount: %d\nAvgPercentage: %.3f\nLastPercentage: %.3f\nSecondPercentilePercentage: %.3f\nLastPercentilePercentage: %.3f\n\n", sa.Unit, sa.Percentile, *sa.TotalCount, sa.TotalMonths, sa.MonthsSinceLast, sa.Last, sa.Average, sa.SecondPercentileAverage, sa.LastPercentileAverage, *sa.SecondPercentileCount, *sa.LastPercentileCount, *sa.AverageCountPercentage, *sa.LastCountPercentage, *sa.SecondPercentileCountPercentage, *sa.LastPercentileCountPercentage)
 }
@@ -116,7 +143,7 @@ type HasTimestamp interface {
 	GetTimestamp() time.Time
 }
 
-func Analyze(sortedKeys []Key, grouped map[Key]float64, percentile int) Result {
+func Analyze(sortedKeys []Key, grouped map[Key]float64, percentile float64) Result {
 
 	lastKey, monthsSinceLast := CalcSinceLast(sortedKeys, grouped)
 	last := grouped[lastKey]
@@ -137,7 +164,7 @@ func Analyze(sortedKeys []Key, grouped map[Key]float64, percentile int) Result {
 	}
 }
 
-func AnalyzeForActivity[T HasTimestamp](data []T, percentile int) Result {
+func AnalyzeForActivity[T HasTimestamp](data []T, percentile float64) Result {
 
 	total := len(data)
 
@@ -206,7 +233,7 @@ func CalcOver(keys []Key, grouped map[Key]float64) (avg float64) {
 	return
 }
 
-func CalcPercentileAverage(p int, sortedKeys []Key, grouped map[Key]float64) (secondPercentileAvg, lastPercentileAvg float64) {
+func CalcPercentileAverage(p float64, sortedKeys []Key, grouped map[Key]float64) (secondPercentileAvg, lastPercentileAvg float64) {
 
 	_, secondPercentile, lastPercentile := GetPercentilesOf(sortedKeys, p)
 
@@ -216,7 +243,7 @@ func CalcPercentileAverage(p int, sortedKeys []Key, grouped map[Key]float64) (se
 	return
 }
 
-func CalcPercentileCount(p int, sortedKeys []Key, groupedCounts map[Key]float64) (secondPercentileCount, lastPercentileCount int) {
+func CalcPercentileCount(p float64, sortedKeys []Key, groupedCounts map[Key]float64) (secondPercentileCount, lastPercentileCount int) {
 
 	_, secondPercentile, lastPercentile := GetPercentilesOf(sortedKeys, p)
 
@@ -237,21 +264,21 @@ func CalcPercentileCount(p int, sortedKeys []Key, groupedCounts map[Key]float64)
 	return
 }
 
-func GetPercentilesOf[T any](elements []T, p int) (first, second, last []T) {
+func GetPercentilesOf[T any](elements []T, p float64) (first, second, last []T) {
 
 	// e.g. total = 1000
 	total := len(elements)
 
-	// e.g. p = 20
-	p = 100 / p                               // p = 5
-	percentile := float64(total) / float64(p) // percentile = 200
+	// e.g. p = 12,5
+	p = 100 / p                      // p = 8
+	percentile := float64(total) / p // percentile = 125
 
-	pFirst := int(percentile)                 // = 200
-	pLast := int(percentile * float64(p-1.0)) // = 800
+	pFirst := int(percentile)            // = 125
+	pLast := int(percentile * (p - 1.0)) // = 875
 
-	first = elements[0:pFirst]             // [0 : 200]
-	second = elements[pFirst : 2*pFirst+1] // [200 : 401]
-	last = elements[pLast:]                // [800 : max]
+	first = elements[0:pFirst]             // [0 : 125]
+	second = elements[pFirst : 2*pFirst+1] // [125 : 251]
+	last = elements[pLast:]                // [875 : max]
 
 	return
 }

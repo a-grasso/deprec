@@ -12,7 +12,7 @@ func Recentness(m *model.DataModel, c configuration.Recentness) model.CoreResult
 
 	cr := model.NewCoreResult(model.Recentness)
 
-	p := c.TimeframePercentile
+	percentile := c.TimeframePercentile
 
 	commits := m.Repository.Commits
 	if commits != nil {
@@ -20,7 +20,7 @@ func Recentness(m *model.DataModel, c configuration.Recentness) model.CoreResult
 			return commits[i].Timestamp.Before(commits[j].Timestamp)
 		})
 
-		averageMonthsLastCommit := averageMonthsSinceLast(commits, p)
+		averageMonthsLastCommit := averageMonthsSinceLast(commits, percentile)
 
 		cr.IntakeLimit(averageMonthsLastCommit, float64(c.CommitLimit), 1)
 	}
@@ -31,7 +31,7 @@ func Recentness(m *model.DataModel, c configuration.Recentness) model.CoreResult
 			return releases[i].Date.Before(releases[j].Date)
 		})
 
-		averageMonthsLastRelease := averageMonthsSinceLast(releases, p)
+		averageMonthsLastRelease := averageMonthsSinceLast(releases, percentile)
 
 		cr.IntakeLimit(averageMonthsLastRelease, float64(c.ReleaseLimit), 1)
 	}
@@ -42,7 +42,7 @@ func Recentness(m *model.DataModel, c configuration.Recentness) model.CoreResult
 			return tags[i].Date.Before(tags[j].Date)
 		})
 
-		averageMonthsLastTag := averageMonthsSinceLast(tags, p)
+		averageMonthsLastTag := averageMonthsSinceLast(tags, percentile)
 
 		cr.IntakeLimit(averageMonthsLastTag, float64(c.ReleaseLimit), 1)
 	}
@@ -50,8 +50,8 @@ func Recentness(m *model.DataModel, c configuration.Recentness) model.CoreResult
 	return cr
 }
 
-func averageMonthsSinceLast[T statistics.HasTimestamp](elements []T, p int) float64 {
-	_, _, timeFrame := statistics.GetPercentilesOf(elements, p)
+func averageMonthsSinceLast[T statistics.HasTimestamp](elements []T, percentile float64) float64 {
+	_, _, timeFrame := statistics.GetPercentilesOf(elements, percentile)
 
 	monthsSince := funk.Map(timeFrame, func(t T) int {
 		return statistics.CalculateTimeDifference(t.GetTimestamp(), statistics.CustomNow())

@@ -82,7 +82,7 @@ func handleAsync[T any](f func() (T, *github.Response, error)) (T, error) {
 		_, isAcceptedError := err.(*github.AcceptedError)
 
 		if isAcceptedError {
-			logging.Logger.Info("waiting for async request of GitHub...")
+			logging.Logger.Debug("waiting for async request of GitHub...")
 		} else {
 			break
 		}

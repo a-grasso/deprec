@@ -13,8 +13,9 @@ func Processing(m *model.DataModel, c configuration.Processing) model.CoreResult
 
 	cr := model.NewCoreResult(model.Processing)
 
-	//issues := funk.Filter(m.Repository.Issues, func(i model.Issue) bool { return !strings.Contains(i.Author, "[bot]") }).([]model.Issue)
 	issues := m.Repository.Issues
+
+	issues = []model.Issue{}
 
 	if len(issues) == 0 {
 		return cr
@@ -24,75 +25,18 @@ func Processing(m *model.DataModel, c configuration.Processing) model.CoreResult
 		return issues[i].Number < issues[j].Number
 	})
 
-	openedIssues := funk.Filter(issues, func(i model.Issue) bool { return i.State == model.IssueStateOpen }).([]model.Issue)
 	closedIssues := funk.Filter(issues, func(i model.Issue) bool { return i.State == model.IssueStateClosed }).([]model.Issue)
 
-	avgClosingTime := calcAvgClosingTime(closedIssues)
+	closingTime := averageClosingTime(closedIssues)
+	cr.IntakeLimit(closingTime, float64(c.ClosingTimeLimit), 2)
 
-	cr.IntakeLimit(avgClosingTime, float64(c.ClosingTimeLimit), 2)
-
-	dep := m.Repository.Name
-	dep = dep + ""
-
-	if len(closedIssues) != 0 {
-		//burnUp := averageBurnUp(issues, closedIssues)
-		//cr.Intake(burnUp, 1)
-
-		burn := averageBurn(issues, closedIssues)
-		cr.Intake(burn, 2)
-	}
-
-	if len(openedIssues) != 0 {
-		//burnDown := averageBurnDown(openedIssues)
-		//cr.Intake(burnDown, 1)
-	}
+	burn := averageBurn(issues, closedIssues, c.BurnPercentile)
+	cr.Intake(burn, 2)
 
 	return cr
 }
 
-func averageBurnUp(issues []model.Issue, closed []model.Issue) float64 {
-
-	sortedKeys, _ := statistics.GroupByTimestamp(issues)
-
-	_, grouped := statistics.GroupBy(closed, func(i model.Issue) statistics.Key {
-		return statistics.TimeToKey(i.ClosingTime)
-	})
-
-	mapper := func(k statistics.Key, closed []model.Issue) (statistics.Key, float64) {
-		return k, float64(len(closed))
-	}
-
-	burnUp := funk.Map(grouped, mapper).(map[statistics.Key]float64)
-
-	analysis := statistics.Analyze(sortedKeys, burnUp, 20)
-
-	eval := evaluate(analysis)
-
-	return eval
-}
-
-func averageBurnDown(opened []model.Issue) float64 {
-
-	sortedKeys, grouped := statistics.GroupBy(opened, func(i model.Issue) statistics.Key {
-		return statistics.TimeToKey(i.CreationTime)
-	})
-
-	statistics.FillInMissingKeys(&sortedKeys)
-
-	mapper := func(k statistics.Key, closed []model.Issue) (statistics.Key, float64) {
-		return k, float64(len(closed))
-	}
-
-	burnDown := funk.Map(grouped, mapper).(map[statistics.Key]float64)
-
-	analysis := statistics.Analyze(sortedKeys, burnDown, 20)
-
-	eval := evaluate(analysis)
-
-	return eval
-}
-
-func averageBurn(issues []model.Issue, closedIssues []model.Issue) float64 {
+func averageBurn(issues []model.Issue, closedIssues []model.Issue, percentile float64) float64 {
 
 	sortedKeysOpen, opened := statistics.GroupBy(issues, func(i model.Issue) statistics.Key {
 		return statistics.TimeToKey(i.CreationTime)
@@ -130,7 +74,7 @@ func averageBurn(issues []model.Issue, closedIssues []model.Issue) float64 {
 		burn[key] = f
 	}
 
-	analysis := statistics.Analyze(sortedKeys, burn, 20)
+	analysis := statistics.Analyze(sortedKeys, burn, percentile)
 
 	eval := evaluateBurnAnalysis(analysis)
 
@@ -141,16 +85,21 @@ func evaluateBurnAnalysis(burn statistics.Result) float64 {
 
 	average := math.Min(1.0, burn.Average)
 
-	percentileAverageDiff := math.Min(1, burn.LastPercentileAverage/burn.SecondPercentileAverage)
+	percentileAverageDiff := burn.LPAOverSPA()
 
-	lpaAverageDiff := math.Min(1, burn.LastPercentileAverage/burn.Average)
+	lpaAverageDiff := burn.LPAOverAVG()
 
-	result := (average*2 + percentileAverageDiff + lpaAverageDiff) / 4
-	result = (average*2 + lpaAverageDiff) / 3
-	return result
+	// TODO: which is better?
+	result1 := (average*2 + percentileAverageDiff + lpaAverageDiff) / 4
+	result2 := (average*2 + lpaAverageDiff) / 3
+	return (result1 + result2) / 2
 }
 
-func calcAvgClosingTime(closedIssues []model.Issue) (months float64) {
+func averageClosingTime(closedIssues []model.Issue) (months float64) {
+
+	if len(closedIssues) == 0 {
+		return math.Inf(1)
+	}
 
 	closingTime := funk.Map(closedIssues, func(i model.Issue) (int, int) {
 		difference := statistics.CalculateTimeDifference(i.CreationTime, i.ClosingTime)

@@ -1,13 +1,15 @@
 package cores
 
 import (
+	"deprec/configuration"
 	"deprec/model"
+	"deprec/statistics"
 	"github.com/thoas/go-funk"
 	"math"
 	"sort"
 )
 
-func CoreTeam(m *model.DataModel) model.CoreResult {
+func CoreTeam(m *model.DataModel, c configuration.CoreTeam) model.CoreResult {
 
 	cr := model.NewCoreResult(model.CoreTeam)
 
@@ -15,14 +17,12 @@ func CoreTeam(m *model.DataModel) model.CoreResult {
 	commits := m.Repository.Commits
 
 	if contributors != nil {
-		percentage := coreTeamPercentage(contributors)
+		coreTeamPercentage := coreTeamPercentage(contributors)
 
-		coreTeamStrength := math.Min(3*percentage, 100) / 100
-
-		cr.Intake(coreTeamStrength, 1)
+		cr.IntakeThreshold(coreTeamPercentage, c.CoreTeamStrengthThresholdPercentage, 1)
 
 		if commits != nil {
-			activeContributors := activeContributors(m.Repository.Commits, m.Repository.Contributors)
+			activeContributors := activeContributors(m.Repository.Commits, m.Repository.Contributors, c.ActiveContributorsPercentile)
 
 			cr.Intake(activeContributors, 2)
 		}
@@ -33,22 +33,19 @@ func CoreTeam(m *model.DataModel) model.CoreResult {
 	return cr
 }
 
-func activeContributors(commits []model.Commit, contributors []model.Contributor) float64 {
+func activeContributors(commits []model.Commit, contributors []model.Contributor, percentile float64) float64 {
 	sort.Slice(commits, func(i, j int) bool {
 		return commits[i].Timestamp.After(commits[j].Timestamp)
 	})
-
-	percentile := float64(len(commits)) / float64(20)
-
-	p20 := int(percentile)
 
 	var lastActiveContributors []model.Contributor
 	mappedContributors := funk.Map(contributors, func(c model.Contributor) (string, model.Contributor) {
 		return c.Name, c
 	}).(map[string]model.Contributor)
 
-	i := commits[:p20]
-	for _, commit := range i {
+	lastCommits, _, _ := statistics.GetPercentilesOf(commits, percentile)
+
+	for _, commit := range lastCommits {
 		lastActiveContributors = append(lastActiveContributors, mappedContributors[commit.Author])
 	}
 
@@ -64,28 +61,35 @@ func coreTeamPercentage(contributors []model.Contributor) float64 {
 		return c.Contributions
 	}).([]int)
 
-	sort.Slice(contributions, func(i, j int) bool {
-		return i > j
-	})
-
 	index := findBiggestJump(contributions)
 
-	coreTeam := contributors[:index+1]
+	coreTeam := contributors[:index]
 
 	totalContributors := len(contributors)
 	return float64(len(coreTeam)) / float64(totalContributors) * 100
 }
 
-func findBiggestJump(contributors []int) (index int) {
-	var max int
-	for i := 1; i < len(contributors); i++ {
+func findBiggestJump(contributions []int) (index int) {
 
-		curJump := contributors[i-1] - contributors[i]
-		if curJump > max {
-			index = i
-			max = curJump
+	var maxAbs int
+	var maxRel float64
+
+	var indexAbs int
+	var indexRel int
+	for i := 1; i < len(contributions); i++ {
+
+		curJumpRel := 1 - (float64(contributions[i]) / float64(contributions[i-1]))
+		if curJumpRel > maxRel {
+			indexRel = i
+			maxRel = curJumpRel
+		}
+
+		curJumpAbs := contributions[i-1] - contributions[i]
+		if curJumpAbs > maxAbs {
+			indexAbs = i
+			maxAbs = curJumpAbs
 		}
 	}
 
-	return
+	return int(math.Round((float64(indexAbs) + float64(indexRel)) / 2))
 }

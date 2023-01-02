@@ -16,10 +16,11 @@ type CoresConfig struct {
 	Processing Processing `json:"Processing"`
 	Network    Network    `json:"Network"`
 	Popularity Popularity `json:"Popularity"`
+	CoreTeam   CoreTeam   `json:"CoreTeam"`
 }
 
 type Activity struct {
-	Percentile int `json:"Percentile"`
+	Percentile float64 `json:"Percentile"`
 }
 type Network struct {
 	Threshold int `json:"Threshold"`
@@ -29,13 +30,19 @@ type Popularity struct {
 }
 
 type Recentness struct {
-	CommitLimit         int `json:"CommitLimit"`
-	ReleaseLimit        int `json:"ReleaseLimit"`
-	TimeframePercentile int `json:"TimeframePercentile"`
+	CommitLimit         int     `json:"CommitLimit"`
+	ReleaseLimit        int     `json:"ReleaseLimit"`
+	TimeframePercentile float64 `json:"TimeframePercentile"`
 }
 
 type Processing struct {
-	ClosingTimeLimit int `json:"ClosingTimeLimit"`
+	ClosingTimeLimit int     `json:"ClosingTimeLimit"`
+	BurnPercentile   float64 `json:"BurnPercentile"`
+}
+
+type CoreTeam struct {
+	ActiveContributorsPercentile        float64 `json:"ActiveContributorsPercentile"`
+	CoreTeamStrengthThresholdPercentage float64 `json:"CoreTeamStrengthThresholdPercentage"`
 }
 
 type Configuration struct {
