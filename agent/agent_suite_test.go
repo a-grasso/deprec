@@ -73,8 +73,12 @@ var _ = Describe("Agent", func() {
 			}
 
 			config = &configuration.Configuration{
-				GitHub:      config.GitHub,
-				MongoDB:     config.MongoDB,
+				Extraction: configuration.Extraction{
+					GitHub: config.GitHub,
+				},
+				Cache: configuration.Cache{
+					MongoDB: config.MongoDB,
+				},
 				CoresConfig: config.CoresConfig,
 			}
 

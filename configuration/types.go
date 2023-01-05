@@ -45,8 +45,21 @@ type CoreTeam struct {
 	CoreTeamStrengthThresholdPercentage float64 `json:"CoreTeamStrengthThresholdPercentage"`
 }
 
+type Extraction struct {
+	GitHub     GitHub     `json:"GitHub"`
+	Repository Repository `json:"Repository"`
+}
+
+type Repository struct {
+	TopContributorCount int `json:"TopContributorCount"`
+}
+
+type Cache struct {
+	MongoDB MongoDB `json:"MongoDB"`
+}
+
 type Configuration struct {
-	GitHub      `json:"GitHub"`
-	MongoDB     `json:"MongoDB"`
+	Extraction  `json:"Extraction"`
+	Cache       `json:"Cache"`
 	CoresConfig `json:"CoresConfig"`
 }

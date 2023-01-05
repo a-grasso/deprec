@@ -53,15 +53,15 @@ func parseVCSString(vcs string) (string, string) {
 
 func mongoDBClient(config *configuration.Configuration) *mongo.Client {
 	credentials := options.Credential{
-		Username: config.Username,
-		Password: config.Password,
+		Username: config.MongoDB.Username,
+		Password: config.MongoDB.Password,
 	}
 
-	clientOpts := options.Client().ApplyURI(config.URI).SetAuth(credentials)
+	clientOpts := options.Client().ApplyURI(config.MongoDB.URI).SetAuth(credentials)
 	cache, err := mongo.Connect(context.TODO(), clientOpts)
 	// TODO: Check connection (Ping)
 	if err != nil {
-		logging.SugaredLogger.Fatalf("connecting to mongodb database at '%s': %s", config.URI, err)
+		logging.SugaredLogger.Fatalf("connecting to mongodb database at '%s': %s", config.MongoDB.URI, err)
 	}
 	return cache
 }
@@ -69,7 +69,7 @@ func mongoDBClient(config *configuration.Configuration) *mongo.Client {
 func githubClient(config *configuration.Configuration) *github.Client {
 	ctx := context.Background()
 	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: config.APIToken},
+		&oauth2.Token{AccessToken: config.GitHub.APIToken},
 	)
 	tc := oauth2.NewClient(ctx, ts)
 
