@@ -48,6 +48,7 @@ func SortKeys(keys []Key) {
 		return a.Before(b)
 	})
 }
+
 func CalculateTimeDifference(from time.Time, to time.Time) int {
 	var years, months int
 
@@ -136,7 +137,7 @@ func (sa *Result) LPAOverSPA() float64 {
 }
 
 func (sa *Result) String() string {
-	return fmt.Sprintf("Statistic Analysis Result: %s\nPercentile: %d %%\n\nTotal: %d\nTotalMonths: %d\nMonthsSinceLast: %d\nLast: %f\nAverage: %.3f\nAvgSecondPercentileCount: %.3f\nAvgLastPercentileCount: %.3f\nSecondPercentileCount: %d\nLastPercentileCount: %d\nAvgPercentage: %.3f\nLastPercentage: %.3f\nSecondPercentilePercentage: %.3f\nLastPercentilePercentage: %.3f\n\n", sa.Unit, sa.Percentile, *sa.TotalCount, sa.TotalMonths, sa.MonthsSinceLast, sa.Last, sa.Average, sa.SecondPercentileAverage, sa.LastPercentileAverage, *sa.SecondPercentileCount, *sa.LastPercentileCount, *sa.AverageCountPercentage, *sa.LastCountPercentage, *sa.SecondPercentileCountPercentage, *sa.LastPercentileCountPercentage)
+	return fmt.Sprintf("Statistic Analysis Result: %s\nPercentile: %f %%\n\nTotal: %d\nTotalMonths: %d\nMonthsSinceLast: %d\nLast: %f\nAverage: %.3f\nAvgSecondPercentileCount: %.3f\nAvgLastPercentileCount: %.3f\nSecondPercentileCount: %d\nLastPercentileCount: %d\nAvgPercentage: %.3f\nLastPercentage: %.3f\nSecondPercentilePercentage: %.3f\nLastPercentilePercentage: %.3f\n\n", sa.Unit, sa.Percentile, *sa.TotalCount, sa.TotalMonths, sa.MonthsSinceLast, sa.Last, sa.Average, sa.SecondPercentileAverage, sa.LastPercentileAverage, *sa.SecondPercentileCount, *sa.LastPercentileCount, *sa.AverageCountPercentage, *sa.LastCountPercentage, *sa.SecondPercentileCountPercentage, *sa.LastPercentileCountPercentage)
 }
 
 type HasTimestamp interface {
@@ -270,15 +271,29 @@ func GetPercentilesOf[T any](elements []T, p float64) (first, second, last []T) 
 	total := len(elements)
 
 	// e.g. p = 12,5
-	p = 100 / p                      // p = 8
-	percentile := float64(total) / p // percentile = 125
+	slices := math.Round(100 / p)       // slices = 8
+	perSlice := float64(total) / slices // perSlice = 125
 
-	pFirst := int(percentile)            // = 125
-	pLast := int(percentile * (p - 1.0)) // = 875
+	elementsPerSlice := make([][]T, int(slices))
+	scope := math.Max(1, perSlice) // = 125
 
-	first = elements[0:pFirst]             // [0 : 125]
-	second = elements[pFirst : 2*pFirst+1] // [125 : 251]
-	last = elements[pLast:]                // [875 : max]
+	for i := 0; i < int(slices); i++ {
+
+		if i >= total {
+			break
+		}
+
+		j := int(scope * float64(i))
+		k := int(scope * float64(i+1))
+		elementsPerSlice[i] = elements[j:k]
+	}
+
+	sizeDiff := int(slices) - total
+	offset := int(math.Max(0, float64(sizeDiff)))
+
+	first = elementsPerSlice[0]                             // [0   : 125]
+	second = elementsPerSlice[1]                            // [125 : 250]
+	last = elementsPerSlice[len(elementsPerSlice)-offset-1] // [875 : max]
 
 	return
 }
