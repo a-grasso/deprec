@@ -37,10 +37,13 @@ func Effort(m *model.DataModel, c configuration.CoresConfig) model.CoreResult {
 
 	activity := Activity(m, c.Activity)
 
+	recentness := Recentness(m, c.Recentness)
+
 	coreTeam := CoreTeam(m, c.CoreTeam)
 
+	cr.Overtake(recentness, 5)
 	cr.Overtake(activity, 3)
-	cr.Overtake(coreTeam, 1)
+	cr.Overtake(coreTeam, 2)
 
 	return cr
 }
@@ -62,13 +65,13 @@ func Interconnectedness(m *model.DataModel, c configuration.CoresConfig) model.C
 func Community(m *model.DataModel) model.CoreResult {
 	cr := model.NewCoreResult(model.Community)
 
-	contributorPrestige := ContributorPrestige(m)
+	//contributorPrestige := ContributorPrestige(m)
 
 	//thirdPartyParticipation := ThirdPartyParticipation(m)
 
 	organizationalBackup := OrganizationalBackup(m)
 
-	cr.Overtake(contributorPrestige, 0)
+	//cr.Overtake(contributorPrestige, 0)
 
 	cr.Overtake(organizationalBackup, 1)
 
@@ -92,10 +95,6 @@ func Ecosystem(m *model.DataModel) {
 func Circumstances(m *model.DataModel, c configuration.CoresConfig) model.CoreResult {
 
 	cr := model.NewCoreResult(model.Circumstances)
-
-	recentness := Recentness(m, c.Recentness)
-
-	cr.Overtake(recentness, 2)
 
 	return cr
 }

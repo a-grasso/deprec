@@ -59,9 +59,9 @@ func (agent *Agent) CombinationAndConclusion() model.CoreResult {
 	circumstances := cores.Circumstances(agent.DataModel, agent.Config.CoresConfig)
 
 	cr.Overtake(deityGiven, 100)
-	cr.Overtake(effort, 2)
+	cr.Overtake(effort, 1)
 	cr.Overtake(support, 1)
-	cr.Overtake(circumstances, 1)
+	cr.Overtake(circumstances, 0)
 	cr.Overtake(community, 0)
 	cr.Overtake(interconnectedness, 0)
 
