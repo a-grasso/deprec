@@ -97,7 +97,7 @@ var _ = Describe("Agent", func() {
 
 			expected := row.Recommendation
 
-			Expect(actual).To(Equal(expected), "Expected: '%s', Was: '%s' | %s", expected, actual, agentResult.CombConResult.ToString())
+			Expect(actual).To(Equal(expected), "Expected: '%s', Was: '%s' | %s", expected, actual, agentResult.CombConResult.ToStringDeep())
 		},
 		func(row *CSVRow) string {
 			return fmt.Sprintf("should result in '%s' when running for dependency '%s', comment: '%s'", row.Recommendation, row.Name, row.Comment)

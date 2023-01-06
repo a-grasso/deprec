@@ -64,7 +64,9 @@ func (cr *CoreResult) ToStringDeep() string {
 	rec := cr.Softmax()
 	topCore := fmt.Sprintf("Top Core: %v", cr.Core)
 	softmaxResult := fmt.Sprintf("%s -> %.3f | %s -> %.3f | %s -> %.3f | %s -> %.3f", NoConcerns, rec[NoConcerns], NoImmediateAction, rec[NoImmediateAction], Watchlist, rec[Watchlist], DecisionMaking, rec[DecisionMaking])
-	underlyingCores := fmt.Sprintf("Underlying Cores: %v", funk.Map(cr.UnderlyingCores, func(cr CoreResult) string { return fmt.Sprintf("\n{\n%v\n}\n", cr.ToString()) }))
+	underlyingCores := fmt.Sprintf("Underlying Cores: %v", funk.Map(cr.UnderlyingCores, func(weight float64, cr []CoreResult) string {
+		return fmt.Sprintf("\n{ Weight: %f\n%v\n}\n", weight, funk.Map(cr, func(c CoreResult) string { return fmt.Sprintf("\n{\n%v\n}\n", c.ToStringDeep()) }))
+	}))
 
 	return topCore + Separator + softmaxResult + Separator + underlyingCores
 }
