@@ -159,8 +159,7 @@ func (cr *CoreResult) Intake(value float64, weight float64) {
 
 func (cr *CoreResult) Overtake(from CoreResult, weight float64) {
 
-	normalized := from
-	//normalized := from.Normalized()
+	normalized := from.Normalized()
 
 	cr.NoConcerns += normalized.NoConcerns * weight
 	cr.NoImmediateAction += normalized.NoImmediateAction * weight
