@@ -15,8 +15,6 @@ func Processing(m *model.DataModel, c configuration.Processing) model.CoreResult
 
 	issues := m.Repository.Issues
 
-	issues = []model.Issue{}
-
 	if len(issues) == 0 {
 		return cr
 	}

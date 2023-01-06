@@ -3,24 +3,24 @@ ignore,repository,comment,recommendation,name,version,note
 true,https://github.com/apache/logging-log4j2,active,NC,log4j2,,
 ,https://github.com/findbugsproject/findbugs,"(readme) eol because successor, development continued on new project",DM,findbugs,,
 ,https://github.com/gleclaire/findbugs-maven-plugin,(archived) eol as findbugs eol,DM,findbugs-maven-plugin,,
-,https://github.com/mojohaus/animal-sniffer,"(readme) maintenance mode, as now built-in, support excellent tho",NC,animal-sniffer,,
-,https://github.com/isaacs/st,feature complete candidate,DM,st,,should result W/NIA
+,https://github.com/mojohaus/animal-sniffer,"(readme) maintenance mode, as now built-in, support excellent tho",NIA,animal-sniffer,,would be W if activity overall wasnt that high
+,https://github.com/isaacs/st,"feature complete candidate, release long ago but no activity since i.e. latest release is latest status, high usage/popularity, small code base doing one exact thing and that good",W,st,,should result W/NIA
 ,https://github.com/isaacs/github,(archived) because replaced,DM,isaacs-github,,
 ,https://github.com/Scarly-Crow/lamia-community,(readme) eol,DM,lama-community,,
-,https://github.com/sustained/CoffeeScript-Sublime-Plugin,"eol, good candidate to test AFs",DM,coffescript-sublime,,
+,https://github.com/sustained/CoffeeScript-Sublime-Plugin,"eol, good candidate to test AFs, very low activity, no releases/tags,",DM,coffescript-sublime,,this is basically not a dependency
 ,https://github.com/sandyre/libopencad,"(about) eol, successor",DM,libopencad,,
 ,https://github.com/qos-ch/slf4j,active,NC,slf4j,,
 ,https://github.com/ben-manes/caffeine,active,NC,caffeine,,
-,https://github.com/owasp/owasp-java-encoder,"not sure, rather caution, not much activity, support ok, last release long ago, maybe feature complete candidate",NIA,owasp-java-encoder,,should result NIA/NC
+,https://github.com/owasp/owasp-java-encoder,"does one thing but good, not much activity, support ok, last release long ago, maybe feature complete candidate, only maintenance since last release",NIA,owasp-java-encoder,,should result NIA/NC
 ,https://github.com/jakartaee/mail-api,implementation and api was split,NIA,mail-api,,
-,https://github.com/ronmamo/reflections,"sporadic activity, probably needs not much maintenance, release long ago, support good, effort is there, popular",DM,reflections,,
-,https://github.com/FasterXML/java-classmate,"rather meh, release long time ago, not very popular, probably maintenance mode, not much effort",DM,java-classmate,,
+,https://github.com/ronmamo/reflections,"sporadic activity, probably needs not much maintenance, release long ago, support good, effort is there, popular",W,reflections,,"not sure, should be between W/NIA"
+,https://github.com/FasterXML/java-classmate,"rather meh, release long time ago, not very popular, probably maintenance mode, not much effort, big org backup, probably nice feature complete candidate",NIA,java-classmate,,
 ,https://github.com/stevespringett/cvss-calculator,"possible feature complete candidate (very weird, niche (and unpopular), used by only a couple but big projects)",NIA,cvss-calculator,,
 ,https://github.com/damnhandy/Handy-URI-Templates,"meh, release long ago, commits lacking, effort little bit, support bad",DM,handy-uri-templates,,
-,https://github.com/eclipse-ee4j/jaxb-istack-commons,"not too active, probably does not need much action, probably niche",DM,jaxb-istack-commons,,
+,https://github.com/eclipse-ee4j/jaxb-istack-commons,"not too active, probably does not need much action, probably , big org behind, part of something bigger",W,jaxb-istack-commons,,
 ,https://github.com/PebbleTemplates/pebble,"active, effort is there but niche, probably needs not much attention",NIA,pebble,,
 true,https://github.com/reactjs/reactjs.org,heavy weight test case,NC,react,,
-,https://github.com/jaredpalmer/tsdx,"looks like active but not much progress, not much activity, release long ago, popular, support seems there tho",DM,tsdx,,
+,https://github.com/jaredpalmer/tsdx,"activity very bad, release long ago, seems popular tho, support kinda meh",DM,tsdx,,
 ,https://github.com/NicolasBissig/azure-functions-decorators,active,NC,nico,,
 ,https://github.com/mariadb-corporation/mariadb-connector-j,active,NC,mariadb-connector-j,,
 ,https://github.com/qoomon/maven-git-versioning-extension,"support is there, not much action as probably not needed, active",NC,maven-git-versioning,,
@@ -28,7 +28,7 @@ true,https://github.com/reactjs/reactjs.org,heavy weight test case,NC,react,,
 ,https://github.com/raphw/byte-buddy/,active,NC,byte-buddy,,
 ,https://github.com/eclipse/org.aspectj,"active, neat little project that has huge history",NC,aspectj,,
 ,http://github.com/FasterXML/jackson-annotations,"active, very strong activity since beginning, releases good, has only one main contributor",NC,jackson-annotations,,
-,,,,,,
+,https://github.com/eclipse-ee4j/angus-mail,"successor of mail-api, active but release seems ""final"", rather caution as unsure",NIA,angus-mail,,
 ,,,,,,
 ,,,,,,
 ,,,,,,
