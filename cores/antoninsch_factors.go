@@ -62,14 +62,14 @@ func Interconnectedness(m *model.DataModel, c configuration.CoresConfig) model.C
 	return cr
 }
 
-func Community(m *model.DataModel) model.CoreResult {
+func Community(m *model.DataModel, c configuration.CoresConfig) model.CoreResult {
 	cr := model.NewCoreResult(model.Community)
 
 	//contributorPrestige := ContributorPrestige(m)
 
 	//thirdPartyParticipation := ThirdPartyParticipation(m)
 
-	organizationalBackup := OrganizationalBackup(m)
+	organizationalBackup := OrganizationalBackup(m, c.OrgBackup)
 
 	//cr.Overtake(contributorPrestige, 0)
 
@@ -83,8 +83,11 @@ func Support(m *model.DataModel, c configuration.CoresConfig) model.CoreResult {
 
 	processing := Processing(m, c.Processing)
 
+	engagement := Engagement(m, c.Engagement)
+
 	cr.Overtake(processing, 2)
 
+	cr.Overtake(engagement, 1)
 	return cr
 }
 

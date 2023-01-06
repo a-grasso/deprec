@@ -52,7 +52,7 @@ func (agent *Agent) CombinationAndConclusion() model.CoreResult {
 
 	interconnectedness := cores.Interconnectedness(agent.DataModel, agent.Config.CoresConfig)
 
-	community := cores.Community(agent.DataModel)
+	community := cores.Community(agent.DataModel, agent.Config.CoresConfig)
 
 	support := cores.Support(agent.DataModel, agent.Config.CoresConfig)
 

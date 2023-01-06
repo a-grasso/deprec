@@ -25,6 +25,7 @@ const (
 	Community            Core = "Community"
 	Support              Core = "Support"
 	Circumstances        Core = "Circumstances"
+	Engagement           Core = "Engagement"
 )
 
 type CoreResult struct {

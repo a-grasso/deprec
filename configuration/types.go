@@ -17,6 +17,8 @@ type CoresConfig struct {
 	Network    Network    `json:"Network"`
 	Popularity Popularity `json:"Popularity"`
 	CoreTeam   CoreTeam   `json:"CoreTeam"`
+	OrgBackup  OrgBackup  `json:"OrgBackup"`
+	Engagement Engagement `json:"Engagement"`
 }
 
 type Activity struct {
@@ -38,6 +40,15 @@ type Recentness struct {
 type Processing struct {
 	ClosingTimeLimit int     `json:"ClosingTimeLimit"`
 	BurnPercentile   float64 `json:"BurnPercentile"`
+}
+
+type Engagement struct {
+	IssueCommentsRatioThresholdPercentage float64 `json:"IssueCommentsRatioThresholdPercentage"`
+}
+type OrgBackup struct {
+	CompanyThreshold      int     `json:"CompanyThreshold"`
+	SponsorThreshold      float64 `json:"SponsorThreshold"`
+	OrganizationThreshold float64 `json:"OrganizationThreshold"`
 }
 
 type CoreTeam struct {
