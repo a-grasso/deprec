@@ -20,9 +20,14 @@ func Recentness(m *model.DataModel, c configuration.Recentness) model.CoreResult
 			return commits[i].Timestamp.Before(commits[j].Timestamp)
 		})
 
+		lastCommit := commits[len(commits)-1]
+		lastCommitMonthsSince := statistics.CalculateTimeDifference(lastCommit.Timestamp, statistics.CustomNow())
+
 		averageMonthsLastCommit := averageMonthsSinceLast(commits, percentile)
 
-		cr.IntakeLimit(averageMonthsLastCommit, float64(c.CommitLimit), 1)
+		eval := (2*float64(lastCommitMonthsSince) + averageMonthsLastCommit) / 3
+
+		cr.IntakeLimit(eval, float64(c.CommitLimit), 1)
 	}
 
 	releases := m.Repository.Releases

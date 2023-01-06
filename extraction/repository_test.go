@@ -15,63 +15,63 @@ var testDependency = &model.Dependency{
 var ghe = NewGitHubExtractor(testDependency, config)
 
 func TestExtractOrganizationNil(t *testing.T) {
-	t.Cleanup(cleanDatabase)
+	t.Cleanup(CleanDatabase)
 
 	org := ghe.extractOrganization("")
 
 	assert.Nil(t, org)
 
-	checkNoDatabase(t)
+	CheckNoDatabase(t)
 }
 
 func TestExtractRepositoryDataNil(t *testing.T) {
-	t.Cleanup(cleanDatabase)
+	t.Cleanup(CleanDatabase)
 
 	repoData := ghe.extractRepositoryData("", "")
 
 	assert.Nil(t, repoData)
 
-	checkNoDatabase(t)
+	CheckNoDatabase(t)
 }
 
 func TestExtractReadMeNil(t *testing.T) {
-	t.Cleanup(cleanDatabase)
+	t.Cleanup(CleanDatabase)
 
 	readme := ghe.extractReadMe("", "")
 
 	assert.Equal(t, "", readme)
 
-	checkNoDatabase(t)
+	CheckNoDatabase(t)
 }
 
 func TestExtractContributorsNil(t *testing.T) {
-	t.Cleanup(cleanDatabase)
+	t.Cleanup(CleanDatabase)
 
 	contributors := ghe.extractContributors("", "")
 
 	assert.Nil(t, contributors)
 
-	checkNoDatabase(t)
+	CheckNoDatabase(t)
 }
 
 func TestListContributorStatsNil(t *testing.T) {
-	t.Cleanup(cleanDatabase)
+	t.Cleanup(CleanDatabase)
 
 	contributorStats := ghe.listContributorStats("", "")
 
 	assert.Nil(t, contributorStats)
 
-	checkNoDatabase(t)
+	CheckNoDatabase(t)
 }
 
 func TestListContributorOrganizationsNil(t *testing.T) {
-	t.Cleanup(cleanDatabase)
+	t.Cleanup(CleanDatabase)
 
 	contributorOrganizations := ghe.listContributorOrganizations("")
 
 	assert.Nil(t, contributorOrganizations)
 
-	checkNoDatabase(t)
+	CheckNoDatabase(t)
 }
 
 func TestListContributorRepositoriesNil(t *testing.T) {
@@ -80,25 +80,25 @@ func TestListContributorRepositoriesNil(t *testing.T) {
 
 	assert.NotNil(t, contributorRepositories)
 
-	checkNoDatabase(t)
+	CheckNoDatabase(t)
 }
 
 func TestExtractCommitsNil(t *testing.T) {
-	t.Cleanup(cleanDatabase)
+	t.Cleanup(CleanDatabase)
 
 	contributorStats := ghe.extractCommits("", "")
 
 	assert.Nil(t, contributorStats)
 
-	checkNoDatabase(t)
+	CheckNoDatabase(t)
 }
 
 func TestExtractTagsNil(t *testing.T) {
-	t.Cleanup(cleanDatabase)
+	t.Cleanup(CleanDatabase)
 
 	tags := ghe.extractTags("", "")
 
 	assert.Nil(t, tags)
 
-	checkNoDatabase(t)
+	CheckNoDatabase(t)
 }

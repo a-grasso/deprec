@@ -46,12 +46,7 @@ type CoreTeam struct {
 }
 
 type Extraction struct {
-	GitHub     GitHub     `json:"GitHub"`
-	Repository Repository `json:"Repository"`
-}
-
-type Repository struct {
-	TopContributorCount int `json:"TopContributorCount"`
+	GitHub GitHub `json:"GitHub"`
 }
 
 type Cache struct {

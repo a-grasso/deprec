@@ -169,6 +169,7 @@ type Issue struct {
 
 type Contributor struct {
 	Name                    string
+	Company                 string
 	Sponsors                int
 	Organizations           int
 	Contributions           int

@@ -2,14 +2,13 @@ package extraction
 
 import (
 	"context"
+	"deprec/cache"
 	"deprec/configuration"
+	"deprec/githubapi"
 	"deprec/logging"
 	"deprec/model"
 	"github.com/google/go-github/v48/github"
 	"github.com/thoas/go-funk"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
-	"golang.org/x/oauth2"
 	"strings"
 	"time"
 )
@@ -24,9 +23,8 @@ type GitHubExtractor struct {
 
 func NewGitHubExtractor(dependency *model.Dependency, config *configuration.Configuration) *GitHubExtractor {
 
-	client := githubClient(config)
-
-	cache := mongoDBClient(config)
+	cache := cache.NewCache(config.MongoDB)
+	client := githubapi.NewClient(config.GitHub)
 
 	gitHubClientWrapper := NewGitHubClientWrapper(client, cache)
 
@@ -37,7 +35,7 @@ func NewGitHubExtractor(dependency *model.Dependency, config *configuration.Conf
 }
 
 func (ghe *GitHubExtractor) checkRateLimits() {
-	limits, _, err := ghe.Client.client.RateLimits(context.TODO())
+	limits, _, err := ghe.Client.Client.Rest().RateLimits(context.TODO())
 	if err != nil {
 		logging.SugaredLogger.Debugf("could not check rate limit for github rest api :%s", err)
 		return
@@ -49,32 +47,6 @@ func parseVCSString(vcs string) (string, string) {
 	splits := strings.Split(vcs, ".git")
 	splits = strings.Split(splits[0], "/")
 	return splits[3], splits[4]
-}
-
-func mongoDBClient(config *configuration.Configuration) *mongo.Client {
-	credentials := options.Credential{
-		Username: config.MongoDB.Username,
-		Password: config.MongoDB.Password,
-	}
-
-	clientOpts := options.Client().ApplyURI(config.MongoDB.URI).SetAuth(credentials)
-	cache, err := mongo.Connect(context.TODO(), clientOpts)
-	// TODO: Check connection (Ping)
-	if err != nil {
-		logging.SugaredLogger.Fatalf("connecting to mongodb database at '%s': %s", config.MongoDB.URI, err)
-	}
-	return cache
-}
-
-func githubClient(config *configuration.Configuration) *github.Client {
-	ctx := context.Background()
-	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: config.GitHub.APIToken},
-	)
-	tc := oauth2.NewClient(ctx, ts)
-
-	client := github.NewClient(tc)
-	return client
 }
 
 func (ghe *GitHubExtractor) Extract(dataModel *model.DataModel) {
@@ -358,21 +330,27 @@ func (ghe *GitHubExtractor) extractContributors(owner, repo string) []model.Cont
 		return nil
 	}
 
+	additionalContributorInfo, err := FetchContributorInfo(context.TODO(), contributors, ghe.Client)
+	if err != nil {
+		additionalContributorInfo = map[string]ContributorInfo{}
+	}
+
 	var result []model.Contributor
 	contributorStats := ghe.listContributorStats(owner, repo)
 	for _, c := range contributors {
 
 		user := c.GetLogin()
-		repos := len(ghe.listContributorRepositories(user))
 		firstContribution, lastContribution, total := ghe.siftContributorStats(contributorStats, user)
 
-		orgs := len(ghe.listContributorOrganizations(user))
+		info := additionalContributorInfo[user]
+
 		contributor := model.Contributor{
 			Name:                    user,
-			Sponsors:                0,
-			Organizations:           orgs,
+			Company:                 info.Company,
+			Sponsors:                info.Sponsors.TotalCount,
+			Organizations:           info.Organizations.TotalCount,
 			Contributions:           c.GetContributions(),
-			Repositories:            repos,
+			Repositories:            info.Repositories.TotalCount,
 			FirstContribution:       firstContribution,
 			LastContribution:        lastContribution,
 			TotalStatsContributions: total,

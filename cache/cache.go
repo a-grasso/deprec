@@ -1,7 +1,8 @@
-package extraction
+package cache
 
 import (
 	"context"
+	"deprec/configuration"
 	"deprec/logging"
 	"github.com/google/go-github/v48/github"
 	"go.mongodb.org/mongo-driver/bson"
@@ -10,7 +11,34 @@ import (
 	"time"
 )
 
-func fetchSingle[T any](ctx context.Context, coll *mongo.Collection, f func() (*T, *github.Response, error)) (*T, error) {
+type Cache struct {
+	*mongo.Client
+}
+
+func NewCache(config configuration.MongoDB) Cache {
+	client := mongoDBClient(config)
+
+	return Cache{
+		client,
+	}
+}
+
+func mongoDBClient(config configuration.MongoDB) *mongo.Client {
+	credentials := options.Credential{
+		Username: config.Username,
+		Password: config.Password,
+	}
+
+	clientOpts := options.Client().ApplyURI(config.URI).SetAuth(credentials)
+	cache, err := mongo.Connect(context.TODO(), clientOpts)
+	// TODO: Check connection (Ping)
+	if err != nil {
+		logging.SugaredLogger.Fatalf("connecting to mongodb database at '%s': %s", config.URI, err)
+	}
+	return cache
+}
+
+func FetchSingle[T any](ctx context.Context, coll *mongo.Collection, f func() (*T, *github.Response, error)) (*T, error) {
 
 	cachedObject := checkCacheSingle[T](coll)
 	if cachedObject != nil {
@@ -30,7 +58,7 @@ func fetchSingle[T any](ctx context.Context, coll *mongo.Collection, f func() (*
 	return object, nil
 }
 
-func fetchPagination[T any](ctx context.Context, coll *mongo.Collection, f func() ([]T, *github.Response, error), opts *github.ListOptions) ([]T, error) {
+func FetchPagination[T any](ctx context.Context, coll *mongo.Collection, f func() ([]T, *github.Response, error), opts *github.ListOptions) ([]T, error) {
 
 	cachedObjects := checkCache[T](coll)
 	if cachedObjects != nil {
@@ -50,7 +78,7 @@ func fetchPagination[T any](ctx context.Context, coll *mongo.Collection, f func(
 	return objects, nil
 }
 
-func fetchAsync[T any](ctx context.Context, coll *mongo.Collection, f func() ([]T, *github.Response, error)) ([]T, error) {
+func FetchAsync[T any](ctx context.Context, coll *mongo.Collection, f func() ([]T, *github.Response, error)) ([]T, error) {
 
 	cachedObjects := checkCache[T](coll)
 	if cachedObjects != nil {
