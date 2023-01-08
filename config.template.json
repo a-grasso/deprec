@@ -1,0 +1,46 @@
+{
+  "Extraction": {
+    "GitHub": {
+      "APIToken": "<>"
+    }
+  },
+  "Cache": {
+    "MongoDB": {
+      "Username": "<>",
+      "Password": "<>>",
+      "URI": "mongodb://localhost:27017"
+    }
+  },
+  "CoresConfig": {
+    "OrgBackup": {
+      "CompanyThreshold": 10,
+      "SponsorThreshold": 10,
+      "OrganizationThreshold": 10
+    },
+    "Engagement": {
+      "IssueCommentsRatioThresholdPercentage": 30
+    },
+    "Activity": {
+      "Percentile": 20
+    },
+    "Recentness": {
+      "ReleaseLimit": 4,
+      "CommitLimit": 24,
+      "TimeframePercentile": 2
+    },
+    "Processing": {
+      "ClosingTimeLimit": 2,
+      "BurnPercentile": 20
+    },
+    "Network": {
+      "Threshold": 200
+    },
+    "Popularity": {
+      "Threshold": 200
+    },
+    "CoreTeam": {
+      "ActiveContributorsPercentile": 5,
+      "CoreTeamStrengthThresholdPercentage": 30
+    }
+  }
+}
