@@ -16,6 +16,8 @@ func Engagement(m *model.DataModel, c configuration.Engagement) model.CoreResult
 
 	ratio := totalComments / float64(totalIssues)
 
+	ratio *= 100
+
 	cr.IntakeThreshold(ratio, c.IssueCommentsRatioThresholdPercentage, 1)
 
 	return cr

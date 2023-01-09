@@ -18,7 +18,7 @@
       "OrganizationThreshold": 10
     },
     "Engagement": {
-      "IssueCommentsRatioThresholdPercentage": 30
+      "IssueCommentsRatioThresholdPercentage": 325
     },
     "Activity": {
       "Percentile": 20
@@ -26,17 +26,18 @@
     "Recentness": {
       "ReleaseLimit": 4,
       "CommitLimit": 24,
-      "TimeframePercentile": 2
+      "TimeframePercentileCommits": 2,
+      "TimeframePercentileReleases": 1
     },
     "Processing": {
       "ClosingTimeLimit": 2,
       "BurnPercentile": 20
     },
     "Network": {
-      "Threshold": 200
+      "Threshold": 2000
     },
     "Popularity": {
-      "Threshold": 200
+      "Threshold": 2000
     },
     "CoreTeam": {
       "ActiveContributorsPercentile": 5,

@@ -32,9 +32,10 @@ type Popularity struct {
 }
 
 type Recentness struct {
-	CommitLimit         int     `json:"CommitLimit"`
-	ReleaseLimit        int     `json:"ReleaseLimit"`
-	TimeframePercentile float64 `json:"TimeframePercentile"`
+	CommitLimit                 int     `json:"CommitLimit"`
+	ReleaseLimit                int     `json:"ReleaseLimit"`
+	TimeframePercentileCommits  float64 `json:"TimeframePercentileCommits"`
+	TimeframePercentileReleases float64 `json:"TimeframePercentileReleases"`
 }
 
 type Processing struct {

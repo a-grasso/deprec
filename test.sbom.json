@@ -117,7 +117,7 @@
       "externalReferences": [
         {
           "type": "vcs",
-          "url": "https://github.com/ben-manes/caffeine"
+          "url": "https://github.com/apache/logging-log4j1"
         },
         {
           "type": "website",
@@ -205,7 +205,7 @@
       "type": "library",
       "bom-ref": "pkg:maven/us.springett/alpine@1.9.0?type=jar",
       "group": "us.springett",
-      "name": "alpine",
+      "name": "caffeine",
       "version": "1.9.0",
       "description": "An opinionated scaffolding library that jumpstarts Java projects with an API-first design, secure defaults, and minimal dependencies.",
       "scope": "required",
@@ -267,7 +267,7 @@
         },
         {
           "type": "vcs",
-          "url": "https://github.com/stevespringett/Alpine.git"
+          "url": "https://github.com/ben-manes/caffeine"
         }
       ]
     },
