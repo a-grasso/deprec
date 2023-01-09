@@ -5,6 +5,7 @@ import (
 	"deprec/configuration"
 	"deprec/logging"
 	"github.com/google/go-github/v48/github"
+	"github.com/thoas/go-funk"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -42,11 +43,11 @@ func FetchSingle[T any](ctx context.Context, coll *mongo.Collection, f func() (*
 
 	cachedObject := checkCacheSingle[T](coll)
 	if cachedObject != nil {
-		logging.SugaredLogger.Debugf("HIT THE CACHE | collection '%s' of database '%s'", coll.Name(), coll.Database().Name())
+		logging.SugaredLogger.Debugf("CACHE HIT | collection '%s' of database '%s'", coll.Name(), coll.Database().Name())
 		return cachedObject, nil
 	}
 
-	logging.SugaredLogger.Debugf("CACHE EMPTY | consuming API for collection '%s' of database '%s'", coll.Name(), coll.Database().Name())
+	logging.SugaredLogger.Debugf("EMPTY CACHE | consuming API for collection '%s' of database '%s'", coll.Name(), coll.Database().Name())
 
 	object, _, err := f()
 	if err != nil {
@@ -62,11 +63,11 @@ func FetchPagination[T any](ctx context.Context, coll *mongo.Collection, f func(
 
 	cachedObjects := checkCache[T](coll)
 	if cachedObjects != nil {
-		logging.SugaredLogger.Debugf("HIT THE CACHE | collection '%s' of database '%s'", coll.Name(), coll.Database().Name())
+		logging.SugaredLogger.Debugf("CACHE HIT | collection '%s' of database '%s'", coll.Name(), coll.Database().Name())
 		return cachedObjects, nil
 	}
 
-	logging.SugaredLogger.Debugf("CACHE EMPTY | consuming API for collection '%s' of database '%s'", coll.Name(), coll.Database().Name())
+	logging.SugaredLogger.Debugf("EMPTY CACHE | consuming API for collection '%s' of database '%s'", coll.Name(), coll.Database().Name())
 
 	objects, err := handlePagination[T](f, opts)
 	if err != nil {
@@ -78,15 +79,37 @@ func FetchPagination[T any](ctx context.Context, coll *mongo.Collection, f func(
 	return objects, nil
 }
 
+func FetchBatchQuery[T any](ctx context.Context, coll *mongo.Collection, f func() (map[string]T, error)) ([]T, error) {
+
+	cached := checkCache[T](coll)
+
+	if cached != nil {
+		logging.SugaredLogger.Debugf("CACHE HIT | collection '%s' of database '%s'", coll.Name(), coll.Database().Name())
+		return cached, nil
+	}
+
+	logging.SugaredLogger.Debugf("EMPTY CACHE | consuming API for collection '%s' of database '%s'", coll.Name(), coll.Database().Name())
+
+	queryResponse, err := f()
+	if err != nil {
+		return nil, err
+	}
+
+	values := funk.Values(queryResponse).([]T)
+	updateCache[T](ctx, values, coll)
+
+	return values, nil
+}
+
 func FetchAsync[T any](ctx context.Context, coll *mongo.Collection, f func() ([]T, *github.Response, error)) ([]T, error) {
 
 	cachedObjects := checkCache[T](coll)
 	if cachedObjects != nil {
-		logging.SugaredLogger.Debugf("HIT THE CACHE | collection '%s' of database '%s'", coll.Name(), coll.Database().Name())
+		logging.SugaredLogger.Debugf("CACHE HIT | collection '%s' of database '%s'", coll.Name(), coll.Database().Name())
 		return cachedObjects, nil
 	}
 
-	logging.SugaredLogger.Debugf("CACHE EMPTY | consuming API for collection '%s' of database '%s'", coll.Name(), coll.Database().Name())
+	logging.SugaredLogger.Debugf("EMPTY CACHE | consuming API for collection '%s' of database '%s'", coll.Name(), coll.Database().Name())
 
 	objects, err := handleAsync[[]T](f)
 	if err != nil {

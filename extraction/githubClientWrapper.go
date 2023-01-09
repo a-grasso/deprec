@@ -18,6 +18,7 @@ type GitHubClientWrapper struct {
 	Repositories  *RepositoriesServiceWrapper
 	Organizations *OrganizationsServiceWrapper
 	Issues        *IssuesServiceWrapper
+	GraphQL       *GraphQLWrapper
 }
 
 type ServiceWrapper struct {
@@ -28,6 +29,7 @@ type ServiceWrapper struct {
 type RepositoriesServiceWrapper ServiceWrapper
 type OrganizationsServiceWrapper ServiceWrapper
 type IssuesServiceWrapper ServiceWrapper
+type GraphQLWrapper ServiceWrapper
 
 func NewGitHubClientWrapper(client githubapi.Client, cache cache.Cache) *GitHubClientWrapper {
 
@@ -39,6 +41,7 @@ func NewGitHubClientWrapper(client githubapi.Client, cache cache.Cache) *GitHubC
 	wrapper.Repositories = (*RepositoriesServiceWrapper)(&wrapper.common)
 	wrapper.Organizations = (*OrganizationsServiceWrapper)(&wrapper.common)
 	wrapper.Issues = (*IssuesServiceWrapper)(&wrapper.common)
+	wrapper.GraphQL = (*GraphQLWrapper)(&wrapper.common)
 
 	return wrapper
 }

@@ -330,7 +330,8 @@ func (ghe *GitHubExtractor) extractContributors(owner, repo string) []model.Cont
 		return nil
 	}
 
-	additionalContributorInfo, err := FetchContributorInfo(context.TODO(), contributors, ghe.Client)
+	additionalContributorInfo, err := ghe.Client.GraphQL.FetchContributorInfo(context.TODO(), repo, contributors, ghe.Client)
+
 	if err != nil {
 		additionalContributorInfo = map[string]ContributorInfo{}
 	}

@@ -2,7 +2,7 @@ package extraction
 
 import (
 	"context"
-	"deprec/logging"
+	"deprec/cache"
 	"errors"
 	"fmt"
 	"github.com/google/go-github/v48/github"
@@ -14,6 +14,7 @@ import (
 func BatchQuery[T any](ctx context.Context, client *GitHubClientWrapper, queries map[string]string, vars map[string]any) (map[string]T, error) {
 	// Create a query using reflection (see https://github.com/shurcooL/githubv4/issues/17)
 	// for when we don't know the exact query before runtime.
+
 	var t T
 	fieldType := reflect.TypeOf(t)
 	var fields []reflect.StructField
@@ -46,9 +47,9 @@ func BatchQuery[T any](ctx context.Context, client *GitHubClientWrapper, queries
 	return res, nil
 }
 
-func FetchContributorInfo(ctx context.Context, contributors []*github.Contributor, c *GitHubClientWrapper) (map[string]ContributorInfo, error) {
+func (ql *GraphQLWrapper) FetchContributorInfo(ctx context.Context, repo string, contributors []*github.Contributor, c *GitHubClientWrapper) (map[string]ContributorInfo, error) {
 
-	logging.Logger.Info("HITTING V4 API")
+	coll := ql.Cache.Database("query_contributor_info").Collection(repo)
 
 	// Doing this over REST would take O(n) requests, using GraphQL takes O(1).
 	userQueries := map[string]string{}
@@ -63,16 +64,18 @@ func FetchContributorInfo(ctx context.Context, contributors []*github.Contributo
 		userQueries[fmt.Sprint(i)] = fmt.Sprintf("user(login:\"%s\")", login)
 	}
 	if len(userQueries) == 0 {
-		// We didn't add any users.
 		return nil, errors.New("no contributors to fetch info for")
 	}
-	r, err := BatchQuery[ContributorInfo](ctx, c, userQueries, map[string]any{})
-	if err != nil {
-		return nil, err
+
+	batchQuery := func() (map[string]ContributorInfo, error) {
+		return BatchQuery[ContributorInfo](ctx, c, userQueries, map[string]any{})
 	}
 
-	m := funk.Map(r, func(s string, q ContributorInfo) (string, ContributorInfo) { return q.Login, q }).(map[string]ContributorInfo)
-	return m, nil
+	info, err := cache.FetchBatchQuery(ctx, coll, batchQuery)
+
+	mapped := funk.Map(info, func(q ContributorInfo) (string, ContributorInfo) { return q.Login, q }).(map[string]ContributorInfo)
+
+	return mapped, err
 }
 
 type ContributorInfo struct {
