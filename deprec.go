@@ -13,19 +13,22 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
+	"sync"
 )
 
 type input struct {
 	sbomPath   string
 	configPath string
+	numWorkers int
 }
 
 func main() {
 	logging.Logger.Info("DepRec run started...")
 
 	flag.Usage = func() {
-		fmt.Printf("Usage: %s <sbom> <config>\nOptions:\n none", os.Args[0])
+		fmt.Printf("Usage: %s <sbom> <config> <workers>\nOptions:\n none", os.Args[0])
 	}
 
 	input, err := getInput()
@@ -44,8 +47,14 @@ func main() {
 		exitGracefully(err)
 	}
 
-	dependencies := parseSBOM(cdxBom)
+	deps := parseSBOM(cdxBom)
 
+	linear(config, deps)
+
+	//parallel(deps, input, config)
+}
+
+func linear(config *configuration.Configuration, dependencies []*model.Dependency) {
 	var agentResults []model.AgentResult
 	totalDependencies := len(dependencies)
 	for i, dep := range dependencies {
@@ -64,6 +73,54 @@ func main() {
 	logging.Logger.Info("...DepRec run done")
 	for _, ar := range agentResults {
 		logging.SugaredLogger.Infof("%s --->> %s", ar.Dependency.Name, ar.TopRecommendation())
+		logging.SugaredLogger.Infof("{\n%s\n}", ar.CombConResult.ToStringDeep())
+	}
+}
+
+func parallel(deps []*model.Dependency, input input, config *configuration.Configuration) {
+	agentResults := make(chan *model.AgentResult, len(deps))
+	dependencies := make(chan *model.Dependency, len(deps))
+
+	var wg sync.WaitGroup
+
+	for w := 0; w < input.numWorkers; w++ {
+		wg.Add(1)
+
+		w := w
+
+		go func() {
+			defer wg.Done()
+			worker(config, dependencies, agentResults, w)
+		}()
+	}
+
+	for i, dep := range deps {
+
+		if i > 50 {
+			break
+		}
+
+		dependencies <- dep
+	}
+	close(dependencies)
+
+	wg.Wait()
+
+	logging.Logger.Info("...DepRec run done")
+
+	for ar := range agentResults {
+		logging.SugaredLogger.Infof("%s --->> %s", ar.Dependency.Name, ar.TopRecommendation())
+	}
+}
+
+func worker(configuration *configuration.Configuration, dependencies <-chan *model.Dependency, results chan<- *model.AgentResult, worker int) {
+
+	for dep := range dependencies {
+		logging.SugaredLogger.Infof("worker %d running agent for dependency '%s:%s' %d/%d", worker, dep.Name, dep.Version, 0, 0)
+
+		a := agent.NewAgent(dep, configuration)
+		asd := a.Start()
+		results <- &asd
 	}
 }
 
@@ -76,8 +133,12 @@ func getInput() (input, error) {
 
 	sbom := flag.Arg(0)
 	config := flag.Arg(1)
+	workers, err := strconv.Atoi(flag.Arg(2))
+	if err != nil {
+		workers = 5
+	}
 
-	return input{sbom, config}, nil
+	return input{sbom, config, workers}, nil
 }
 
 func exitGracefully(err error) {
