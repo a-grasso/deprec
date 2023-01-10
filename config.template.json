@@ -2,13 +2,17 @@
   "Extraction": {
     "GitHub": {
       "APIToken": "<>"
+    },
+    "OSSIndex": {
+      "Username": "<>",
+      "Token": "<>"
     }
   },
   "Cache": {
     "MongoDB": {
+      "URI": "<>",
       "Username": "<>",
-      "Password": "<>>",
-      "URI": "mongodb://localhost:27017"
+      "Password": "<>"
     }
   },
   "CoresConfig": {

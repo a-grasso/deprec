@@ -7,9 +7,9 @@ import (
 )
 
 var testDependency = &model.Dependency{
-	Name:     "test-dependency",
-	Version:  "stable",
-	MetaData: map[string]string{"vcs": "https://github.com//.git"},
+	Name:               "test-dependency",
+	Version:            "stable",
+	ExternalReferences: map[model.ExternalReference]string{"vcs": "https://github.com//.git"},
 }
 
 var ghe = NewGitHubExtractor(testDependency, config)

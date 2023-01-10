@@ -5,8 +5,13 @@ import (
 )
 
 type DataModel struct {
-	Repository   *Repository
-	Distribution *Distribution
+	Repository         *Repository
+	Distribution       *Distribution
+	VulnerabilityIndex *VulnerabilityIndex
+}
+
+type VulnerabilityIndex struct {
+	TotalVulnerabilitiesCount int
 }
 
 type Repository struct {
@@ -14,17 +19,12 @@ type Repository struct {
 	Issues       []Issue
 	Commits      []Commit
 	Releases     []Release
-	Tags         []Tag
 
 	*RepositoryData
 }
 
 func (r *Repository) TotalCommits() int {
 	return len(r.Commits)
-}
-
-func (r *Repository) TotalTags() int {
-	return len(r.Tags)
 }
 
 func (r *Repository) TotalIssues() int {
@@ -54,8 +54,7 @@ type RepositoryData struct {
 	Archivation bool
 	Disabled    bool
 
-	LOC      int
-	TotalPRs int
+	LOC int
 
 	Forks    int
 	Watchers int
@@ -63,8 +62,6 @@ type RepositoryData struct {
 
 	Dependencies []string
 	Dependents   []string
-
-	CommunityStandards float64
 }
 
 type Organization struct {
@@ -80,11 +77,8 @@ type Organization struct {
 type Commit struct {
 	Author       string
 	Committer    string
-	Changes      []string
 	ChangedFiles []string
-	Type         string
 	Message      string
-	Branch       string
 	Timestamp    time.Time
 	Additions    int
 	Deletions    int
@@ -99,8 +93,6 @@ type Release struct {
 	Author      string
 	Version     string
 	Description string
-	Changes     []string
-	Type        string
 	Date        time.Time
 }
 
@@ -108,35 +100,11 @@ func (r Release) GetTimestamp() time.Time {
 	return r.Date
 }
 
-type Tag struct {
-	Author      string
-	Version     string
-	Description string
-	Date        time.Time
-}
-
-func (c Tag) GetTimestamp() time.Time {
-	return c.Date
-}
-
 type IssueState string
 
 const (
-	IssueStateOpen   IssueState = "open"
 	IssueStateClosed IssueState = "closed"
-	IssueStateOther  IssueState = "other"
 )
-
-func ToIssueState(s string) IssueState {
-	switch s {
-	case "open":
-		return IssueStateOpen
-	case "closed":
-		return IssueStateClosed
-	default:
-		return IssueStateOther
-	}
-}
 
 type IssueContribution struct {
 	Time time.Time
@@ -146,15 +114,10 @@ func (ic IssueContribution) GetTimestamp() time.Time {
 	return ic.Time
 }
 
-func (i Issue) GetTimestamp() time.Time {
-	return i.CreationTime
-}
-
 type Issue struct {
 	Number            int
 	Author            string
 	AuthorAssociation string
-	Labels            []string
 	State             IssueState
 	Title             string
 	Content           string
@@ -162,21 +125,24 @@ type Issue struct {
 	Contributions     []IssueContribution
 	Contributors      []string
 	CreationTime      time.Time
-	FirstResponse     time.Time
-	LastContribution  time.Time
+	FirstResponse     *time.Time
+	LastUpdate        time.Time
 	ClosingTime       time.Time
 }
 
+func (i Issue) GetTimestamp() time.Time {
+	return i.CreationTime
+}
+
 type Contributor struct {
-	Name                    string
-	Company                 string
-	Sponsors                int
-	Organizations           int
-	Contributions           int
-	Repositories            int
-	FirstContribution       *time.Time
-	LastContribution        *time.Time
-	TotalStatsContributions int
+	Name              string
+	Company           string
+	Sponsors          int
+	Organizations     int
+	Contributions     int
+	Repositories      int
+	FirstContribution *time.Time
+	LastContribution  *time.Time
 }
 
 type ContributorInfo struct {
@@ -199,21 +165,26 @@ type Distribution struct {
 }
 
 type Artifact struct {
-	NewVersionAvailable  bool
+	Version              string
 	ArtifactRepositories []string
 	Date                 time.Time
 	Vulnerabilities      []string
 	Dependents           []string
 	Dependencies         []string
-	DeprecationWarning   bool
+	DeprecationWarning   bool // TODO: Cant interpret false confidently
+	Contributors         []string
+	Developers           []string
+	Organization         string
+	Licenses             []string
+	MailingLists         []string
 }
 
 type Library struct {
-	Ranking       int
-	License       string
-	UsedBy        int
-	Moved         bool
-	Versions      []*map[string]float64
-	Description   string
-	LastPublished string
+	Ranking       *int
+	Licenses      []string
+	UsedBy        *int
+	Versions      []string
+	LastUpdated   time.Time
+	LatestVersion string
+	LatestRelease string
 }

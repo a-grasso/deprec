@@ -6,10 +6,13 @@ require (
 	github.com/CycloneDX/cyclonedx-go v0.7.0
 	github.com/gocarina/gocsv v0.0.0-20221105105431-c8ef78125b99
 	github.com/google/go-github/v48 v48.1.0
+	github.com/nscuro/ossindex-client v0.2.0
 	github.com/onsi/ginkgo/v2 v2.6.0
 	github.com/onsi/gomega v1.24.1
+	github.com/shurcooL/githubv4 v0.0.0-20221229060216-a8d4a561cc93
 	github.com/stretchr/testify v1.8.0
 	github.com/thoas/go-funk v0.9.2
+	github.com/vifraa/gopom v0.2.1
 	go.mongodb.org/mongo-driver v1.11.0
 	go.uber.org/zap v1.24.0
 	golang.org/x/oauth2 v0.0.0-20180821212333-d2e6202438be
@@ -27,7 +30,6 @@ require (
 	github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/shurcooL/githubv4 v0.0.0-20221229060216-a8d4a561cc93 // indirect
 	github.com/shurcooL/graphql v0.0.0-20220606043923-3cf50f8a0a29 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.1 // indirect

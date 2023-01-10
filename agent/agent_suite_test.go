@@ -24,6 +24,8 @@ func TestAgent(t *testing.T) {
 
 type CSVRow struct {
 	Repository     string `csv:"repository"` // .csv column headers
+	SHA1           string `csv:"sha1"`       // .csv column headers
+	PackageURL     string `csv:"purl"`       // .csv column headers
 	Name           string `csv:"name"`
 	Recommendation string `csv:"recommendation"`
 	Comment        string `csv:"comment"`
@@ -83,9 +85,9 @@ var _ = Describe("Agent", func() {
 			}
 
 			dep := model.Dependency{
-				Name:     row.Name,
-				Version:  row.Version,
-				MetaData: map[string]string{"vcs": row.Repository},
+				Name:               row.Name,
+				Version:            row.Version,
+				ExternalReferences: map[model.ExternalReference]string{model.VCS: row.Repository},
 			}
 
 			agent := agent.NewAgent(&dep, config)
@@ -93,6 +95,7 @@ var _ = Describe("Agent", func() {
 			agentResult := agent.Start()
 
 			recommendation := agentResult.TopRecommendation()
+
 			actual := recommendation.ToAbbreviation()
 
 			expected := row.Recommendation

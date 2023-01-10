@@ -33,8 +33,16 @@ func (agent *Agent) Start() model.AgentResult {
 
 func (agent *Agent) Extraction() {
 
-	if strings.Contains(agent.Dependency.MetaData["vcs"], "github") {
+	if vcs, exists := agent.Dependency.ExternalReferences[model.VCS]; exists && strings.Contains(vcs, "github") {
 		extraction.NewGitHubExtractor(agent.Dependency, agent.Config).Extract(agent.DataModel)
+	}
+
+	if agent.Dependency.PackageURL != "" {
+		extraction.NewOSSIndexExtractor(agent.Dependency, agent.Config).Extract(agent.DataModel)
+	}
+
+	if sha1, exists := agent.Dependency.Hashes[model.SHA1]; exists && sha1 != "" {
+		extraction.NewMavenCentralExtractor(agent.Dependency, agent.Config).Extract(agent.DataModel)
 	}
 }
 

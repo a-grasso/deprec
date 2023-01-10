@@ -44,17 +44,6 @@ func Recentness(m *model.DataModel, c configuration.Recentness) model.CoreResult
 		cr.IntakeLimit(eval, float64(c.ReleaseLimit), 1)
 	}
 
-	tags := m.Repository.Tags
-	if tags != nil {
-		sort.Slice(tags, func(i, j int) bool {
-			return tags[i].Date.Before(tags[j].Date)
-		})
-
-		averageMonthsLastTag := averageMonthsSinceLast(tags, c.TimeframePercentileReleases)
-
-		cr.IntakeLimit(averageMonthsLastTag, float64(c.ReleaseLimit), 1)
-	}
-
 	return cr
 }
 

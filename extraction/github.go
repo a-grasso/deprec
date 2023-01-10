@@ -28,7 +28,7 @@ func NewGitHubExtractor(dependency *model.Dependency, config *configuration.Conf
 
 	clientWrapper := githubapi.NewClientWrapper(client, cache)
 
-	vcs := dependency.MetaData["vcs"]
+	vcs := dependency.ExternalReferences["vcs"]
 	owner, repo := parseVCSString(vcs)
 
 	return &GitHubExtractor{RepositoryURL: vcs, Owner: owner, Repository: repo, Config: config, Client: clientWrapper}
@@ -65,10 +65,8 @@ func (ghe *GitHubExtractor) Extract(dataModel *model.DataModel) {
 	commits := ghe.extractCommits(ghe.Owner, ghe.Repository)
 
 	releases := ghe.extractReleases(ghe.Owner, ghe.Repository)
-
-	var tags []model.Tag
 	if releases == nil {
-		tags = ghe.extractTags(ghe.Owner, ghe.Repository)
+		releases = ghe.extractTags(ghe.Owner, ghe.Repository)
 	}
 
 	issues := ghe.extractIssues(ghe.Owner, ghe.Repository)
@@ -78,7 +76,6 @@ func (ghe *GitHubExtractor) Extract(dataModel *model.DataModel) {
 		Issues:         issues,
 		Commits:        commits,
 		Releases:       releases,
-		Tags:           tags,
 		RepositoryData: repositoryData,
 	}
 
@@ -116,25 +113,23 @@ func (ghe *GitHubExtractor) extractRepositoryData(owner, repo string) *model.Rep
 	org := ghe.extractOrganization(repository.GetOrganization().GetLogin())
 
 	repositoryData := &model.RepositoryData{
-		Name:               repository.GetName(),
-		Owner:              repository.GetOwner().GetLogin(),
-		Org:                org,
-		CreatedAt:          repository.GetCreatedAt().Time,
-		Size:               repository.GetSize(),
-		License:            repository.GetLicense().GetKey(),
-		AllowForking:       repository.GetAllowForking(),
-		ReadMe:             readme,
-		About:              repository.GetDescription(),
-		Archivation:        repository.GetArchived(),
-		Disabled:           repository.GetDisabled(),
-		LOC:                loc,
-		TotalPRs:           0,
-		Forks:              repository.GetForksCount(),
-		Watchers:           repository.GetSubscribersCount(),
-		Stars:              repository.GetStargazersCount(),
-		Dependencies:       nil,
-		Dependents:         nil,
-		CommunityStandards: 0,
+		Name:         repository.GetName(),
+		Owner:        repository.GetOwner().GetLogin(),
+		Org:          org,
+		CreatedAt:    repository.GetCreatedAt().Time,
+		Size:         repository.GetSize(),
+		License:      repository.GetLicense().GetKey(),
+		AllowForking: repository.GetAllowForking(),
+		ReadMe:       readme,
+		About:        repository.GetDescription(),
+		Archivation:  repository.GetArchived(),
+		Disabled:     repository.GetDisabled(),
+		LOC:          loc,
+		Forks:        repository.GetForksCount(),
+		Watchers:     repository.GetSubscribersCount(),
+		Stars:        repository.GetStargazersCount(),
+		Dependencies: nil,
+		Dependents:   nil,
 	}
 
 	return repositoryData
@@ -170,8 +165,6 @@ func (ghe *GitHubExtractor) extractReleases(owner, repo string) []model.Release 
 			Author:      release.GetAuthor().GetLogin(),
 			Version:     release.GetName(),
 			Description: release.GetBody(),
-			Changes:     nil,
-			Type:        "",
 			Date:        release.GetPublishedAt().Time,
 		}
 
@@ -181,14 +174,14 @@ func (ghe *GitHubExtractor) extractReleases(owner, repo string) []model.Release 
 	return result
 }
 
-func (ghe *GitHubExtractor) extractTags(owner, repo string) []model.Tag {
+func (ghe *GitHubExtractor) extractTags(owner, repo string) []model.Release {
 	tags, err := ghe.Client.Repositories.ListTags(context.TODO(), owner, repo, &github.ListOptions{})
 	if err != nil {
 		logging.SugaredLogger.Debugf("could not extract tags of '%s' : %s", ghe.RepositoryURL, err)
 		return nil
 	}
 
-	var result []model.Tag
+	var result []model.Release
 
 	for _, tag := range tags {
 
@@ -205,7 +198,7 @@ func (ghe *GitHubExtractor) extractTags(owner, repo string) []model.Tag {
 				continue
 			}
 
-			r := model.Tag{
+			r := model.Release{
 				Author:      tagCommit.GetCommit().GetAuthor().GetEmail(),
 				Version:     tag.GetName(),
 				Description: tagCommit.GetCommit().GetMessage(),
@@ -216,7 +209,7 @@ func (ghe *GitHubExtractor) extractTags(owner, repo string) []model.Tag {
 
 		} else {
 
-			r := model.Tag{
+			r := model.Release{
 				Author:      tag.GetCommit().GetAuthor().GetLogin(),
 				Version:     tag.GetName(),
 				Description: tag.GetCommit().GetMessage(),
@@ -270,16 +263,15 @@ func (ghe *GitHubExtractor) extractIssues(owner, repo string) []model.Issue {
 			Number:            issue.GetNumber(),
 			Author:            issue.GetUser().GetLogin(),
 			AuthorAssociation: issue.GetAuthorAssociation(),
-			Labels:            nil,
-			State:             model.ToIssueState(issue.GetState()),
+			State:             model.IssueState(issue.GetState()),
 			Title:             issue.GetTitle(),
 			Content:           issue.GetBody(),
 			ClosedBy:          issue.GetClosedBy().GetLogin(),
 			Contributions:     contributions,
 			Contributors:      nil,
 			CreationTime:      issue.GetCreatedAt(),
-			FirstResponse:     time.Time{},
-			LastContribution:  issue.GetUpdatedAt(),
+			FirstResponse:     nil,
+			LastUpdate:        issue.GetUpdatedAt(),
 			ClosingTime:       issue.GetClosedAt(),
 		}
 
@@ -309,11 +301,8 @@ func (ghe *GitHubExtractor) extractCommits(owner, repo string) []model.Commit {
 		commit := model.Commit{
 			Author:       c.GetAuthor().GetLogin(),
 			Committer:    c.GetCommitter().GetLogin(),
-			Changes:      nil,
 			ChangedFiles: changedFiles,
-			Type:         "",
 			Message:      c.GetCommit().GetMessage(),
-			Branch:       "",
 			Timestamp:    c.GetCommit().GetCommitter().GetDate(),
 			Additions:    c.GetCommit().GetStats().GetAdditions(),
 			Deletions:    c.GetCommit().GetStats().GetDeletions(),
@@ -346,20 +335,19 @@ func (ghe *GitHubExtractor) extractContributors(owner, repo string) []model.Cont
 	for _, c := range contributors {
 
 		user := c.GetLogin()
-		firstContribution, lastContribution, total := ghe.siftContributorStats(contributorStats, user)
+		firstContribution, lastContribution := ghe.siftContributorStats(contributorStats, user)
 
 		info := additionalContributorInfo[user]
 
 		contributor := model.Contributor{
-			Name:                    user,
-			Company:                 info.Company,
-			Sponsors:                info.Sponsors.TotalCount,
-			Organizations:           info.Organizations.TotalCount,
-			Contributions:           c.GetContributions(),
-			Repositories:            info.Repositories.TotalCount,
-			FirstContribution:       firstContribution,
-			LastContribution:        lastContribution,
-			TotalStatsContributions: total,
+			Name:              user,
+			Company:           info.Company,
+			Sponsors:          info.Sponsors.TotalCount,
+			Organizations:     info.Organizations.TotalCount,
+			Contributions:     c.GetContributions(),
+			Repositories:      info.Repositories.TotalCount,
+			FirstContribution: firstContribution,
+			LastContribution:  lastContribution,
 		}
 
 		result = append(result, contributor)
@@ -368,7 +356,7 @@ func (ghe *GitHubExtractor) extractContributors(owner, repo string) []model.Cont
 	return result
 }
 
-func (ghe *GitHubExtractor) siftContributorStats(contributorStats []*github.ContributorStats, user string) (first *time.Time, last *time.Time, total int) {
+func (ghe *GitHubExtractor) siftContributorStats(contributorStats []*github.ContributorStats, user string) (first *time.Time, last *time.Time) {
 	var stats *github.ContributorStats
 	for _, cs := range contributorStats {
 		if user == cs.GetAuthor().GetLogin() {
@@ -378,10 +366,8 @@ func (ghe *GitHubExtractor) siftContributorStats(contributorStats []*github.Cont
 
 	if stats == nil {
 		logging.SugaredLogger.Debugf("could not find stats of contributor '%s' from repo '%s'", user, ghe.RepositoryURL)
-		return nil, nil, 0
+		return nil, nil
 	}
-
-	total = stats.GetTotal()
 
 	activeWeeks := funk.Filter(stats.Weeks, func(w *github.WeeklyStats) bool {
 		if w.GetCommits() == 0 && w.GetAdditions() == 0 && w.GetDeletions() == 0 {

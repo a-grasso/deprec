@@ -86,8 +86,9 @@ func (s *RepositoriesServiceWrapper) Get(ctx context.Context, owner string, repo
 
 	coll := s.Cache.Database("repositories_get").Collection(fmt.Sprintf("%s-%s", owner, repo))
 
-	f := func() (*github.Repository, *github.Response, error) {
-		return s.Client.Rest().Repositories.Get(ctx, owner, repo)
+	f := func() (*github.Repository, error) {
+		repository, _, err := s.Client.Rest().Repositories.Get(ctx, owner, repo)
+		return repository, err
 	}
 
 	return cache.FetchSingle[github.Repository](ctx, coll, f)
@@ -97,8 +98,9 @@ func (s *RepositoriesServiceWrapper) GetReadMe(ctx context.Context, owner string
 
 	coll := s.Cache.Database("repositories_get_readme").Collection(fmt.Sprintf("%s-%s", owner, repo))
 
-	f := func() (*github.RepositoryContent, *github.Response, error) {
-		return s.Client.Rest().Repositories.GetReadme(ctx, owner, repo, opts)
+	f := func() (*github.RepositoryContent, error) {
+		readme, _, err := s.Client.Rest().Repositories.GetReadme(ctx, owner, repo, opts)
+		return readme, err
 	}
 
 	return cache.FetchSingle[github.RepositoryContent](ctx, coll, f)
@@ -119,8 +121,9 @@ func (s *OrganizationsServiceWrapper) Get(ctx context.Context, org string) (*git
 
 	coll := s.Cache.Database("organizations_get").Collection(org)
 
-	f := func() (*github.Organization, *github.Response, error) {
-		return s.Client.Rest().Organizations.Get(ctx, org)
+	f := func() (*github.Organization, error) {
+		organ, _, err := s.Client.Rest().Organizations.Get(ctx, org)
+		return organ, err
 	}
 
 	return cache.FetchSingle[github.Organization](ctx, coll, f)
@@ -185,9 +188,10 @@ func (s *RepositoriesServiceWrapper) GetCommit(ctx context.Context, owner string
 
 	coll := s.Cache.Database("repositories_get_commit").Collection(fmt.Sprintf("%s-%s-%s", owner, repository, sha))
 
-	f := func() (*github.RepositoryCommit, *github.Response, error) {
-		return s.Client.Rest().Repositories.GetCommit(ctx, owner, repository, sha, opts)
+	f := func() (*github.RepositoryCommit, error) {
+		commit, _, err := s.Client.Rest().Repositories.GetCommit(ctx, owner, repository, sha, opts)
+		return commit, err
 	}
 
-	return cache.FetchSingle(ctx, coll, f)
+	return cache.FetchSingle[github.RepositoryCommit](ctx, coll, f)
 }

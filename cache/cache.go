@@ -39,7 +39,7 @@ func mongoDBClient(config configuration.MongoDB) *mongo.Client {
 	return cache
 }
 
-func FetchSingle[T any](ctx context.Context, coll *mongo.Collection, f func() (*T, *github.Response, error)) (*T, error) {
+func FetchSingle[T any](ctx context.Context, coll *mongo.Collection, f func() (*T, error)) (*T, error) {
 
 	cachedObject := checkCacheSingle[T](coll)
 	if cachedObject != nil {
@@ -49,7 +49,7 @@ func FetchSingle[T any](ctx context.Context, coll *mongo.Collection, f func() (*
 
 	logging.SugaredLogger.Debugf("EMPTY CACHE | consuming API for collection '%s' of database '%s'", coll.Name(), coll.Database().Name())
 
-	object, _, err := f()
+	object, err := f()
 	if err != nil {
 		return nil, err
 	}
@@ -57,6 +57,26 @@ func FetchSingle[T any](ctx context.Context, coll *mongo.Collection, f func() (*
 	updateCacheSingle[*T](ctx, object, coll)
 
 	return object, nil
+}
+
+func FetchMultiple[T any](ctx context.Context, coll *mongo.Collection, f func() ([]T, error)) ([]T, error) {
+
+	cachedObjects := checkCache[T](coll)
+	if cachedObjects != nil {
+		logging.SugaredLogger.Debugf("CACHE HIT | collection '%s' of database '%s'", coll.Name(), coll.Database().Name())
+		return cachedObjects, nil
+	}
+
+	logging.SugaredLogger.Debugf("EMPTY CACHE | consuming API for collection '%s' of database '%s'", coll.Name(), coll.Database().Name())
+
+	objects, err := f()
+	if err != nil {
+		return nil, err
+	}
+
+	updateCache[T](ctx, objects, coll)
+
+	return objects, nil
 }
 
 func FetchPagination[T any](ctx context.Context, coll *mongo.Collection, f func() ([]T, *github.Response, error), opts *github.ListOptions) ([]T, error) {

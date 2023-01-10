@@ -4,6 +4,11 @@ type GitHub struct {
 	APIToken string `json:"APIToken"`
 }
 
+type OSSIndex struct {
+	Username string `json:"Username"`
+	Token    string `json:"Token"`
+}
+
 type MongoDB struct {
 	Username string `json:"Username"`
 	Password string `json:"Password"`
@@ -58,7 +63,8 @@ type CoreTeam struct {
 }
 
 type Extraction struct {
-	GitHub GitHub `json:"GitHub"`
+	GitHub   GitHub   `json:"GitHub"`
+	OSSIndex OSSIndex `json:"OSSIndex"`
 }
 
 type Cache struct {

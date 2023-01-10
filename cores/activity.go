@@ -18,7 +18,6 @@ func Activity(m *model.DataModel, config configuration.Activity) model.CoreResul
 	percentile := config.Percentile
 	handle(m.Repository.Commits, 3, percentile, &cr)
 	handle(m.Repository.Releases, 3, percentile, &cr)
-	handle(m.Repository.Tags, 3, percentile, &cr)
 	handle(m.Repository.Issues, 2, percentile, &cr)
 	handle(issueContributions, 1, percentile, &cr)
 

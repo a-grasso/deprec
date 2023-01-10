@@ -19,6 +19,12 @@ func CustomNow() time.Time {
 	return a
 }
 
+func CustomYear(year int) time.Time {
+	a := time.Now()
+	a = time.Date(year, 1, 1, 0, 0, 0, 0, time.UTC)
+	return a
+}
+
 func (key *Key) Before(other Key) bool {
 	if key.Year == other.Year {
 		return key.Month < other.Month

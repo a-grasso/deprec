@@ -10,8 +10,6 @@ import (
 	"flag"
 	"fmt"
 	cdx "github.com/CycloneDX/cyclonedx-go"
-	"io"
-	"net/http"
 	"os"
 	"strconv"
 	"strings"
@@ -145,16 +143,6 @@ func exitGracefully(err error) {
 	logging.SugaredLogger.Fatalf("exited gracefully : %v\n", err)
 }
 
-func getSBOMFromURL(url string) (io.ReadCloser, error) {
-
-	res, err := http.Get("https://github.com/DependencyTrack/dependency-track/releases/download/4.1.0/bom.json")
-	if err != nil {
-		return nil, err
-	}
-	defer res.Body.Close()
-	return res.Body, nil
-}
-
 func decodeSBOM(sbomPath string) (*cdx.BOM, error) {
 
 	json, err := os.ReadFile(sbomPath)
@@ -204,16 +192,18 @@ func parseSBOM(sbom *cdx.BOM) []*model.Dependency {
 
 	for _, c := range *sbom.Components {
 		result = append(result, &model.Dependency{
-			Name:     c.Name,
-			Version:  c.Version,
-			MetaData: parseExternalReference(c),
+			Name:               c.Name,
+			Version:            c.Version,
+			PackageURL:         c.PackageURL,
+			Hashes:             parseHashes(c),
+			ExternalReferences: parseExternalReference(c),
 		})
 	}
 
 	return result
 }
 
-func parseExternalReference(component cdx.Component) map[string]string {
+func parseExternalReference(component cdx.Component) map[model.ExternalReference]string {
 
 	references := component.ExternalReferences
 
@@ -222,41 +212,29 @@ func parseExternalReference(component cdx.Component) map[string]string {
 		return nil
 	}
 
-	result := make(map[string]string)
+	result := make(map[model.ExternalReference]string)
 
 	for _, reference := range *references {
-		result[string(reference.Type)] = reference.URL
+		result[model.ExternalReference(reference.Type)] = reference.URL
 	}
 
 	return result
 }
 
-/*
-func RequireValidSBOM(bom *cdx.BOM, fileFormat cdx.BOMFileFormat) {
-	var inputFormat string
-	switch fileFormat {
-	case cdx.BOMFileFormatJSON:
-		inputFormat = "json"
-	case cdx.BOMFileFormatXML:
-		inputFormat = "xml"
+func parseHashes(component cdx.Component) map[model.HashAlgorithm]string {
+
+	hashes := component.Hashes
+
+	if hashes == nil {
+		logging.SugaredLogger.Infof("SBOM component '%s' has no external references", component.Name)
+		return nil
 	}
 
-	bomFile, err := os.Create(fmt.Sprintf("bom.%s", inputFormat))
-	defer func() {
-		if err := bomFile.Close(); err != nil && err.Error() != "file already closed" {
-			fmt.Printf("failed to close bom file: %v\n", err)
-		}
-	}()
+	result := make(map[model.HashAlgorithm]string)
 
-	encoder := cdx.NewBOMEncoder(bomFile, fileFormat)
-	encoder.SetPretty(true)
-	err = encoder.Encode(bom)
-
-	valCmd := exec.Command("cyclonedx", "validate", "--input-file", bomFile.Name(), "--input-format", inputFormat, "--input-version", "v1_4", "--fail-on-errors") // #nosec G204
-	valOut, err := valCmd.CombinedOutput()
-	if err != nil {
-		// Provide some context when test is failing
-		fmt.Printf("validation error: %s\n", string(valOut))
+	for _, hash := range *hashes {
+		result[model.HashAlgorithm(hash.Algorithm)] = hash.Value
 	}
+
+	return result
 }
-*/

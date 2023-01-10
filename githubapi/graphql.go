@@ -72,7 +72,7 @@ func (ql *GraphQLWrapper) FetchContributorInfo(ctx context.Context, repo string,
 		return BatchQuery[model.ContributorInfo](ctx, ql.Client, userQueries, map[string]any{})
 	}
 
-	info, err := cache.FetchBatchQuery(ctx, coll, batchQuery)
+	info, err := cache.FetchBatchQuery[model.ContributorInfo](ctx, coll, batchQuery)
 
 	mapped := funk.Map(info, func(q model.ContributorInfo) (string, model.ContributorInfo) { return q.Login, q }).(map[string]model.ContributorInfo)
 
