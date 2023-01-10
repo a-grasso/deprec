@@ -179,6 +179,20 @@ type Contributor struct {
 	TotalStatsContributions int
 }
 
+type ContributorInfo struct {
+	Repositories struct {
+		TotalCount int
+	}
+	Sponsors struct {
+		TotalCount int
+	}
+	Organizations struct {
+		TotalCount int
+	}
+	Company string
+	Login   string
+}
+
 type Distribution struct {
 	Library  *Library
 	Artifact *Artifact

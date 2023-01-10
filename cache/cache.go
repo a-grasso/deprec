@@ -16,10 +16,10 @@ type Cache struct {
 	*mongo.Client
 }
 
-func NewCache(config configuration.MongoDB) Cache {
+func NewCache(config configuration.MongoDB) *Cache {
 	client := mongoDBClient(config)
 
-	return Cache{
+	return &Cache{
 		client,
 	}
 }

@@ -1,17 +1,16 @@
-package extraction
+package githubapi
 
 import (
 	"context"
 	"deprec/cache"
-	"deprec/githubapi"
 	"fmt"
 	"github.com/google/go-github/v48/github"
 	"github.com/thoas/go-funk"
 )
 
-type GitHubClientWrapper struct {
-	Cache  cache.Cache
-	Client githubapi.Client
+type ClientWrapper struct {
+	Cache  *cache.Cache
+	Client *Client
 
 	common ServiceWrapper
 
@@ -22,8 +21,8 @@ type GitHubClientWrapper struct {
 }
 
 type ServiceWrapper struct {
-	Cache  cache.Cache
-	Client githubapi.Client
+	Cache  *cache.Cache
+	Client *Client
 }
 
 type RepositoriesServiceWrapper ServiceWrapper
@@ -31,9 +30,9 @@ type OrganizationsServiceWrapper ServiceWrapper
 type IssuesServiceWrapper ServiceWrapper
 type GraphQLWrapper ServiceWrapper
 
-func NewGitHubClientWrapper(client githubapi.Client, cache cache.Cache) *GitHubClientWrapper {
+func NewClientWrapper(client *Client, cache *cache.Cache) *ClientWrapper {
 
-	wrapper := &GitHubClientWrapper{Client: client, Cache: cache}
+	wrapper := &ClientWrapper{Client: client, Cache: cache}
 
 	wrapper.common.Client = client
 	wrapper.common.Cache = cache

@@ -18,7 +18,7 @@ type GitHubExtractor struct {
 	Repository    string
 	Owner         string
 	Config        *configuration.Configuration
-	Client        *GitHubClientWrapper
+	Client        *githubapi.ClientWrapper
 }
 
 func NewGitHubExtractor(dependency *model.Dependency, config *configuration.Configuration) *GitHubExtractor {
@@ -26,12 +26,12 @@ func NewGitHubExtractor(dependency *model.Dependency, config *configuration.Conf
 	cache := cache.NewCache(config.MongoDB)
 	client := githubapi.NewClient(config.GitHub)
 
-	gitHubClientWrapper := NewGitHubClientWrapper(client, cache)
+	clientWrapper := githubapi.NewClientWrapper(client, cache)
 
 	vcs := dependency.MetaData["vcs"]
 	owner, repo := parseVCSString(vcs)
 
-	return &GitHubExtractor{RepositoryURL: vcs, Owner: owner, Repository: repo, Config: config, Client: gitHubClientWrapper}
+	return &GitHubExtractor{RepositoryURL: vcs, Owner: owner, Repository: repo, Config: config, Client: clientWrapper}
 }
 
 func (ghe *GitHubExtractor) checkRateLimits() {
@@ -194,7 +194,12 @@ func (ghe *GitHubExtractor) extractTags(owner, repo string) []model.Tag {
 
 		if tag.GetCommit().GetCommitter() == nil {
 
-			tagCommit, err := ghe.Client.Repositories.GetCommit(context.TODO(), owner, repo, tag.GetCommit().GetSHA(), &github.ListOptions{})
+			sha := tag.GetCommit().GetSHA()
+			if sha == "" {
+				continue
+			}
+
+			tagCommit, err := ghe.Client.Repositories.GetCommit(context.TODO(), owner, repo, sha, &github.ListOptions{})
 
 			if err != nil {
 				continue
@@ -330,10 +335,10 @@ func (ghe *GitHubExtractor) extractContributors(owner, repo string) []model.Cont
 		return nil
 	}
 
-	additionalContributorInfo, err := ghe.Client.GraphQL.FetchContributorInfo(context.TODO(), repo, contributors, ghe.Client)
+	additionalContributorInfo, err := ghe.Client.GraphQL.FetchContributorInfo(context.TODO(), repo, contributors)
 
 	if err != nil {
-		additionalContributorInfo = map[string]ContributorInfo{}
+		additionalContributorInfo = map[string]model.ContributorInfo{}
 	}
 
 	var result []model.Contributor

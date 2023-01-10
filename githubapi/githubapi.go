@@ -13,10 +13,10 @@ type Client struct {
 	graphClient *githubv4.Client
 }
 
-func NewClient(config configuration.GitHub) Client {
+func NewClient(config configuration.GitHub) *Client {
 
 	rest, graph := githubClient(config)
-	return Client{
+	return &Client{
 		restClient:  rest,
 		graphClient: graph,
 	}
