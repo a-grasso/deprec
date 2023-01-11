@@ -12,7 +12,44 @@ func Recentness(m *model.DataModel, c configuration.Recentness) model.CoreResult
 
 	cr := model.NewCoreResult(model.Recentness)
 
-	commits := m.Repository.Commits
+	repositoryPart(cr, c, m.Repository)
+
+	distributionPart(cr, c, m.Distribution)
+
+	return *cr
+}
+
+func distributionPart(cr *model.CoreResult, c configuration.Recentness, distribution *model.Distribution) {
+	if distribution == nil {
+		return
+	}
+
+	artifact := distribution.Artifact
+	if artifact != nil {
+		date := artifact.Date
+
+		monthsSince := statistics.CalculateTimeDifference(date, statistics.CustomNow())
+
+		cr.IntakeLimit(float64(monthsSince), float64(c.ArtifactLimit), 1)
+
+	}
+
+	library := distribution.Library
+	if library != nil {
+		lastUpdated := library.LastUpdated
+
+		monthsSince := statistics.CalculateTimeDifference(lastUpdated, statistics.CustomNow())
+
+		cr.IntakeLimit(float64(monthsSince), float64(c.LibraryLimit), 1)
+	}
+}
+
+func repositoryPart(cr *model.CoreResult, c configuration.Recentness, repository *model.Repository) {
+	if repository == nil {
+		return
+	}
+
+	commits := repository.Commits
 	if commits != nil {
 		sort.Slice(commits, func(i, j int) bool {
 			return commits[i].Timestamp.Before(commits[j].Timestamp)
@@ -25,10 +62,10 @@ func Recentness(m *model.DataModel, c configuration.Recentness) model.CoreResult
 
 		eval := (2*float64(lastCommitMonthsSince) + averageMonthsLastCommit) / 3
 
-		cr.IntakeLimit(eval, float64(c.CommitLimit), 1)
+		cr.IntakeLimit(eval, float64(c.CommitLimit), 2)
 	}
 
-	releases := m.Repository.Releases
+	releases := repository.Releases
 	if releases != nil {
 		sort.Slice(releases, func(i, j int) bool {
 			return releases[i].Date.Before(releases[j].Date)
@@ -41,10 +78,8 @@ func Recentness(m *model.DataModel, c configuration.Recentness) model.CoreResult
 
 		eval := (3*float64(lastReleaseMonthsSince) + averageMonthsLastRelease) / 4
 
-		cr.IntakeLimit(eval, float64(c.ReleaseLimit), 1)
+		cr.IntakeLimit(eval, float64(c.ReleaseLimit), 2)
 	}
-
-	return cr
 }
 
 func averageMonthsSinceLast[T statistics.HasTimestamp](elements []T, percentile float64) float64 {

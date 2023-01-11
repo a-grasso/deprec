@@ -63,7 +63,7 @@ func tableEntries() []TableEntry {
 
 var _ = Describe("Agent", func() {
 
-	DescribeTable("using only repository data",
+	DescribeTable("using only all data",
 		func(row *CSVRow) {
 
 			if row.Name == "" {
@@ -76,7 +76,8 @@ var _ = Describe("Agent", func() {
 
 			config = &configuration.Configuration{
 				Extraction: configuration.Extraction{
-					GitHub: config.GitHub,
+					GitHub:   config.GitHub,
+					OSSIndex: config.OSSIndex,
 				},
 				Cache: configuration.Cache{
 					MongoDB: config.MongoDB,
@@ -87,6 +88,8 @@ var _ = Describe("Agent", func() {
 			dep := model.Dependency{
 				Name:               row.Name,
 				Version:            row.Version,
+				PackageURL:         row.PackageURL,
+				Hashes:             map[model.HashAlgorithm]string{model.SHA1: row.SHA1},
 				ExternalReferences: map[model.ExternalReference]string{model.VCS: row.Repository},
 			}
 

@@ -4,28 +4,31 @@ import (
 	"fmt"
 	"github.com/thoas/go-funk"
 	"gonum.org/v1/gonum/mat"
+	"log"
 	"math"
 )
 
 type Core string
 
 const (
-	CombCon              Core = "Combination And Conclusion"
-	Activity             Core = "Activity"
-	CoreTeam             Core = "Core Team"
-	DeityGiven           Core = "Deity-Given"
-	Recentness           Core = "Recentness"
-	OrganizationalBackup Core = "Organizational Backup"
-	ContributorPrestige  Core = "ContributorPrestige"
-	Processing           Core = "Processing"
-	Effort               Core = "Effort"
-	Interconnectedness   Core = "Interconnectedness"
-	Network              Core = "Network"
-	Popularity           Core = "Popularity"
-	Community            Core = "Community"
-	Support              Core = "Support"
-	Circumstances        Core = "Circumstances"
-	Engagement           Core = "Engagement"
+	CombCon                 Core = "Combination And Conclusion"
+	Activity                Core = "Activity"
+	CoreTeam                Core = "Core Team"
+	Rivalry                 Core = "Rivalry"
+	DeityGiven              Core = "Deity-Given"
+	Recentness              Core = "Recentness"
+	OrganizationalBackup    Core = "Organizational Backup"
+	ThirdPartyParticipation Core = "ThirdPartyParticipation"
+	ContributorPrestige     Core = "ContributorPrestige"
+	Processing              Core = "Processing"
+	Effort                  Core = "Effort"
+	Interconnectedness      Core = "Interconnectedness"
+	Network                 Core = "Network"
+	Popularity              Core = "Popularity"
+	Community               Core = "Community"
+	Support                 Core = "Support"
+	Circumstances           Core = "Circumstances"
+	Engagement              Core = "Engagement"
 )
 
 type CoreResult struct {
@@ -39,8 +42,8 @@ type CoreResult struct {
 	UnderlyingCores map[float64][]CoreResult
 }
 
-func NewCoreResult(core Core) CoreResult {
-	return CoreResult{Core: core, UnderlyingCores: make(map[float64][]CoreResult)}
+func NewCoreResult(core Core) *CoreResult {
+	return &CoreResult{Core: core, UnderlyingCores: make(map[float64][]CoreResult)}
 }
 
 const Separator string = " <---> "
@@ -131,12 +134,25 @@ func (cr *CoreResult) IntakeThreshold(value, threshold, weight float64) {
 
 func (cr *CoreResult) IntakeLimit(value, limit, weight float64) {
 
-	v := math.Max(0, 1-value/limit)
+	r := value / limit
+	v := math.Max(0, 1-r)
+
+	if v < 0.25 && v > 0 {
+		v += 0.25
+	}
+
+	v = math.Max(0, v)
+	v = math.Min(1, v)
 
 	cr.Intake(v, weight)
 }
 
 func (cr *CoreResult) Intake(value float64, weight float64) {
+
+	if value > 1 {
+		log.Printf("TOO MUCH TO INTAKE FOR %s", cr.Core)
+		return
+	}
 
 	if value >= 0.75 {
 		cr.NoConcerns += weight
@@ -153,7 +169,12 @@ func (cr *CoreResult) Intake(value float64, weight float64) {
 		return
 	}
 
-	cr.DecisionMaking += weight
+	if value >= 0 {
+		cr.DecisionMaking += weight
+		return
+	}
+
+	log.Printf("TOO LITTLE TO INTAKE FOR %s", cr.Core)
 
 	return
 }

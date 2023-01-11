@@ -21,6 +21,10 @@
       "SponsorThreshold": 10,
       "OrganizationThreshold": 10
     },
+    "ThirdPartyParticipation": {
+      "CommitLimit": 2,
+      "ThirdPartyCommitThresholdPercentage": 30
+    },
     "Engagement": {
       "IssueCommentsRatioThresholdPercentage": 325
     },
@@ -30,6 +34,8 @@
     "Recentness": {
       "ReleaseLimit": 4,
       "CommitLimit": 24,
+      "ArtifactLimit": 12,
+      "LibraryLimit": 4,
       "TimeframePercentileCommits": 2,
       "TimeframePercentileReleases": 1
     },
@@ -45,7 +51,7 @@
     },
     "CoreTeam": {
       "ActiveContributorsPercentile": 5,
-      "CoreTeamStrengthThresholdPercentage": 30
+      "CoreTeamStrengthThresholdPercentage": 10
     }
   }
 }

@@ -17,15 +17,16 @@ func CoreTeam(m *model.DataModel, c configuration.CoreTeam) model.CoreResult {
 	commits := m.Repository.Commits
 
 	if contributors == nil {
-		return cr
+		return *cr
 	}
 
 	percentage := coreTeamPercentage(contributors)
+	//TODO: Needs overhaul, as too punishing for big projects 50+ contributors (all those with ~2 commits)
 
 	cr.IntakeThreshold(percentage, c.CoreTeamStrengthThresholdPercentage, 1)
 
 	if commits == nil {
-		return cr
+		return *cr
 	}
 
 	active := activeContributors(m.Repository.Commits, m.Repository.Contributors, c.ActiveContributorsPercentile)
@@ -34,7 +35,7 @@ func CoreTeam(m *model.DataModel, c configuration.CoreTeam) model.CoreResult {
 
 	// TODO: in relation zu timeline setzen?
 
-	return cr
+	return *cr
 }
 
 func activeContributors(commits []model.Commit, contributors []model.Contributor, percentile float64) float64 {

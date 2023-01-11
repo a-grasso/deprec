@@ -16,12 +16,12 @@ func Activity(m *model.DataModel, config configuration.Activity) model.CoreResul
 	}).([]model.IssueContribution)
 
 	percentile := config.Percentile
-	handle(m.Repository.Commits, 3, percentile, &cr)
-	handle(m.Repository.Releases, 3, percentile, &cr)
-	handle(m.Repository.Issues, 2, percentile, &cr)
-	handle(issueContributions, 1, percentile, &cr)
+	handle(m.Repository.Commits, 3, percentile, cr)
+	handle(m.Repository.Releases, 3, percentile, cr)
+	handle(m.Repository.Issues, 2, percentile, cr)
+	handle(issueContributions, 1, percentile, cr)
 
-	return cr
+	return *cr
 }
 
 func handle[T statistics.HasTimestamp](count []T, weight float64, percentile float64, cr *model.CoreResult) {

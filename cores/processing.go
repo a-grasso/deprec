@@ -16,7 +16,7 @@ func Processing(m *model.DataModel, c configuration.Processing) model.CoreResult
 	issues := m.Repository.Issues
 
 	if len(issues) == 0 {
-		return cr
+		return *cr
 	}
 
 	sort.Slice(issues, func(i, j int) bool {
@@ -31,7 +31,7 @@ func Processing(m *model.DataModel, c configuration.Processing) model.CoreResult
 	burn := averageBurn(issues, closedIssues, c.BurnPercentile)
 	cr.Intake(burn, 2)
 
-	return cr
+	return *cr
 }
 
 func averageBurn(issues []model.Issue, closedIssues []model.Issue, percentile float64) float64 {

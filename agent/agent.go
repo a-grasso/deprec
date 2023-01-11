@@ -50,8 +50,8 @@ func (agent *Agent) CombinationAndConclusion() model.CoreResult {
 
 	cr := model.NewCoreResult(model.CombCon)
 
-	if agent.DataModel.Repository == nil /*&& agent.DataModel.Distribution == nil*/ {
-		return cr
+	if agent.DataModel.Repository == nil && agent.DataModel.Distribution == nil {
+		return *cr
 	}
 
 	deityGiven := cores.DeityGiven(agent.DataModel)
@@ -73,5 +73,5 @@ func (agent *Agent) CombinationAndConclusion() model.CoreResult {
 	cr.Overtake(community, 0)
 	cr.Overtake(interconnectedness, 0)
 
-	return cr
+	return *cr
 }

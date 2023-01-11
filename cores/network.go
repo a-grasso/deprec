@@ -28,5 +28,5 @@ func Network(m *model.DataModel, c configuration.Network) model.CoreResult {
 		cr.IntakeThreshold(float64(repositoryNetwork), float64(c.Threshold), 1)
 	}
 
-	return cr
+	return *cr
 }

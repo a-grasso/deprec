@@ -14,7 +14,7 @@ func OrganizationalBackup(m *model.DataModel, c configuration.OrgBackup) model.C
 	contributors := m.Repository.Contributors
 
 	if len(contributors) == 0 {
-		return cr
+		return *cr
 	}
 
 	sort.Slice(contributors, func(i, j int) bool {
@@ -35,5 +35,5 @@ func OrganizationalBackup(m *model.DataModel, c configuration.OrgBackup) model.C
 		cr.Intake(0, 3)
 	}
 
-	return cr
+	return *cr
 }

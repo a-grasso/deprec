@@ -18,5 +18,5 @@ func Popularity(m *model.DataModel, c configuration.Popularity) model.CoreResult
 		cr.IntakeThreshold(float64(repositoryPopularity), float64(c.Threshold), 1)
 	}
 
-	return cr
+	return *cr
 }

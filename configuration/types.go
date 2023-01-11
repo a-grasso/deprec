@@ -16,19 +16,25 @@ type MongoDB struct {
 }
 
 type CoresConfig struct {
-	Activity   Activity   `json:"Activity"`
-	Recentness Recentness `json:"Recentness"`
-	Processing Processing `json:"Processing"`
-	Network    Network    `json:"Network"`
-	Popularity Popularity `json:"Popularity"`
-	CoreTeam   CoreTeam   `json:"CoreTeam"`
-	OrgBackup  OrgBackup  `json:"OrgBackup"`
-	Engagement Engagement `json:"Engagement"`
+	Activity                Activity                `json:"Activity"`
+	Recentness              Recentness              `json:"Recentness"`
+	Processing              Processing              `json:"Processing"`
+	Network                 Network                 `json:"Network"`
+	Popularity              Popularity              `json:"Popularity"`
+	CoreTeam                CoreTeam                `json:"CoreTeam"`
+	OrgBackup               OrgBackup               `json:"OrgBackup"`
+	Engagement              Engagement              `json:"Engagement"`
+	ThirdPartyParticipation ThirdPartyParticipation `json:"ThirdPartyParticipation"`
 }
 
 type Activity struct {
 	Percentile float64 `json:"Percentile"`
 }
+type ThirdPartyParticipation struct {
+	CommitLimit                         int `json:"CommitLimit"`
+	ThirdPartyCommitThresholdPercentage int `json:"ThirdPartyCommitThresholdPercentage"`
+}
+
 type Network struct {
 	Threshold int `json:"Threshold"`
 }
@@ -39,6 +45,8 @@ type Popularity struct {
 type Recentness struct {
 	CommitLimit                 int     `json:"CommitLimit"`
 	ReleaseLimit                int     `json:"ReleaseLimit"`
+	ArtifactLimit               int     `json:"ArtifactLimit"`
+	LibraryLimit                int     `json:"LibraryLimit"`
 	TimeframePercentileCommits  float64 `json:"TimeframePercentileCommits"`
 	TimeframePercentileReleases float64 `json:"TimeframePercentileReleases"`
 }

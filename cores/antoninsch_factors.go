@@ -14,22 +14,35 @@ func DeityGiven(m *model.DataModel) model.CoreResult {
 
 	cr := model.NewCoreResult(model.DeityGiven)
 
-	archived := m.Repository.Archivation
-	if archived {
-		cr.Intake(0, 1)
+	if m.Repository != nil {
+		archived := m.Repository.Archivation
+		if archived {
+			cr.Intake(0, 1)
+		}
+
+		readme := strings.ToLower(m.Repository.ReadMe)
+		if strings.Contains(readme, "end-of-life") {
+			cr.Intake(0, 1)
+		}
+
+		about := strings.ToLower(m.Repository.About)
+		if strings.Contains(about, "deprecated") || strings.Contains(about, "end-of-life") || strings.Contains(about, "abandoned") {
+			cr.Intake(0, 1)
+		}
 	}
 
-	readme := strings.ToLower(m.Repository.ReadMe)
-	if strings.Contains(readme, "deprecated") || strings.Contains(readme, "end-of-life") {
-		cr.Intake(0, 1)
+	if distribution := m.Distribution; distribution != nil {
+
+		if artifact := distribution.Artifact; artifact != nil {
+
+			description := strings.ToLower(artifact.Description)
+			if strings.Contains(description, "deprecated") || strings.Contains(description, "end-of-life") || strings.Contains(description, "abandoned") {
+				cr.Intake(0, 1)
+			}
+		}
 	}
 
-	about := strings.ToLower(m.Repository.About)
-	if strings.Contains(about, "deprecated") || strings.Contains(about, "end-of-life") || strings.Contains(about, "abandoned") {
-		cr.Intake(0, 1)
-	}
-
-	return cr
+	return *cr
 }
 
 func Effort(m *model.DataModel, c configuration.CoresConfig) model.CoreResult {
@@ -45,7 +58,7 @@ func Effort(m *model.DataModel, c configuration.CoresConfig) model.CoreResult {
 	cr.Overtake(activity, 2)
 	cr.Overtake(coreTeam, 1)
 
-	return cr
+	return *cr
 }
 
 func Interconnectedness(m *model.DataModel, c configuration.CoresConfig) model.CoreResult {
@@ -59,23 +72,21 @@ func Interconnectedness(m *model.DataModel, c configuration.CoresConfig) model.C
 
 	cr.Overtake(popularity, 1)
 
-	return cr
+	return *cr
 }
 
 func Community(m *model.DataModel, c configuration.CoresConfig) model.CoreResult {
 	cr := model.NewCoreResult(model.Community)
 
-	//contributorPrestige := ContributorPrestige(m)
-
-	//thirdPartyParticipation := ThirdPartyParticipation(m)
+	thirdPartyParticipation := ThirdPartyParticipation(m, c.ThirdPartyParticipation)
 
 	organizationalBackup := OrganizationalBackup(m, c.OrgBackup)
 
-	//cr.Overtake(contributorPrestige, 0)
+	cr.Overtake(organizationalBackup, 3)
 
-	cr.Overtake(organizationalBackup, 1)
+	cr.Overtake(thirdPartyParticipation, 1)
 
-	return cr
+	return *cr
 }
 
 func Support(m *model.DataModel, c configuration.CoresConfig) model.CoreResult {
@@ -88,7 +99,7 @@ func Support(m *model.DataModel, c configuration.CoresConfig) model.CoreResult {
 	cr.Overtake(processing, 2)
 
 	cr.Overtake(engagement, 1)
-	return cr
+	return *cr
 }
 
 func Ecosystem(m *model.DataModel) {
@@ -99,5 +110,9 @@ func Circumstances(m *model.DataModel, c configuration.CoresConfig) model.CoreRe
 
 	cr := model.NewCoreResult(model.Circumstances)
 
-	return cr
+	rivalry := Rivalry(m)
+
+	cr.Overtake(rivalry, 1)
+
+	return *cr
 }

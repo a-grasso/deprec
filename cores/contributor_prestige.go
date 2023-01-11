@@ -50,5 +50,5 @@ func ContributorPrestige(m *model.DataModel) model.CoreResult {
 	result := funk.Sum(prestiges) / float64(len(prestiges))
 	cr.Intake(result, 1)
 
-	return cr
+	return *cr
 }
