@@ -52,7 +52,7 @@ func Vulnerabilities(m *model.DataModel) model.CoreResult {
 
 	vulnerabilities := m.VulnerabilityIndex.TotalVulnerabilitiesCount
 
-	eval := math.Max(1, float64(vulnerabilities))
+	eval := 1 - math.Min(1, float64(vulnerabilities))
 
 	cr.Intake(eval, 1)
 
