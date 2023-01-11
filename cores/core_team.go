@@ -29,7 +29,7 @@ func CoreTeam(m *model.DataModel, c configuration.CoreTeam) model.CoreResult {
 		return *cr
 	}
 
-	active := activeContributors(m.Repository.Commits, m.Repository.Contributors, c.ActiveContributorsPercentile)
+	active := activeContributors(commits, contributors, c.ActiveContributorsPercentile)
 
 	cr.Intake(active, 2)
 

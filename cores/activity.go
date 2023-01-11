@@ -11,14 +11,21 @@ func Activity(m *model.DataModel, config configuration.Activity) model.CoreResul
 
 	cr := model.NewCoreResult(model.Activity)
 
-	issueContributions := funk.FlatMap(m.Repository.Issues, func(issue model.Issue) []model.IssueContribution {
+	if m.Repository == nil {
+		return *cr
+	}
+
+	commits := m.Repository.Commits
+	releases := m.Repository.Releases
+	issues := m.Repository.Issues
+	issueContributions := funk.FlatMap(issues, func(issue model.Issue) []model.IssueContribution {
 		return issue.Contributions
 	}).([]model.IssueContribution)
 
 	percentile := config.Percentile
-	handle(m.Repository.Commits, 3, percentile, cr)
-	handle(m.Repository.Releases, 3, percentile, cr)
-	handle(m.Repository.Issues, 2, percentile, cr)
+	handle(commits, 3, percentile, cr)
+	handle(releases, 3, percentile, cr)
+	handle(issues, 2, percentile, cr)
 	handle(issueContributions, 1, percentile, cr)
 
 	return *cr

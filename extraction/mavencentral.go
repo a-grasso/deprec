@@ -6,11 +6,9 @@ import (
 	"deprec/logging"
 	"deprec/mavencentralapi"
 	"deprec/model"
-	"deprec/statistics"
 	"fmt"
 	"github.com/thoas/go-funk"
 	"github.com/vifraa/gopom"
-	"strconv"
 	"time"
 )
 
@@ -57,10 +55,11 @@ func (mce *MavenCentralExtractor) Extract(dataModel *model.DataModel) {
 	version := response.V
 	artifactId := response.A
 	groupId := response.G
+	timestamp := time.Unix(response.Timestamp, 0)
 
 	library := mce.extractLibrary(groupId, artifactId)
 
-	artifact := mce.extractArtifact(groupId, artifactId, version)
+	artifact := mce.extractArtifact(groupId, artifactId, version, timestamp)
 
 	dataModel.Distribution = &model.Distribution{
 		Library:  library,
@@ -68,7 +67,7 @@ func (mce *MavenCentralExtractor) Extract(dataModel *model.DataModel) {
 	}
 }
 
-func (mce *MavenCentralExtractor) extractArtifact(groupId string, artifactId string, version string) *model.Artifact {
+func (mce *MavenCentralExtractor) extractArtifact(groupId string, artifactId string, version string, date time.Time) *model.Artifact {
 	pom, err := mce.Client.GetArtifactPom(groupId, artifactId, version)
 	if err != nil {
 		logging.SugaredLogger.Debugf("could not get artifact pom for '%s' with SHA-1 '%s'", mce.DependencyName, mce.SHA1)
@@ -76,12 +75,6 @@ func (mce *MavenCentralExtractor) extractArtifact(groupId string, artifactId str
 	}
 
 	repos := funk.Map(pom.Repositories, func(r gopom.Repository) string { return r.Name }).([]string)
-
-	year, err := strconv.Atoi(pom.InceptionYear)
-	var date time.Time
-	if err == nil {
-		date = statistics.CustomYear(year)
-	}
 
 	dependencies := collectDependencies(pom)
 

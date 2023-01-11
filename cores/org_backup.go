@@ -4,7 +4,6 @@ import (
 	"deprec/configuration"
 	"deprec/model"
 	"github.com/thoas/go-funk"
-	"sort"
 )
 
 func OrganizationalBackup(m *model.DataModel, c configuration.OrgBackup) model.CoreResult {
@@ -17,17 +16,13 @@ func OrganizationalBackup(m *model.DataModel, c configuration.OrgBackup) model.C
 		return *cr
 	}
 
-	sort.Slice(contributors, func(i, j int) bool {
-		return contributors[i].Contributions > contributors[j].Contributions
-	})
-
-	companies := funk.Filter(funk.Map(contributors, func(c model.Contributor) string { return c.Company }), func(c string) bool { return c != "" }).([]string)
+	companies := funk.Filter(funk.Map(contributors, func(c model.Contributor) string { return c.Company }), func(company string) bool { return company != "" }).([]string)
 	sponsors := funk.Sum(funk.Map(contributors, func(c model.Contributor) int { return c.Sponsors }))
 	organizations := funk.Sum(funk.Map(contributors, func(c model.Contributor) int { return c.Organizations }))
 
 	cr.IntakeThreshold(float64(len(companies)), float64(c.CompanyThreshold), 2)
 	cr.IntakeThreshold(sponsors, c.SponsorThreshold, 1)
-	cr.IntakeThreshold(organizations, c.OrganizationThreshold, 1)
+	cr.IntakeThreshold(organizations, c.OrganizationThreshold, 2)
 
 	if m.Repository.Org != nil {
 		cr.Intake(1, 3)
