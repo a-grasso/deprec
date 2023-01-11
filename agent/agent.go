@@ -55,6 +55,7 @@ func (agent *Agent) CombinationAndConclusion() model.CoreResult {
 	}
 
 	deityGiven := cores.DeityGiven(agent.DataModel)
+	vulnerabilities := cores.Vulnerabilities(agent.DataModel)
 
 	effort := cores.Effort(agent.DataModel, agent.Config.CoresConfig)
 
@@ -64,14 +65,15 @@ func (agent *Agent) CombinationAndConclusion() model.CoreResult {
 
 	support := cores.Support(agent.DataModel, agent.Config.CoresConfig)
 
-	circumstances := cores.Circumstances(agent.DataModel, agent.Config.CoresConfig)
+	circumstances := cores.Circumstances(agent.DataModel)
 
 	cr.Overtake(deityGiven, 100)
-	cr.Overtake(effort, 2)
+	cr.Overtake(vulnerabilities, 25)
+	cr.Overtake(effort, 1)
 	cr.Overtake(support, 1)
-	cr.Overtake(circumstances, 0)
-	cr.Overtake(community, 0)
-	cr.Overtake(interconnectedness, 0)
+	cr.Overtake(circumstances, 1)
+	cr.Overtake(community, 1)
+	cr.Overtake(interconnectedness, 1)
 
 	return *cr
 }

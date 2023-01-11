@@ -3,12 +3,9 @@ package cores
 import (
 	"deprec/configuration"
 	"deprec/model"
+	"math"
 	"strings"
 )
-
-func ProjectSize(m *model.DataModel) float64 {
-	return float64(m.Repository.LOC + m.Repository.TotalCommits() + m.Repository.TotalIssues() + m.Repository.TotalContributors() + m.Repository.TotalReleases())
-}
 
 func DeityGiven(m *model.DataModel) model.CoreResult {
 
@@ -45,7 +42,25 @@ func DeityGiven(m *model.DataModel) model.CoreResult {
 	return *cr
 }
 
+func Vulnerabilities(m *model.DataModel) model.CoreResult {
+
+	cr := model.NewCoreResult(model.Vulnerabilities)
+
+	if m.VulnerabilityIndex == nil {
+		return *cr
+	}
+
+	vulnerabilities := m.VulnerabilityIndex.TotalVulnerabilitiesCount
+
+	eval := math.Max(1, float64(vulnerabilities))
+
+	cr.Intake(eval, 1)
+
+	return *cr
+}
+
 func Effort(m *model.DataModel, c configuration.CoresConfig) model.CoreResult {
+
 	cr := model.NewCoreResult(model.Effort)
 
 	activity := Activity(m, c.Activity)
@@ -62,6 +77,7 @@ func Effort(m *model.DataModel, c configuration.CoresConfig) model.CoreResult {
 }
 
 func Interconnectedness(m *model.DataModel, c configuration.CoresConfig) model.CoreResult {
+
 	cr := model.NewCoreResult(model.Interconnectedness)
 
 	network := Network(m, c.Network)
@@ -76,6 +92,7 @@ func Interconnectedness(m *model.DataModel, c configuration.CoresConfig) model.C
 }
 
 func Community(m *model.DataModel, c configuration.CoresConfig) model.CoreResult {
+
 	cr := model.NewCoreResult(model.Community)
 
 	thirdPartyParticipation := ThirdPartyParticipation(m, c.ThirdPartyParticipation)
@@ -90,6 +107,7 @@ func Community(m *model.DataModel, c configuration.CoresConfig) model.CoreResult
 }
 
 func Support(m *model.DataModel, c configuration.CoresConfig) model.CoreResult {
+
 	cr := model.NewCoreResult(model.Support)
 
 	processing := Processing(m, c.Processing)
@@ -102,11 +120,7 @@ func Support(m *model.DataModel, c configuration.CoresConfig) model.CoreResult {
 	return *cr
 }
 
-func Ecosystem(m *model.DataModel) {
-
-}
-
-func Circumstances(m *model.DataModel, c configuration.CoresConfig) model.CoreResult {
+func Circumstances(m *model.DataModel) model.CoreResult {
 
 	cr := model.NewCoreResult(model.Circumstances)
 

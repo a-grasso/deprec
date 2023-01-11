@@ -1,5 +1,5 @@
 ignore,repository,comment,recommendation,name,version,note,sha1,purl
-,https://github.com/apache/logging-log4j1,(readme) eol,DM,log4j1,1.2.17,,,
+,https://github.com/apache/logging-log4j1,(readme) eol,DM,log4j1,1.2.17,,5af35056b4d257e4b64b9e8069c0746e8b08629f,pkg:maven/log4j/log4j@1.2.17?type=jar
 true,https://github.com/apache/logging-log4j2,active,NC,log4j2,24.1.1-jre,,2e3014320a8005e3f3c1800cb246ed42db8cab81,pkg:maven/com.google.guava/guava@24.1.1-jre?type=jar
 ,https://github.com/findbugsproject/findbugs,"(readme) eol because successor, development continued on new project",DM,findbugs,,,,
 ,https://github.com/gleclaire/findbugs-maven-plugin,(archived) eol as findbugs eol,DM,findbugs-maven-plugin,,,,

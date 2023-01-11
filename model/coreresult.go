@@ -25,6 +25,7 @@ const (
 	Interconnectedness      Core = "Interconnectedness"
 	Network                 Core = "Network"
 	Popularity              Core = "Popularity"
+	Vulnerabilities         Core = "Vulnerabilities"
 	Community               Core = "Community"
 	Support                 Core = "Support"
 	Circumstances           Core = "Circumstances"

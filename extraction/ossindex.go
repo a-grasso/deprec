@@ -6,6 +6,8 @@ import (
 	"deprec/logging"
 	"deprec/model"
 	"deprec/ossindexapi"
+	"net/http"
+	"strings"
 )
 
 type OSSIndexExtractor struct {
@@ -35,15 +37,27 @@ func (ossie *OSSIndexExtractor) Extract(dataModel *model.DataModel) {
 
 	index := &model.VulnerabilityIndex{}
 
-	reports, _ := ossie.Client.GetComponentReport(ossie.PackageURL)
+	purl := strings.Split(ossie.PackageURL, "?type")[0]
 
-	vulnerabilities := 0
-
-	for _, report := range reports {
-		vulnerabilities += len(report.Vulnerabilities)
+	reports, err := ossie.Client.GetComponentReport(purl)
+	if err != nil {
+		return
+	}
+	if len(reports) != 1 {
+		return
 	}
 
-	index.TotalVulnerabilitiesCount = vulnerabilities
+	componentReport := reports[0]
+
+	resp, err := http.Get(componentReport.Reference)
+	if err != nil {
+		return
+	}
+	if resp.StatusCode == http.StatusNotFound {
+		return
+	}
+
+	index.TotalVulnerabilitiesCount = len(componentReport.Vulnerabilities)
 
 	dataModel.VulnerabilityIndex = index
 }
