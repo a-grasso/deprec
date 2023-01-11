@@ -166,6 +166,7 @@ type Distribution struct {
 
 type Artifact struct {
 	Version              string
+	Description          string
 	ArtifactRepositories []string
 	Date                 time.Time
 	Vulnerabilities      []string

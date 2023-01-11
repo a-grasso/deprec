@@ -21,7 +21,7 @@ func CustomNow() time.Time {
 
 func CustomYear(year int) time.Time {
 	a := time.Now()
-	a = time.Date(year, 1, 1, 0, 0, 0, 0, time.UTC)
+	a = time.Date(year, 12, 1, 0, 0, 0, 0, time.UTC)
 	return a
 }
 

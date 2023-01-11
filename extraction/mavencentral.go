@@ -58,10 +58,6 @@ func (mce *MavenCentralExtractor) Extract(dataModel *model.DataModel) {
 	artifactId := response.A
 	groupId := response.G
 
-	version = "1.2.17"
-	artifactId = "log4j"
-	groupId = "log4j"
-
 	library := mce.extractLibrary(groupId, artifactId)
 
 	artifact := mce.extractArtifact(groupId, artifactId, version)
@@ -81,8 +77,11 @@ func (mce *MavenCentralExtractor) extractArtifact(groupId string, artifactId str
 
 	repos := funk.Map(pom.Repositories, func(r gopom.Repository) string { return r.Name }).([]string)
 
-	year, _ := strconv.Atoi(pom.InceptionYear)
-	date := statistics.CustomYear(year)
+	year, err := strconv.Atoi(pom.InceptionYear)
+	var date time.Time
+	if err == nil {
+		date = statistics.CustomYear(year)
+	}
 
 	dependencies := collectDependencies(pom)
 
@@ -95,7 +94,7 @@ func (mce *MavenCentralExtractor) extractArtifact(groupId string, artifactId str
 	mailingLists := funk.Map(pom.MailingLists, func(ml gopom.MailingList) string { return ml.Name }).([]string)
 
 	return &model.Artifact{
-		Version:              pom.Version,
+		Version:              version,
 		ArtifactRepositories: repos,
 		Date:                 date,
 		Vulnerabilities:      nil,
@@ -107,6 +106,7 @@ func (mce *MavenCentralExtractor) extractArtifact(groupId string, artifactId str
 		Organization:         pom.Organization.Name,
 		Licenses:             licenses,
 		MailingLists:         mailingLists,
+		Description:          pom.Description,
 	}
 }
 
@@ -125,7 +125,7 @@ func collectDependencies(pom *gopom.Project) []string {
 	for _, dependency := range pomDependencies {
 		dep := fmt.Sprintf("%s-%s-%s", dependency.GroupID, dependency.ArtifactID, dependency.Version)
 
-		if funk.Contains(dep, dep) {
+		if funk.Contains(dependencies, dep) {
 			continue
 		}
 
