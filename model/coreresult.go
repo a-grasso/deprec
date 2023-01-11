@@ -98,7 +98,9 @@ func (cr *CoreResult) Normalized() CoreResult {
 	}
 }
 
-func (cr *CoreResult) Softmax() RecommendationResult {
+type RecommendationDistribution map[Recommendation]float64
+
+func (cr *CoreResult) Softmax() RecommendationDistribution {
 
 	matrix := mat.NewDense(4, 1, []float64{cr.NoConcerns, cr.NoImmediateAction, cr.Watchlist, cr.DecisionMaking})
 
@@ -114,7 +116,7 @@ func (cr *CoreResult) Softmax() RecommendationResult {
 		return math.Exp(v) / sum
 	}, matrix)
 
-	result := make(map[Recommendation]float64)
+	result := make(RecommendationDistribution)
 
 	col := resultMatrix.ColView(0)
 

@@ -5,8 +5,40 @@ import (
 	"deprec/cores"
 	"deprec/extraction"
 	"deprec/model"
+	"fmt"
 	"strings"
 )
+
+type Result struct {
+	Dependency      *model.Dependency
+	Core            model.CoreResult
+	Recommendations model.RecommendationDistribution
+}
+
+func (ar *Result) ToString() string {
+
+	header := fmt.Sprintf("Result %s: ", ar.Dependency.Name)
+	body := ar.Core.ToStringDeep()
+
+	return header + body
+}
+
+func (ar *Result) TopRecommendation() model.Recommendation {
+
+	result := ar.Recommendations
+
+	var rec model.Recommendation
+
+	tmp := -1.0
+	for recommendation, f := range result {
+		if f > tmp {
+			rec = recommendation
+			tmp = f
+		}
+	}
+
+	return rec
+}
 
 type Agent struct {
 	Dependency *model.Dependency
@@ -19,15 +51,15 @@ func NewAgent(dependency *model.Dependency, configuration *configuration.Configu
 	return &agent
 }
 
-func (agent *Agent) Start() model.AgentResult {
+func (agent *Agent) Start() Result {
 	agent.Extraction()
 
 	result := agent.CombinationAndConclusion()
 
-	return model.AgentResult{
-		Dependency:    agent.Dependency,
-		CombConResult: result,
-		Result:        result.Softmax(),
+	return Result{
+		Dependency:      agent.Dependency,
+		Core:            result,
+		Recommendations: result.Softmax(),
 	}
 }
 
