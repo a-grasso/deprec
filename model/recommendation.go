@@ -12,6 +12,7 @@ const (
 	NoImmediateAction Recommendation = "No Immediate Action"
 	Watchlist         Recommendation = "Watchlist"
 	DecisionMaking    Recommendation = "Decision Making"
+	Inconclusive      Recommendation = "Inconclusive | No Recommendation Was Possible"
 )
 
 func (r Recommendation) ToAbbreviation() string {
