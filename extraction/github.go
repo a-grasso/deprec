@@ -17,14 +17,13 @@ type GitHubExtractor struct {
 	RepositoryURL string
 	Repository    string
 	Owner         string
-	Config        *configuration.Configuration
+	Config        configuration.GitHub
 	Client        *githubapi.ClientWrapper
 }
 
-func NewGitHubExtractor(dependency *model.Dependency, config *configuration.Configuration) *GitHubExtractor {
+func NewGitHubExtractor(dependency model.Dependency, config configuration.GitHub, cache *cache.Cache) *GitHubExtractor {
 
-	cache := cache.NewCache(config.MongoDB)
-	client := githubapi.NewClient(config.GitHub)
+	client := githubapi.NewClient(config)
 
 	clientWrapper := githubapi.NewClientWrapper(client, cache)
 

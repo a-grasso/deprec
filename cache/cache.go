@@ -32,10 +32,17 @@ func mongoDBClient(config configuration.MongoDB) *mongo.Client {
 
 	clientOpts := options.Client().ApplyURI(config.URI).SetAuth(credentials)
 	cache, err := mongo.Connect(context.TODO(), clientOpts)
-	// TODO: Check connection (Ping)
 	if err != nil {
-		logging.SugaredLogger.Fatalf("connecting to mongodb database at '%s': %s", config.URI, err)
+		logging.SugaredLogger.Errorf("connecting to mongodb database at '%s': %s", config.URI, err)
+		return nil
 	}
+
+	err = cache.Ping(context.TODO(), nil)
+	if err != nil {
+		logging.SugaredLogger.Errorf("pinging mongodb database at '%s' failed: %s", config.URI, err)
+		return nil
+	}
+
 	return cache
 }
 

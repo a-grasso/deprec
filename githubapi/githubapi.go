@@ -16,6 +16,7 @@ type Client struct {
 func NewClient(config configuration.GitHub) *Client {
 
 	rest, graph := githubClient(config)
+
 	return &Client{
 		restClient:  rest,
 		graphClient: graph,

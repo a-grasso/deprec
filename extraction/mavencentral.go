@@ -2,7 +2,6 @@ package extraction
 
 import (
 	"deprec/cache"
-	"deprec/configuration"
 	"deprec/logging"
 	"deprec/mavencentralapi"
 	"deprec/model"
@@ -15,13 +14,11 @@ import (
 type MavenCentralExtractor struct {
 	DependencyName string
 	SHA1           string
-	Config         *configuration.Configuration
 	Client         *mavencentralapi.ClientWrapper
 }
 
-func NewMavenCentralExtractor(dependency *model.Dependency, config *configuration.Configuration) *MavenCentralExtractor {
+func NewMavenCentralExtractor(dependency model.Dependency, cache *cache.Cache) *MavenCentralExtractor {
 
-	cache := cache.NewCache(config.MongoDB)
 	client := mavencentralapi.NewClient()
 
 	wrapper := mavencentralapi.NewClientWrapper(client, cache)
@@ -31,7 +28,6 @@ func NewMavenCentralExtractor(dependency *model.Dependency, config *configuratio
 	return &MavenCentralExtractor{
 		DependencyName: dependency.Name,
 		SHA1:           sha1,
-		Config:         config,
 		Client:         wrapper,
 	}
 }

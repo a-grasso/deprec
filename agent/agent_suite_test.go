@@ -93,9 +93,9 @@ var _ = Describe("Agent", func() {
 				ExternalReferences: map[model.ExternalReference]string{model.VCS: row.Repository},
 			}
 
-			agent := agent.NewAgent(&dep, config)
+			agent := agent.NewAgent(dep, *config)
 
-			agentResult := agent.Start()
+			agentResult := agent.Run()
 
 			recommendation := agentResult.TopRecommendation()
 

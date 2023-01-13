@@ -16,7 +16,7 @@ import (
 	"sync"
 )
 
-type input struct {
+type Input struct {
 	sbomPath   string
 	configPath string
 	numWorkers int
@@ -47,12 +47,12 @@ func main() {
 
 	deps := parseSBOM(cdxBom)
 
-	linear(config, deps)
+	linear(*config, deps)
 
-	//parallel(deps, input, config)
+	parallel(deps, input.numWorkers, *config)
 }
 
-func linear(config *configuration.Configuration, dependencies []*model.Dependency) {
+func linear(config configuration.Configuration, dependencies []model.Dependency) {
 	var agentResults []agent.Result
 	totalDependencies := len(dependencies)
 	for i, dep := range dependencies {
@@ -64,7 +64,7 @@ func linear(config *configuration.Configuration, dependencies []*model.Dependenc
 		logging.SugaredLogger.Infof("running agent for dependency '%s:%s' %d/%d", dep.Name, dep.Version, i, totalDependencies)
 
 		a := agent.NewAgent(dep, config)
-		agentResult := a.Start()
+		agentResult := a.Run()
 		agentResults = append(agentResults, agentResult)
 	}
 
@@ -75,13 +75,13 @@ func linear(config *configuration.Configuration, dependencies []*model.Dependenc
 	}
 }
 
-func parallel(deps []*model.Dependency, input input, config *configuration.Configuration) {
-	agentResults := make(chan *agent.Result, len(deps))
-	dependencies := make(chan *model.Dependency, len(deps))
+func parallel(deps []model.Dependency, numWorkers int, config configuration.Configuration) {
+	agentResults := make(chan agent.Result, len(deps))
+	dependencies := make(chan model.Dependency, len(deps))
 
 	var wg sync.WaitGroup
 
-	for w := 0; w < input.numWorkers; w++ {
+	for w := 0; w < numWorkers; w++ {
 		wg.Add(1)
 
 		w := w
@@ -113,20 +113,19 @@ func parallel(deps []*model.Dependency, input input, config *configuration.Confi
 	}
 }
 
-func worker(configuration *configuration.Configuration, dependencies <-chan *model.Dependency, results chan<- *agent.Result, worker int) {
+func worker(configuration configuration.Configuration, dependencies <-chan model.Dependency, results chan<- agent.Result, worker int) {
 
 	for dep := range dependencies {
 		logging.SugaredLogger.Infof("worker %d running agent for dependency '%s:%s' %d/%d", worker, dep.Name, dep.Version, 0, 0)
 
-		a := agent.NewAgent(dep, configuration)
-		asd := a.Start()
-		results <- &asd
+		agent := agent.NewAgent(dep, configuration)
+		results <- agent.Run()
 	}
 }
 
-func getInput() (input, error) {
+func getInput() (*Input, error) {
 	if len(os.Args) < 3 {
-		return input{}, errors.New("cli argument error: SBOM file and config path arguments required")
+		return &Input{}, errors.New("cli argument error: SBOM file and config path arguments required")
 	}
 
 	flag.Parse()
@@ -138,18 +137,18 @@ func getInput() (input, error) {
 		workers = 5
 	}
 
-	return input{sbom, config, workers}, nil
+	return &Input{sbom, config, workers}, nil
 }
 
 func exitGracefully(err error) {
 	logging.SugaredLogger.Fatalf("exited gracefully : %v\n", err)
 }
 
-func decodeSBOM(sbomPath string) (*cdx.BOM, error) {
+func decodeSBOM(path string) (*cdx.BOM, error) {
 
-	json, err := os.ReadFile(sbomPath)
+	json, err := os.ReadFile(path)
 	if err != nil {
-		return nil, fmt.Errorf("could not read sbom file '%s': %s", sbomPath, err)
+		return nil, fmt.Errorf("could not read sbom file '%s': %s", path, err)
 	}
 	reader := bytes.NewReader(json)
 
@@ -189,11 +188,11 @@ func calcSBOMStats(bom *cdx.BOM) {
 	logging.SugaredLogger.Infof("%d/%d/%d github/vcs/total", vcsGitHub, len(*bom.Components)-noVCS, len(*bom.Components))
 }
 
-func parseSBOM(sbom *cdx.BOM) []*model.Dependency {
-	var result []*model.Dependency
+func parseSBOM(sbom *cdx.BOM) []model.Dependency {
+	var result []model.Dependency
 
 	for _, c := range *sbom.Components {
-		result = append(result, &model.Dependency{
+		result = append(result, model.Dependency{
 			Name:               c.Name,
 			Version:            c.Version,
 			PackageURL:         c.PackageURL,

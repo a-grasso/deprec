@@ -12,14 +12,13 @@ import (
 
 type OSSIndexExtractor struct {
 	PackageURL string
-	Config     *configuration.Configuration
+	Config     configuration.OSSIndex
 	Client     *ossindexapi.ClientWrapper
 }
 
-func NewOSSIndexExtractor(dependency *model.Dependency, config *configuration.Configuration) *OSSIndexExtractor {
+func NewOSSIndexExtractor(dependency model.Dependency, config configuration.OSSIndex, cache *cache.Cache) *OSSIndexExtractor {
 
-	cache := cache.NewCache(config.MongoDB)
-	client := ossindexapi.NewClient(config.OSSIndex)
+	client := ossindexapi.NewClient(config)
 
 	wrapper := ossindexapi.NewClientWrapper(client, cache)
 

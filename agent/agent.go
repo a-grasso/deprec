@@ -1,6 +1,7 @@
 package agent
 
 import (
+	"deprec/cache"
 	"deprec/configuration"
 	"deprec/cores"
 	"deprec/extraction"
@@ -11,7 +12,7 @@ import (
 )
 
 type Result struct {
-	Dependency      *model.Dependency
+	Dependency      model.Dependency
 	Core            model.CoreResult
 	Recommendations model.RecommendationDistribution
 }
@@ -47,17 +48,17 @@ func (ar *Result) TopRecommendation() model.Recommendation {
 }
 
 type Agent struct {
-	Dependency *model.Dependency
+	Dependency model.Dependency
+	Config     configuration.Configuration
 	DataModel  *model.DataModel
-	Config     *configuration.Configuration
 }
 
-func NewAgent(dependency *model.Dependency, configuration *configuration.Configuration) *Agent {
+func NewAgent(dependency model.Dependency, configuration configuration.Configuration) *Agent {
 	agent := Agent{Dependency: dependency, DataModel: &model.DataModel{}, Config: configuration}
 	return &agent
 }
 
-func (agent *Agent) Start() Result {
+func (agent *Agent) Run() Result {
 	agent.Extraction()
 
 	result := agent.CombinationAndConclusion()
@@ -71,16 +72,18 @@ func (agent *Agent) Start() Result {
 
 func (agent *Agent) Extraction() {
 
+	cache := cache.NewCache(agent.Config.MongoDB)
+
 	if vcs, exists := agent.Dependency.ExternalReferences[model.VCS]; exists && strings.Contains(vcs, "github") {
-		extraction.NewGitHubExtractor(agent.Dependency, agent.Config).Extract(agent.DataModel)
+		extraction.NewGitHubExtractor(agent.Dependency, agent.Config.GitHub, cache).Extract(agent.DataModel)
 	}
 
 	if agent.Dependency.PackageURL != "" {
-		extraction.NewOSSIndexExtractor(agent.Dependency, agent.Config).Extract(agent.DataModel)
+		extraction.NewOSSIndexExtractor(agent.Dependency, agent.Config.OSSIndex, cache).Extract(agent.DataModel)
 	}
 
 	if sha1, exists := agent.Dependency.Hashes[model.SHA1]; exists && sha1 != "" {
-		extraction.NewMavenCentralExtractor(agent.Dependency, agent.Config).Extract(agent.DataModel)
+		extraction.NewMavenCentralExtractor(agent.Dependency, cache).Extract(agent.DataModel)
 	}
 }
 
