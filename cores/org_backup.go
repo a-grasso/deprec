@@ -10,6 +10,10 @@ func OrganizationalBackup(m *model.DataModel, c configuration.OrgBackup) model.C
 
 	cr := model.NewCoreResult(model.OrganizationalBackup)
 
+	if m.Repository == nil {
+		return *cr
+	}
+
 	contributors := m.Repository.Contributors
 
 	if len(contributors) == 0 {

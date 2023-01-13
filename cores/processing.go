@@ -13,6 +13,10 @@ func Processing(m *model.DataModel, c configuration.Processing) model.CoreResult
 
 	cr := model.NewCoreResult(model.Processing)
 
+	if m.Repository == nil {
+		return *cr
+	}
+
 	issues := m.Repository.Issues
 
 	if len(issues) == 0 {

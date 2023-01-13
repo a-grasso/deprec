@@ -10,6 +10,10 @@ func ThirdPartyParticipation(m *model.DataModel, c configuration.ThirdPartyParti
 
 	cr := model.NewCoreResult(model.ThirdPartyParticipation)
 
+	if m.Repository == nil {
+		return *cr
+	}
+
 	contributors := m.Repository.Contributors
 
 	noContUser := funk.Filter(contributors, func(c model.Contributor) bool {

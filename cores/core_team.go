@@ -13,6 +13,10 @@ func CoreTeam(m *model.DataModel, c configuration.CoreTeam) model.CoreResult {
 
 	cr := model.NewCoreResult(model.CoreTeam)
 
+	if m.Repository == nil {
+		return *cr
+	}
+
 	contributors := m.Repository.Contributors
 	commits := m.Repository.Commits
 
