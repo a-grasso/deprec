@@ -3,7 +3,6 @@ package cores
 import (
 	"deprec/configuration"
 	"deprec/model"
-	"math"
 	"strings"
 )
 
@@ -52,9 +51,9 @@ func Vulnerabilities(m *model.DataModel) model.CoreResult {
 
 	vulnerabilities := m.VulnerabilityIndex.TotalVulnerabilitiesCount
 
-	eval := 1 - math.Min(1, float64(vulnerabilities))
-
-	cr.Intake(eval, 1)
+	if vulnerabilities > 0 {
+		cr.Intake(0, 1)
+	}
 
 	return *cr
 }
