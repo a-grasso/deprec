@@ -16,6 +16,53 @@ type Cache struct {
 	*mongo.Client
 }
 
+type Database struct {
+	name string
+	*mongo.Database
+}
+
+type Collection struct {
+	name string
+	db   *Database
+	*mongo.Collection
+}
+
+func (c *Cache) Database(db string) *Database {
+	if c.Client == nil {
+		return &Database{db, nil}
+	}
+
+	return &Database{db, c.Client.Database(db)}
+}
+
+func (db *Database) Name() string {
+	return db.name
+}
+
+func (db *Database) Collection(coll string) *Collection {
+	if db.Database == nil {
+		return &Collection{
+			name:       coll,
+			db:         db,
+			Collection: nil,
+		}
+	}
+
+	return &Collection{coll, db, db.Database.Collection(coll)}
+}
+
+func (c *Collection) Name() string {
+	return c.name
+}
+
+func (c *Collection) IsBroken() bool {
+	return c.Collection == nil
+}
+
+func (c *Collection) Database() *Database {
+	return c.db
+}
+
 func NewCache(config configuration.MongoDB) *Cache {
 	client := mongoDBClient(config)
 
@@ -37,7 +84,8 @@ func mongoDBClient(config configuration.MongoDB) *mongo.Client {
 		return nil
 	}
 
-	err = cache.Ping(context.TODO(), nil)
+	timeout, _ := context.WithTimeout(context.TODO(), 1*time.Second)
+	err = cache.Ping(timeout, nil)
 	if err != nil {
 		logging.SugaredLogger.Errorf("pinging mongodb database at '%s' failed: %s", config.URI, err)
 		return nil
@@ -46,7 +94,7 @@ func mongoDBClient(config configuration.MongoDB) *mongo.Client {
 	return cache
 }
 
-func FetchSingle[T any](ctx context.Context, coll *mongo.Collection, f func() (*T, error)) (*T, error) {
+func FetchSingle[T any](ctx context.Context, coll *Collection, f func() (*T, error)) (*T, error) {
 
 	cachedObject := checkCacheSingle[T](coll)
 	if cachedObject != nil {
@@ -66,7 +114,7 @@ func FetchSingle[T any](ctx context.Context, coll *mongo.Collection, f func() (*
 	return object, nil
 }
 
-func FetchMultiple[T any](ctx context.Context, coll *mongo.Collection, f func() ([]T, error)) ([]T, error) {
+func FetchMultiple[T any](ctx context.Context, coll *Collection, f func() ([]T, error)) ([]T, error) {
 
 	cachedObjects := checkCache[T](coll)
 	if cachedObjects != nil {
@@ -86,7 +134,7 @@ func FetchMultiple[T any](ctx context.Context, coll *mongo.Collection, f func() 
 	return objects, nil
 }
 
-func FetchPagination[T any](ctx context.Context, coll *mongo.Collection, f func() ([]T, *github.Response, error), opts *github.ListOptions) ([]T, error) {
+func FetchPagination[T any](ctx context.Context, coll *Collection, f func() ([]T, *github.Response, error), opts *github.ListOptions) ([]T, error) {
 
 	cachedObjects := checkCache[T](coll)
 	if cachedObjects != nil {
@@ -106,7 +154,7 @@ func FetchPagination[T any](ctx context.Context, coll *mongo.Collection, f func(
 	return objects, nil
 }
 
-func FetchBatchQuery[T any](ctx context.Context, coll *mongo.Collection, f func() (map[string]T, error)) ([]T, error) {
+func FetchBatchQuery[T any](ctx context.Context, coll *Collection, f func() (map[string]T, error)) ([]T, error) {
 
 	cached := checkCache[T](coll)
 
@@ -128,7 +176,7 @@ func FetchBatchQuery[T any](ctx context.Context, coll *mongo.Collection, f func(
 	return values, nil
 }
 
-func FetchAsync[T any](ctx context.Context, coll *mongo.Collection, f func() ([]T, *github.Response, error)) ([]T, error) {
+func FetchAsync[T any](ctx context.Context, coll *Collection, f func() ([]T, *github.Response, error)) ([]T, error) {
 
 	cachedObjects := checkCache[T](coll)
 	if cachedObjects != nil {
@@ -188,7 +236,7 @@ func handlePagination[T any](f func() ([]T, *github.Response, error), opts *gith
 	return objects, nil
 }
 
-func checkCacheSingle[T any](collection *mongo.Collection) *T {
+func checkCacheSingle[T any](collection *Collection) *T {
 	cachedObjects := checkCache[T](collection)
 	if len(cachedObjects) == 1 {
 		return &cachedObjects[0]
@@ -196,7 +244,11 @@ func checkCacheSingle[T any](collection *mongo.Collection) *T {
 	return nil
 }
 
-func checkCache[T any](collection *mongo.Collection) []T {
+func checkCache[T any](collection *Collection) []T {
+
+	if collection.IsBroken() {
+		return nil
+	}
 
 	if !emptyCollectionExists(context.TODO(), collection) {
 		return nil
@@ -223,7 +275,7 @@ func checkCache[T any](collection *mongo.Collection) []T {
 	return result
 }
 
-func emptyCollectionExists(ctx context.Context, coll *mongo.Collection) bool {
+func emptyCollectionExists(ctx context.Context, coll *Collection) bool {
 	names, err := coll.Database().ListCollectionNames(ctx, bson.D{}, nil)
 	if err != nil {
 		logging.SugaredLogger.Errorf("listing collection names of database '%s': %s", coll.Database().Name(), err)
@@ -237,11 +289,15 @@ func emptyCollectionExists(ctx context.Context, coll *mongo.Collection) bool {
 	return false
 }
 
-func updateCacheSingle[T any](ctx context.Context, content T, collection *mongo.Collection) {
+func updateCacheSingle[T any](ctx context.Context, content T, collection *Collection) {
 	updateCache[T](ctx, []T{content}, collection)
 }
 
-func updateCache[T any](ctx context.Context, content []T, collection *mongo.Collection) {
+func updateCache[T any](ctx context.Context, content []T, collection *Collection) {
+
+	if collection.IsBroken() {
+		return
+	}
 
 	persistCollection(ctx, collection, len(content))
 
@@ -259,7 +315,7 @@ func updateCache[T any](ctx context.Context, content []T, collection *mongo.Coll
 	}
 }
 
-func persistCollection(ctx context.Context, collection *mongo.Collection, length int) {
+func persistCollection(ctx context.Context, collection *Collection, length int) {
 	if length == 0 {
 		_, _ = collection.InsertOne(ctx, bson.D{})
 		_, _ = collection.DeleteOne(ctx, bson.D{})
