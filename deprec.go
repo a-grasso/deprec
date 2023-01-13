@@ -53,7 +53,7 @@ func main() {
 }
 
 func linear(config *configuration.Configuration, dependencies []*model.Dependency) {
-	var agentResults []model.AgentResult
+	var agentResults []agent.Result
 	totalDependencies := len(dependencies)
 	for i, dep := range dependencies {
 
@@ -71,12 +71,12 @@ func linear(config *configuration.Configuration, dependencies []*model.Dependenc
 	logging.Logger.Info("...DepRec run done")
 	for _, ar := range agentResults {
 		logging.SugaredLogger.Infof("%s --->> %s", ar.Dependency.Name, ar.TopRecommendation())
-		logging.SugaredLogger.Infof("{\n%s\n}", ar.CombConResult.ToStringDeep())
+		logging.SugaredLogger.Infof("{\n%s\n}", ar.Core.ToStringDeep())
 	}
 }
 
 func parallel(deps []*model.Dependency, input input, config *configuration.Configuration) {
-	agentResults := make(chan *model.AgentResult, len(deps))
+	agentResults := make(chan *agent.Result, len(deps))
 	dependencies := make(chan *model.Dependency, len(deps))
 
 	var wg sync.WaitGroup
@@ -104,6 +104,8 @@ func parallel(deps []*model.Dependency, input input, config *configuration.Confi
 
 	wg.Wait()
 
+	close(agentResults)
+
 	logging.Logger.Info("...DepRec run done")
 
 	for ar := range agentResults {
@@ -111,7 +113,7 @@ func parallel(deps []*model.Dependency, input input, config *configuration.Confi
 	}
 }
 
-func worker(configuration *configuration.Configuration, dependencies <-chan *model.Dependency, results chan<- *model.AgentResult, worker int) {
+func worker(configuration *configuration.Configuration, dependencies <-chan *model.Dependency, results chan<- *agent.Result, worker int) {
 
 	for dep := range dependencies {
 		logging.SugaredLogger.Infof("worker %d running agent for dependency '%s:%s' %d/%d", worker, dep.Name, dep.Version, 0, 0)
