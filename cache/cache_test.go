@@ -9,7 +9,12 @@ import (
 func TestCheckCacheSingle(t *testing.T) {
 	t.Cleanup(CleanDatabase)
 
-	collection := cache.Database("test-collection").Collection("test-check-cache-single")
+	db := cache.Database("test-collection")
+	collection := &Collection{
+		name:       "test-check-cache-single",
+		db:         &Database{name: "TestD", Database: db},
+		Collection: db.Collection("test-check-cache-single"),
+	}
 
 	type TestObject struct {
 		One   string
@@ -36,7 +41,12 @@ func TestCheckCacheSingle(t *testing.T) {
 func TestCheckCacheSingleMultiple(t *testing.T) {
 	t.Cleanup(CleanDatabase)
 
-	collection := cache.Database("test-collection").Collection("test-check-cache-single-multiple")
+	db := cache.Database("test-collection")
+	collection := &Collection{
+		name:       "test-check-cache-single-multiple",
+		db:         &Database{name: "TestD", Database: db},
+		Collection: db.Collection("test-check-cache-single-multiple"),
+	}
 
 	type TestObject struct {
 		One   string
@@ -69,7 +79,12 @@ func TestCheckCacheSingleMultiple(t *testing.T) {
 func TestCheckCacheSingleNil(t *testing.T) {
 	t.Cleanup(CleanDatabase)
 
-	collection := cache.Database("test-collection").Collection("test-check-cache-single-nil")
+	db := cache.Database("test-collection")
+	collection := &Collection{
+		name:       "test-check-cache-single-nil",
+		db:         &Database{name: "TestD", Database: db},
+		Collection: db.Collection("test-check-cache-single-nil"),
+	}
 
 	type TestObject struct {
 		One   string
@@ -98,7 +113,12 @@ func TestCheckCacheSingleNil(t *testing.T) {
 func TestCheckCache(t *testing.T) {
 	t.Cleanup(CleanDatabase)
 
-	collection := cache.Database("test-collection").Collection("test-check-cache")
+	db := cache.Database("test-collection")
+	collection := &Collection{
+		name:       "test-check-cache",
+		db:         &Database{name: "TestD", Database: db},
+		Collection: db.Collection("test-check-cache"),
+	}
 
 	type TestObject struct {
 		One   string
@@ -131,7 +151,12 @@ func TestCheckCache(t *testing.T) {
 func TestUpdateCache(t *testing.T) {
 	t.Cleanup(CleanDatabase)
 
-	collection := cache.Database("test-collection").Collection("test-update-cache")
+	db := cache.Database("test-collection")
+	collection := &Collection{
+		name:       "test-update-cache",
+		db:         &Database{name: "TestD", Database: db},
+		Collection: db.Collection("test-update-cache"),
+	}
 
 	precheck := checkCache[any](collection)
 	assert.Empty(t, precheck)
@@ -163,7 +188,12 @@ func TestUpdateCache(t *testing.T) {
 func TestUpdateCacheSingleError(t *testing.T) {
 	t.Cleanup(CleanDatabase)
 
-	collection := cache.Database("test-collection").Collection("test-update-cache-error")
+	db := cache.Database("test-collection")
+	collection := &Collection{
+		name:       "test-update-cache-error",
+		db:         &Database{name: "TestD", Database: db},
+		Collection: db.Collection("test-update-cache-error"),
+	}
 
 	precheck := checkCache[any](collection)
 	assert.Empty(t, precheck)
@@ -183,7 +213,12 @@ func TestUpdateCacheSingleError(t *testing.T) {
 func TestUpdateCacheErrorFirst(t *testing.T) {
 	t.Cleanup(CleanDatabase)
 
-	collection := cache.Database("test-collection").Collection("test-update-cache-error-first")
+	db := cache.Database("test-collection")
+	collection := &Collection{
+		name:       "test-update-cache-error-first",
+		db:         &Database{name: "TestD", Database: db},
+		Collection: db.Collection("test-update-cache-error-first"),
+	}
 
 	precheck := checkCache[any](collection)
 	assert.Empty(t, precheck)
@@ -203,7 +238,12 @@ func TestUpdateCacheErrorFirst(t *testing.T) {
 func TestUpdateCacheErrorInbetween(t *testing.T) {
 	t.Cleanup(CleanDatabase)
 
-	collection := cache.Database("test-collection").Collection("test-update-cache-error-inbetween")
+	db := cache.Database("test-collection")
+	collection := &Collection{
+		name:       "test-update-cache-error-inbetween",
+		db:         &Database{name: "TestD", Database: db},
+		Collection: db.Collection("test-update-cache-error-inbetween"),
+	}
 
 	precheck := checkCache[any](collection)
 	assert.Empty(t, precheck)
@@ -231,7 +271,12 @@ func TestUpdateCacheErrorInbetween(t *testing.T) {
 func TestUpdateCacheSingle(t *testing.T) {
 	t.Cleanup(CleanDatabase)
 
-	collection := cache.Database("test-collection").Collection("test-update-cache-single")
+	db := cache.Database("test-collection")
+	collection := &Collection{
+		name:       "test-update-cache-single",
+		db:         &Database{name: "TestD", Database: db},
+		Collection: db.Collection("test-update-cache-single"),
+	}
 
 	precheck := checkCache[any](collection)
 	assert.Empty(t, precheck)
@@ -258,7 +303,12 @@ func TestUpdateCacheSingle(t *testing.T) {
 func TestPersistCollectionEmpty(t *testing.T) {
 	t.Cleanup(CleanDatabase)
 
-	collection := cache.Database("test-collection").Collection("test-persist-collection-empty")
+	db := cache.Database("test-collection")
+	collection := &Collection{
+		name:       "test-persist-collection-empty",
+		db:         &Database{name: "TestD", Database: db},
+		Collection: db.Collection("test-persist-collection-empty"),
+	}
 
 	assert.False(t, emptyCollectionExists(context.TODO(), collection))
 
@@ -273,7 +323,12 @@ func TestPersistCollectionEmpty(t *testing.T) {
 func TestPersistCollectionNotEmpty(t *testing.T) {
 	t.Cleanup(CleanDatabase)
 
-	collection := cache.Database("test-collection").Collection("test-persist-collection-not-empty")
+	db := cache.Database("test-collection")
+	collection := &Collection{
+		name:       "test-persist-collection-not-empty",
+		db:         &Database{name: "TestD", Database: db},
+		Collection: db.Collection("test-persist-collection-not-empty"),
+	}
 
 	assert.False(t, emptyCollectionExists(context.TODO(), collection))
 
@@ -288,7 +343,12 @@ func TestPersistCollectionNotEmpty(t *testing.T) {
 func TestEmptyCollectionExistsFalse(t *testing.T) {
 	t.Cleanup(CleanDatabase)
 
-	collection := cache.Database("test-collection").Collection("test-empty-collection-exists-false")
+	db := cache.Database("test-collection")
+	collection := &Collection{
+		name:       "test-empty-collection-exists-false",
+		db:         &Database{name: "TestD", Database: db},
+		Collection: db.Collection("test-empty-collection-exists-false"),
+	}
 
 	assert.False(t, emptyCollectionExists(context.TODO(), collection))
 }
@@ -296,7 +356,12 @@ func TestEmptyCollectionExistsFalse(t *testing.T) {
 func TestEmptyCollectionExistsTrue(t *testing.T) {
 	t.Cleanup(CleanDatabase)
 
-	collection := cache.Database("test-collection").Collection("test-empty-collection-exists-true")
+	db := cache.Database("test-collection")
+	collection := &Collection{
+		name:       "test-empty-collection-exists-true",
+		db:         &Database{name: "TestD", Database: db},
+		Collection: db.Collection("test-empty-collection-exists-true"),
+	}
 
 	persistCollection(context.TODO(), collection, 0)
 
