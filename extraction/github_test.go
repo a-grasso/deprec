@@ -6,13 +6,13 @@ import (
 	"testing"
 )
 
-var testDependency = &model.Dependency{
+var testDependency = model.Dependency{
 	Name:               "test-dependency",
 	Version:            "stable",
 	ExternalReferences: map[model.ExternalReference]string{"vcs": "https://github.com//.git"},
 }
 
-var ghe = NewGitHubExtractor(testDependency, config)
+var ghe = NewGitHubExtractor(testDependency, config.GitHub, cacheClient)
 
 func TestExtractOrganizationNil(t *testing.T) {
 	t.Cleanup(CleanDatabase)

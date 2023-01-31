@@ -2,6 +2,7 @@ package extraction
 
 import (
 	"context"
+	"github.com/a-grasso/deprec/cache"
 	"github.com/a-grasso/deprec/configuration"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson"
@@ -16,6 +17,10 @@ var mongoCache, _ = mongo.Connect(context.TODO(), options.Client().ApplyURI(conf
 	Username: config.MongoDB.Username,
 	Password: config.MongoDB.Password,
 }))
+
+var cacheClient = &cache.Cache{
+	Client: mongoCache,
+}
 
 func TestMain(m *testing.M) {
 	CleanDatabase()
