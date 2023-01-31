@@ -30,7 +30,7 @@ true,https://github.com/reactjs/reactjs.org,heavy weight test case,NC,react,,,,
 ,http://github.com/FasterXML/jackson-annotations,"active, very strong activity since beginning, releases good, has only one main contributor",NC,jackson-annotations,,,,
 ,https://github.com/eclipse-ee4j/angus-mail,"successor of mail-api, active but release seems ""final"", rather caution as unsure",NIA,angus-mail,,,,
 ,https://github.com/swagger-api/swagger-core,"activity good, good amount of contributors, core team ok, ",NC,swagger-core,,unlucky that second percentile commit activity that high,,
-,https://github.com/JodaOrg/joda-time,"steady activity through and through, good processing, org backup present, popular",NC,joda-time,2.10.1,"",9ac3dbf89dbf2ee385185dd0cd3064fe789efee0,pkg:maven/joda-time/joda-time@2.10.1?type=jar
+,https://github.com/JodaOrg/joda-time,"steady activity through and through, good processing, org backup present, popular",NC,joda-time,2.10.1,,9ac3dbf89dbf2ee385185dd0cd3064fe789efee0,pkg:maven/joda-time/joda-time@2.10.1?type=jar
 ,https://github.com/hibernate/hibernate-validator,"latest release is titled final - seems naming convention tho, active, support present, popular",NIA,hibernate-validator,5.4.3.Final,unlucky that second percentile commit activity that high,7c3d91629e81937b33dffd5b170956ef9c76af97,pkg:maven/org.hibernate/hibernate-validator@5.4.3.Final?type=jar
 ,https://github.com/jboss-logging/jboss-logging,"rather small, release a bit ago, activity lacking little bit, probably does not need much attention",NIA,jboss-logging,3.3.0.Final,low NIA,3616bb87707910296e2c195dc016287080bba5af,pkg:maven/org.jboss.logging/jboss-logging@3.3.0.Final?type=jar
 ,https://github.com/dropwizard/metrics/,"very popular, strong activity, strong processing, part of bigger",NC,metrics-logback,4.0.5,,306d0d06b0940c6df49031e8dd750e635e4b170f,pkg:maven/io.dropwizard.metrics/metrics-logback@4.0.5?type=jar
@@ -42,13 +42,13 @@ true,https://github.com/reactjs/reactjs.org,heavy weight test case,NC,react,,,,
 ,https://github.com/argparse4j/argparse4j,"release long ago, activity long ago, not too popular",DM,argparse4j,0.8.1,,2c8241f84acf6c924bd75be0dbd68e8d74fbcd70,pkg:maven/net.sourceforge.argparse4j/argparse4j@0.8.1?type=jar
 ,https://github.com/mockito/mockito,"strong activity, strong popularity, strong processing, good core team",NC,mockito-core,2.24.0,,969a7bcb6f16e076904336ebc7ca171d412cc1f9,pkg:maven/org.mockito/mockito-core@2.24.0?type=jar
 ,https://github.com/easymock/objenesis,"ok popularity, release little bit ago, recent activity good, processing decent",NIA,objenesis,2.6,,639033469776fd37c08358c6b92a4761feb2af4b,pkg:maven/org.objenesis/objenesis@2.6?type=jar
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
+,https://github.com/Shopify/dashing,archived,DM,smashing,,,,
+,https://github.com/Smashing/smashing,"active, very good activity and release, good contributors, kinda popular",NC,dashing,,,,
+,https://github.com/carhartl/jquery-cookie,archived,DM,jquery-cookie,,,,
+,https://github.com/js-cookie/js-cookie,"release long ago, last activity kinda long ago, very popular",NIA,js-cookie,,,,
+,https://github.com/ryanb/nifty-generators,archived + readme,DM,nifty,,,,
+,https://github.com/atom/atom,archived,DM,atom,,,,
+,https://github.com/ReactiveX/RxJava,"active, good contributors, very strong popular",NC,rxjava,,unlucky that second percentile commit activity that high,,
 ,,,,,,,,
 ,,,,,,,,
 ,,,,,,,,
