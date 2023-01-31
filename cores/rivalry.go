@@ -1,7 +1,7 @@
 package cores
 
 import (
-	"deprec/model"
+	"github.com/a-grasso/deprec/model"
 )
 
 func Rivalry(m *model.DataModel) model.CoreResult {

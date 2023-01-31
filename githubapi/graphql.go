@@ -2,10 +2,10 @@ package githubapi
 
 import (
 	"context"
-	"deprec/cache"
-	"deprec/model"
 	"errors"
 	"fmt"
+	"github.com/a-grasso/deprec/cache"
+	"github.com/a-grasso/deprec/model"
 	"github.com/google/go-github/v48/github"
 	"github.com/thoas/go-funk"
 	"reflect"

@@ -1,7 +1,7 @@
 package extraction
 
 import (
-	"deprec/model"
+	"github.com/a-grasso/deprec/model"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

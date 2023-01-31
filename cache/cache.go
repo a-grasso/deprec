@@ -2,8 +2,8 @@ package cache
 
 import (
 	"context"
-	"deprec/configuration"
-	"deprec/logging"
+	"github.com/a-grasso/deprec/configuration"
+	"github.com/a-grasso/deprec/logging"
 	"github.com/google/go-github/v48/github"
 	"github.com/thoas/go-funk"
 	"go.mongodb.org/mongo-driver/bson"

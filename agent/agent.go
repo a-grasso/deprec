@@ -1,12 +1,12 @@
 package agent
 
 import (
-	"deprec/cache"
-	"deprec/configuration"
-	"deprec/cores"
-	"deprec/extraction"
-	"deprec/model"
 	"fmt"
+	"github.com/a-grasso/deprec/cache"
+	"github.com/a-grasso/deprec/configuration"
+	"github.com/a-grasso/deprec/cores"
+	"github.com/a-grasso/deprec/extraction"
+	"github.com/a-grasso/deprec/model"
 	"github.com/thoas/go-funk"
 	"strings"
 )

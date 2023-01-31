@@ -1,8 +1,8 @@
 package ossindexapi
 
 import (
-	"deprec/configuration"
-	"deprec/logging"
+	"github.com/a-grasso/deprec/configuration"
+	"github.com/a-grasso/deprec/logging"
 	"github.com/nscuro/ossindex-client"
 )
 

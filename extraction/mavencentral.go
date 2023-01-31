@@ -1,11 +1,11 @@
 package extraction
 
 import (
-	"deprec/cache"
-	"deprec/logging"
-	"deprec/mavencentralapi"
-	"deprec/model"
 	"fmt"
+	"github.com/a-grasso/deprec/cache"
+	"github.com/a-grasso/deprec/logging"
+	"github.com/a-grasso/deprec/mavencentralapi"
+	"github.com/a-grasso/deprec/model"
 	"github.com/thoas/go-funk"
 	"github.com/vifraa/gopom"
 	"time"

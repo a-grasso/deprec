@@ -2,7 +2,7 @@ package ossindexapi
 
 import (
 	"context"
-	"deprec/cache"
+	"github.com/a-grasso/deprec/cache"
 	"github.com/nscuro/ossindex-client"
 )
 

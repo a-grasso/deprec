@@ -2,8 +2,8 @@ package githubapi
 
 import (
 	"context"
-	"deprec/cache"
 	"fmt"
+	"github.com/a-grasso/deprec/cache"
 	"github.com/google/go-github/v48/github"
 	"github.com/thoas/go-funk"
 )

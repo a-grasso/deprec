@@ -2,11 +2,11 @@ package extraction
 
 import (
 	"context"
-	"deprec/cache"
-	"deprec/configuration"
-	"deprec/githubapi"
-	"deprec/logging"
-	"deprec/model"
+	"github.com/a-grasso/deprec/cache"
+	"github.com/a-grasso/deprec/configuration"
+	"github.com/a-grasso/deprec/githubapi"
+	"github.com/a-grasso/deprec/logging"
+	"github.com/a-grasso/deprec/model"
 	"github.com/google/go-github/v48/github"
 	"github.com/thoas/go-funk"
 	"strings"

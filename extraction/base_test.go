@@ -2,7 +2,7 @@ package extraction
 
 import (
 	"context"
-	"deprec/configuration"
+	"github.com/a-grasso/deprec/configuration"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"

@@ -2,8 +2,8 @@ package mavencentralapi
 
 import (
 	"context"
-	"deprec/cache"
 	"fmt"
+	"github.com/a-grasso/deprec/cache"
 	"github.com/vifraa/gopom"
 )
 

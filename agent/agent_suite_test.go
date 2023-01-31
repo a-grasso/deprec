@@ -1,11 +1,11 @@
 package agent_test
 
 import (
-	"deprec/agent"
-	"deprec/configuration"
-	"deprec/logging"
-	"deprec/model"
 	"fmt"
+	"github.com/a-grasso/deprec/agent"
+	"github.com/a-grasso/deprec/configuration"
+	"github.com/a-grasso/deprec/logging"
+	"github.com/a-grasso/deprec/model"
 	"github.com/gocarina/gocsv"
 	"os"
 	"testing"

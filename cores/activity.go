@@ -1,9 +1,9 @@
 package cores
 
 import (
-	"deprec/configuration"
-	"deprec/model"
-	"deprec/statistics"
+	"github.com/a-grasso/deprec/configuration"
+	"github.com/a-grasso/deprec/model"
+	"github.com/a-grasso/deprec/statistics"
 	"github.com/thoas/go-funk"
 )
 

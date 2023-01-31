@@ -1,4 +1,4 @@
-module deprec
+module github.com/a-grasso/deprec
 
 go 1.19
 

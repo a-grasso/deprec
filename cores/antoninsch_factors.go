@@ -1,8 +1,8 @@
 package cores
 
 import (
-	"deprec/configuration"
-	"deprec/model"
+	"github.com/a-grasso/deprec/configuration"
+	"github.com/a-grasso/deprec/model"
 	"strings"
 )
 

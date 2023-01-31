@@ -2,14 +2,14 @@ package main
 
 import (
 	"bytes"
-	"deprec/agent"
-	"deprec/configuration"
-	"deprec/logging"
-	"deprec/model"
 	"errors"
 	"flag"
 	"fmt"
 	cdx "github.com/CycloneDX/cyclonedx-go"
+	"github.com/a-grasso/deprec/agent"
+	"github.com/a-grasso/deprec/configuration"
+	"github.com/a-grasso/deprec/logging"
+	"github.com/a-grasso/deprec/model"
 	"os"
 	"strconv"
 	"strings"

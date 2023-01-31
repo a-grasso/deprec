@@ -1,11 +1,11 @@
 package main
 
 import (
-	"deprec/model"
-	"deprec/statistics"
 	"errors"
 	"fmt"
 	cdx "github.com/CycloneDX/cyclonedx-go"
+	"github.com/a-grasso/deprec/model"
+	"github.com/a-grasso/deprec/statistics"
 	"github.com/google/go-github/v48/github"
 	"github.com/thoas/go-funk"
 	"io"
