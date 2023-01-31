@@ -1,58 +1,69 @@
-package main
+package deprec
 
 import (
-	"bytes"
-	"errors"
-	"flag"
-	"fmt"
+	"github.com/CycloneDX/cyclonedx-go"
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	"github.com/a-grasso/deprec/agent"
 	"github.com/a-grasso/deprec/configuration"
 	"github.com/a-grasso/deprec/logging"
 	"github.com/a-grasso/deprec/model"
-	"os"
-	"strconv"
-	"strings"
 	"sync"
 )
 
-type Input struct {
-	sbomPath   string
-	configPath string
-	numWorkers int
+type Result struct {
+	Results map[string]model.CoreResult
 }
 
-func main() {
+type Client struct {
+	Configuration *configuration.Configuration
+}
+
+func NewClient(config *configuration.Configuration) *Client {
+	return &Client{
+		Configuration: config,
+	}
+}
+
+type RunConfig struct {
+	Mode       RunMode
+	NumWorkers int
+}
+
+type RunMode string
+
+const (
+	Linear   RunMode = "linear"
+	Parallel RunMode = "parallel"
+)
+
+func (c *Client) Run(sbom *cyclonedx.BOM, runConfig RunConfig) *Result {
 	logging.Logger.Info("DepRec run started...")
 
-	flag.Usage = func() {
-		fmt.Printf("Usage: %s <sbom> <config> <workers>\nOptions:\n none", os.Args[0])
+	dependencies := parseSBOM(sbom)
+
+	var agentResults []agent.Result
+	if runConfig.Mode == Linear {
+		agentResults = linear(*c.Configuration, dependencies)
+	} else if runConfig.Mode == Parallel {
+		agentResults = parallel(dependencies, runConfig.NumWorkers, *c.Configuration)
 	}
 
-	input, err := getInput()
+	return convertAgentResults(agentResults)
 
-	if err != nil {
-		exitGracefully(err)
-	}
-
-	config, err := configuration.Load(input.configPath)
-	if err != nil {
-		exitGracefully(err)
-	}
-
-	cdxBom, err := decodeSBOM(input.sbomPath)
-	if err != nil {
-		exitGracefully(err)
-	}
-
-	deps := parseSBOM(cdxBom)
-
-	linear(*config, deps)
-
-	parallel(deps, input.numWorkers, *config)
 }
 
-func linear(config configuration.Configuration, dependencies []model.Dependency) {
+func convertAgentResults(agentResults []agent.Result) *Result {
+
+	resultMap := make(map[string]model.CoreResult, 0)
+
+	for _, agentResult := range agentResults {
+		resultMap[agentResult.Dependency.Name] = agentResult.Core
+	}
+
+	return &Result{Results: resultMap}
+}
+
+func linear(config configuration.Configuration, dependencies []model.Dependency) []agent.Result {
 	var agentResults []agent.Result
 	totalDependencies := len(dependencies)
 	for i, dep := range dependencies {
@@ -73,9 +84,11 @@ func linear(config configuration.Configuration, dependencies []model.Dependency)
 		logging.SugaredLogger.Infof("%s --->> %s", ar.Dependency.Name, ar.TopRecommendation())
 		logging.SugaredLogger.Infof("{\n%s\n}", ar.Core.ToStringDeep())
 	}
+
+	return agentResults
 }
 
-func parallel(deps []model.Dependency, numWorkers int, config configuration.Configuration) {
+func parallel(deps []model.Dependency, numWorkers int, config configuration.Configuration) []agent.Result {
 	agentResults := make(chan agent.Result, len(deps))
 	dependencies := make(chan model.Dependency, len(deps))
 
@@ -108,9 +121,13 @@ func parallel(deps []model.Dependency, numWorkers int, config configuration.Conf
 
 	logging.Logger.Info("...DepRec run done")
 
+	var result []agent.Result
 	for ar := range agentResults {
+		result = append(result, ar)
 		logging.SugaredLogger.Infof("%s --->> %s", ar.Dependency.Name, ar.TopRecommendation())
 	}
+
+	return result
 }
 
 func worker(configuration configuration.Configuration, dependencies <-chan model.Dependency, results chan<- agent.Result, worker int) {
@@ -118,74 +135,9 @@ func worker(configuration configuration.Configuration, dependencies <-chan model
 	for dep := range dependencies {
 		logging.SugaredLogger.Infof("worker %d running agent for dependency '%s:%s' %d/%d", worker, dep.Name, dep.Version, 0, 0)
 
-		agent := agent.NewAgent(dep, configuration)
-		results <- agent.Run()
+		a := agent.NewAgent(dep, configuration)
+		results <- a.Run()
 	}
-}
-
-func getInput() (*Input, error) {
-	if len(os.Args) < 3 {
-		return &Input{}, errors.New("cli argument error: SBOM file and config path arguments required")
-	}
-
-	flag.Parse()
-
-	sbom := flag.Arg(0)
-	config := flag.Arg(1)
-	workers, err := strconv.Atoi(flag.Arg(2))
-	if err != nil {
-		workers = 5
-	}
-
-	return &Input{sbom, config, workers}, nil
-}
-
-func exitGracefully(err error) {
-	logging.SugaredLogger.Fatalf("exited gracefully : %v\n", err)
-}
-
-func decodeSBOM(path string) (*cdx.BOM, error) {
-
-	json, err := os.ReadFile(path)
-	if err != nil {
-		return nil, fmt.Errorf("could not read sbom file '%s': %s", path, err)
-	}
-	reader := bytes.NewReader(json)
-
-	bom := new(cdx.BOM)
-	decoder := cdx.NewBOMDecoder(reader, cdx.BOMFileFormatJSON)
-	if err = decoder.Decode(bom); err != nil {
-		return nil, fmt.Errorf("could not decode SBOM: %s", err)
-	}
-
-	calcSBOMStats(bom)
-
-	return bom, nil
-}
-
-func calcSBOMStats(bom *cdx.BOM) {
-	noVCS := 0
-	vcsGitHub := 0
-	for _, component := range *bom.Components {
-		if component.ExternalReferences == nil {
-			noVCS += 1
-			continue
-		}
-
-		externalReference := parseExternalReference(component)
-		vcs, exists := externalReference["vcs"]
-
-		if !exists {
-			noVCS += 1
-			continue
-		}
-
-		if strings.Contains(vcs, "github.com") {
-			vcsGitHub += 1
-		}
-	}
-
-	logging.SugaredLogger.Infof("%d/%d/%d github/vcs/total", vcsGitHub, len(*bom.Components)-noVCS, len(*bom.Components))
 }
 
 func parseSBOM(sbom *cdx.BOM) []model.Dependency {
