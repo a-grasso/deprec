@@ -81,7 +81,7 @@ func linear(config configuration.Configuration, dependencies []model.Dependency)
 
 	logging.Logger.Info("...DepRec run done")
 	for _, ar := range agentResults {
-		logging.SugaredLogger.Infof("%s --->> %s", ar.Dependency.Name, ar.TopRecommendation())
+		logging.SugaredLogger.Infof("%s:%s --->> %s", ar.Dependency.Name, ar.Dependency.Version, ar.TopRecommendation())
 		logging.SugaredLogger.Infof("{\n%s\n}", ar.Core.ToStringDeep())
 	}
 
@@ -124,7 +124,7 @@ func parallel(deps []model.Dependency, numWorkers int, config configuration.Conf
 	var result []agent.Result
 	for ar := range agentResults {
 		result = append(result, ar)
-		logging.SugaredLogger.Infof("%s --->> %s", ar.Dependency.Name, ar.TopRecommendation())
+		logging.SugaredLogger.Infof("%s:%s --->> %s", ar.Dependency.Name, ar.Dependency.Version, ar.TopRecommendation())
 	}
 
 	return result
