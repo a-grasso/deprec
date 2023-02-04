@@ -11,7 +11,7 @@ import (
 )
 
 type Result struct {
-	Results map[string]model.CoreResult
+	Results map[string]agent.Result
 }
 
 type Client struct {
@@ -54,10 +54,10 @@ func (c *Client) Run(sbom *cyclonedx.BOM, runConfig RunConfig) *Result {
 
 func convertAgentResults(agentResults []agent.Result) *Result {
 
-	resultMap := make(map[string]model.CoreResult, 0)
+	resultMap := make(map[string]agent.Result, 0)
 
 	for _, agentResult := range agentResults {
-		resultMap[agentResult.Dependency.Name] = agentResult.Core
+		resultMap[agentResult.Dependency.Name] = agentResult
 	}
 
 	return &Result{Results: resultMap}
@@ -179,7 +179,7 @@ func parseHashes(component cdx.Component) map[model.HashAlgorithm]string {
 	hashes := component.Hashes
 
 	if hashes == nil {
-		logging.SugaredLogger.Infof("SBOM component '%s' has no external references", component.Name)
+		logging.SugaredLogger.Infof("SBOM component '%s' has no hashes", component.Name)
 		return nil
 	}
 
