@@ -37,7 +37,8 @@ const (
 )
 
 func (c *Client) Run(sbom *cyclonedx.BOM, runConfig RunConfig) *Result {
-	logging.Logger.Info("DepRec run started...")
+	logging.Logger.Info("deprec run started...")
+	defer logging.Logger.Info("...deprec run done")
 
 	dependencies := parseSBOM(sbom)
 
@@ -49,7 +50,6 @@ func (c *Client) Run(sbom *cyclonedx.BOM, runConfig RunConfig) *Result {
 	}
 
 	return convertAgentResults(agentResults)
-
 }
 
 func convertAgentResults(agentResults []agent.Result) *Result {
@@ -77,12 +77,6 @@ func linear(config configuration.Configuration, dependencies []model.Dependency)
 		a := agent.NewAgent(dep, config)
 		agentResult := a.Run()
 		agentResults = append(agentResults, agentResult)
-	}
-
-	logging.Logger.Info("...DepRec run done")
-	for _, ar := range agentResults {
-		logging.SugaredLogger.Infof("%s:%s --->> %s", ar.Dependency.Name, ar.Dependency.Version, ar.TopRecommendation())
-		logging.SugaredLogger.Infof("{\n%s\n}", ar.Core.ToStringDeep())
 	}
 
 	return agentResults
@@ -119,12 +113,9 @@ func parallel(deps []model.Dependency, numWorkers int, config configuration.Conf
 
 	close(agentResults)
 
-	logging.Logger.Info("...DepRec run done")
-
 	var result []agent.Result
 	for ar := range agentResults {
 		result = append(result, ar)
-		logging.SugaredLogger.Infof("%s:%s --->> %s", ar.Dependency.Name, ar.Dependency.Version, ar.TopRecommendation())
 	}
 
 	return result
