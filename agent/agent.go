@@ -20,13 +20,13 @@ type Result struct {
 
 func (ar *Result) UsedCores() string {
 
-	var usedCores []model.CoreResult
+	var usedCores []model.Core
 	for _, cores := range ar.Core.UnderlyingCores {
 
 		for _, core := range cores {
 			coreSum := core.DecisionMaking + core.Watchlist + core.NoImmediateAction + core.NoConcerns
 			if coreSum != 0 {
-				usedCores = append(usedCores, core)
+				usedCores = append(usedCores, core.Core)
 			}
 		}
 	}
