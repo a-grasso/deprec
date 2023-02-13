@@ -33,7 +33,7 @@ const (
 )
 
 type Core struct {
-	Core              CoreName
+	Name              CoreName
 	NoConcerns        float64
 	NoImmediateAction float64
 
@@ -44,7 +44,7 @@ type Core struct {
 }
 
 func NewCoreResult(core CoreName) *Core {
-	return &Core{Core: core, UnderlyingCores: make(map[float64][]Core)}
+	return &Core{Name: core, UnderlyingCores: make(map[float64][]Core)}
 }
 
 const Separator string = " <---> "
@@ -52,11 +52,11 @@ const Separator string = " <---> "
 func (cr *Core) ToString() string {
 
 	rec := cr.Softmax()
-	topCore := fmt.Sprintf("Top Core: %v", cr.Core)
+	topCore := fmt.Sprintf("Top Core: %v", cr.Name)
 	softmaxResult := fmt.Sprintf("%s -> %.3f | %s -> %.3f | %s -> %.3f | %s -> %.3f", NoConcerns, rec[NoConcerns], NoImmediateAction, rec[NoImmediateAction], Watchlist, rec[Watchlist], DecisionMaking, rec[DecisionMaking])
 	underlyingCores := fmt.Sprintf("Underlying Cores: %v", funk.Map(cr.UnderlyingCores, func(weight float64, cr []Core) (float64, []CoreName) {
 		ads := funk.Map(cr, func(cr Core) CoreName {
-			return cr.Core
+			return cr.Name
 		}).([]CoreName)
 		return weight, ads
 	}))
@@ -67,7 +67,7 @@ func (cr *Core) ToString() string {
 func (cr *Core) ToStringDeep() string {
 
 	rec := cr.Softmax()
-	topCore := fmt.Sprintf("Top Core: %v", cr.Core)
+	topCore := fmt.Sprintf("Top Core: %v", cr.Name)
 	softmaxResult := fmt.Sprintf("%s -> %.3f | %s -> %.3f | %s -> %.3f | %s -> %.3f", NoConcerns, rec[NoConcerns], NoImmediateAction, rec[NoImmediateAction], Watchlist, rec[Watchlist], DecisionMaking, rec[DecisionMaking])
 	underlyingCores := fmt.Sprintf("Underlying Cores: %v", funk.Map(cr.UnderlyingCores, func(weight float64, cr []Core) string {
 		return fmt.Sprintf("\n{ Weight: %f\n%v\n}\n", weight, funk.Map(cr, func(c Core) string { return fmt.Sprintf("\n{\n%v\n}\n", c.ToStringDeep()) }))
@@ -89,7 +89,7 @@ func (cr *Core) Normalized() Core {
 	}
 
 	return Core{
-		Core:              cr.Core,
+		Name:              cr.Name,
 		NoConcerns:        cr.NoConcerns / total,
 		NoImmediateAction: cr.NoImmediateAction / total,
 		Watchlist:         cr.Watchlist / total,
@@ -153,7 +153,7 @@ func (cr *Core) IntakeLimit(value, limit, weight float64) {
 func (cr *Core) Intake(value float64, weight float64) {
 
 	if value > 1 {
-		log.Printf("TOO MUCH TO INTAKE FOR %s", cr.Core)
+		log.Printf("TOO MUCH TO INTAKE FOR %s", cr.Name)
 		return
 	}
 
@@ -177,7 +177,7 @@ func (cr *Core) Intake(value float64, weight float64) {
 		return
 	}
 
-	log.Printf("TOO LITTLE TO INTAKE FOR %s", cr.Core)
+	log.Printf("TOO LITTLE TO INTAKE FOR %s", cr.Name)
 
 	return
 }

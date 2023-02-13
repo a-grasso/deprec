@@ -26,7 +26,7 @@ func (ar *Result) UsedCores() string {
 		for _, core := range cores {
 			coreSum := core.DecisionMaking + core.Watchlist + core.NoImmediateAction + core.NoConcerns
 			if coreSum != 0 {
-				usedCores = append(usedCores, core.Core)
+				usedCores = append(usedCores, core.Name)
 			}
 		}
 	}
