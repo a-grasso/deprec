@@ -7,7 +7,7 @@ import (
 	"sort"
 )
 
-func ContributorPrestige(m *model.DataModel) model.CoreResult {
+func ContributorPrestige(m *model.DataModel) model.Core {
 
 	cr := model.NewCoreResult(model.ContributorPrestige)
 

@@ -5,7 +5,7 @@ import (
 	"github.com/a-grasso/deprec/model"
 )
 
-func Network(m *model.DataModel, c configuration.Network) model.CoreResult {
+func Network(m *model.DataModel, c configuration.Network) model.Core {
 	cr := model.NewCoreResult(model.Network)
 
 	if m.Repository != nil {

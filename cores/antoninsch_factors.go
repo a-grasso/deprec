@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func DeityGiven(m *model.DataModel) model.CoreResult {
+func DeityGiven(m *model.DataModel) model.Core {
 
 	cr := model.NewCoreResult(model.DeityGiven)
 
@@ -41,7 +41,7 @@ func DeityGiven(m *model.DataModel) model.CoreResult {
 	return *cr
 }
 
-func Vulnerabilities(m *model.DataModel) model.CoreResult {
+func Vulnerabilities(m *model.DataModel) model.Core {
 
 	cr := model.NewCoreResult(model.Vulnerabilities)
 
@@ -58,7 +58,7 @@ func Vulnerabilities(m *model.DataModel) model.CoreResult {
 	return *cr
 }
 
-func Effort(m *model.DataModel, c configuration.CoresConfig) model.CoreResult {
+func Effort(m *model.DataModel, c configuration.CoresConfig) model.Core {
 
 	cr := model.NewCoreResult(model.Effort)
 
@@ -75,7 +75,7 @@ func Effort(m *model.DataModel, c configuration.CoresConfig) model.CoreResult {
 	return *cr
 }
 
-func Interconnectedness(m *model.DataModel, c configuration.CoresConfig) model.CoreResult {
+func Interconnectedness(m *model.DataModel, c configuration.CoresConfig) model.Core {
 
 	cr := model.NewCoreResult(model.Interconnectedness)
 
@@ -90,7 +90,7 @@ func Interconnectedness(m *model.DataModel, c configuration.CoresConfig) model.C
 	return *cr
 }
 
-func Community(m *model.DataModel, c configuration.CoresConfig) model.CoreResult {
+func Community(m *model.DataModel, c configuration.CoresConfig) model.Core {
 
 	cr := model.NewCoreResult(model.Community)
 
@@ -105,7 +105,7 @@ func Community(m *model.DataModel, c configuration.CoresConfig) model.CoreResult
 	return *cr
 }
 
-func Support(m *model.DataModel, c configuration.CoresConfig) model.CoreResult {
+func Support(m *model.DataModel, c configuration.CoresConfig) model.Core {
 
 	cr := model.NewCoreResult(model.Support)
 
@@ -119,7 +119,7 @@ func Support(m *model.DataModel, c configuration.CoresConfig) model.CoreResult {
 	return *cr
 }
 
-func Circumstances(m *model.DataModel) model.CoreResult {
+func Circumstances(m *model.DataModel) model.Core {
 
 	cr := model.NewCoreResult(model.Circumstances)
 

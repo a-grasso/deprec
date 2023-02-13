@@ -8,7 +8,7 @@ import (
 	"sort"
 )
 
-func Recentness(m *model.DataModel, c configuration.Recentness) model.CoreResult {
+func Recentness(m *model.DataModel, c configuration.Recentness) model.Core {
 
 	cr := model.NewCoreResult(model.Recentness)
 
@@ -19,7 +19,7 @@ func Recentness(m *model.DataModel, c configuration.Recentness) model.CoreResult
 	return *cr
 }
 
-func distributionPart(cr *model.CoreResult, c configuration.Recentness, distribution *model.Distribution) {
+func distributionPart(cr *model.Core, c configuration.Recentness, distribution *model.Distribution) {
 	if distribution == nil {
 		return
 	}
@@ -44,7 +44,7 @@ func distributionPart(cr *model.CoreResult, c configuration.Recentness, distribu
 	}
 }
 
-func repositoryPart(cr *model.CoreResult, c configuration.Recentness, repository *model.Repository) {
+func repositoryPart(cr *model.Core, c configuration.Recentness, repository *model.Repository) {
 	if repository == nil {
 		return
 	}

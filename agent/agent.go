@@ -13,7 +13,7 @@ import (
 
 type Result struct {
 	Dependency      model.Dependency
-	Core            model.CoreResult
+	Core            model.Core
 	Recommendations model.RecommendationDistribution
 	DataSources     []string
 }
@@ -121,7 +121,7 @@ func (agent *Agent) Extraction() []string {
 	return dataSources
 }
 
-func (agent *Agent) CombinationAndConclusion() model.CoreResult {
+func (agent *Agent) CombinationAndConclusion() model.Core {
 
 	cr := model.NewCoreResult(model.CombCon)
 

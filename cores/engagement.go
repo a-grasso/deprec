@@ -6,7 +6,7 @@ import (
 	"github.com/thoas/go-funk"
 )
 
-func Engagement(m *model.DataModel, c configuration.Engagement) model.CoreResult {
+func Engagement(m *model.DataModel, c configuration.Engagement) model.Core {
 
 	cr := model.NewCoreResult(model.Engagement)
 

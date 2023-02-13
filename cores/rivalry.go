@@ -4,7 +4,7 @@ import (
 	"github.com/a-grasso/deprec/model"
 )
 
-func Rivalry(m *model.DataModel) model.CoreResult {
+func Rivalry(m *model.DataModel) model.Core {
 	cr := model.NewCoreResult(model.Rivalry)
 
 	if m.Distribution == nil {

@@ -9,7 +9,7 @@ import (
 	"sort"
 )
 
-func Processing(m *model.DataModel, c configuration.Processing) model.CoreResult {
+func Processing(m *model.DataModel, c configuration.Processing) model.Core {
 
 	cr := model.NewCoreResult(model.Processing)
 

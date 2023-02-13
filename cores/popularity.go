@@ -5,7 +5,7 @@ import (
 	"github.com/a-grasso/deprec/model"
 )
 
-func Popularity(m *model.DataModel, c configuration.Popularity) model.CoreResult {
+func Popularity(m *model.DataModel, c configuration.Popularity) model.Core {
 	cr := model.NewCoreResult(model.Popularity)
 
 	if m.Repository != nil {

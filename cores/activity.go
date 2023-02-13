@@ -7,7 +7,7 @@ import (
 	"github.com/thoas/go-funk"
 )
 
-func Activity(m *model.DataModel, config configuration.Activity) model.CoreResult {
+func Activity(m *model.DataModel, config configuration.Activity) model.Core {
 
 	cr := model.NewCoreResult(model.Activity)
 
@@ -31,7 +31,7 @@ func Activity(m *model.DataModel, config configuration.Activity) model.CoreResul
 	return *cr
 }
 
-func handle[T statistics.HasTimestamp](count []T, weight float64, percentile float64, cr *model.CoreResult) {
+func handle[T statistics.HasTimestamp](count []T, weight float64, percentile float64, cr *model.Core) {
 
 	if len(count) == 0 {
 		return

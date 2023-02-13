@@ -32,7 +32,7 @@ const (
 	Engagement              CoreName = "Engagement"
 )
 
-type CoreResult struct {
+type Core struct {
 	Core              CoreName
 	NoConcerns        float64
 	NoImmediateAction float64
@@ -40,22 +40,22 @@ type CoreResult struct {
 	Watchlist      float64
 	DecisionMaking float64
 
-	UnderlyingCores map[float64][]CoreResult
+	UnderlyingCores map[float64][]Core
 }
 
-func NewCoreResult(core CoreName) *CoreResult {
-	return &CoreResult{Core: core, UnderlyingCores: make(map[float64][]CoreResult)}
+func NewCoreResult(core CoreName) *Core {
+	return &Core{Core: core, UnderlyingCores: make(map[float64][]Core)}
 }
 
 const Separator string = " <---> "
 
-func (cr *CoreResult) ToString() string {
+func (cr *Core) ToString() string {
 
 	rec := cr.Softmax()
 	topCore := fmt.Sprintf("Top Core: %v", cr.Core)
 	softmaxResult := fmt.Sprintf("%s -> %.3f | %s -> %.3f | %s -> %.3f | %s -> %.3f", NoConcerns, rec[NoConcerns], NoImmediateAction, rec[NoImmediateAction], Watchlist, rec[Watchlist], DecisionMaking, rec[DecisionMaking])
-	underlyingCores := fmt.Sprintf("Underlying Cores: %v", funk.Map(cr.UnderlyingCores, func(weight float64, cr []CoreResult) (float64, []CoreName) {
-		ads := funk.Map(cr, func(cr CoreResult) CoreName {
+	underlyingCores := fmt.Sprintf("Underlying Cores: %v", funk.Map(cr.UnderlyingCores, func(weight float64, cr []Core) (float64, []CoreName) {
+		ads := funk.Map(cr, func(cr Core) CoreName {
 			return cr.Core
 		}).([]CoreName)
 		return weight, ads
@@ -64,19 +64,19 @@ func (cr *CoreResult) ToString() string {
 	return topCore + Separator + softmaxResult + Separator + underlyingCores
 }
 
-func (cr *CoreResult) ToStringDeep() string {
+func (cr *Core) ToStringDeep() string {
 
 	rec := cr.Softmax()
 	topCore := fmt.Sprintf("Top Core: %v", cr.Core)
 	softmaxResult := fmt.Sprintf("%s -> %.3f | %s -> %.3f | %s -> %.3f | %s -> %.3f", NoConcerns, rec[NoConcerns], NoImmediateAction, rec[NoImmediateAction], Watchlist, rec[Watchlist], DecisionMaking, rec[DecisionMaking])
-	underlyingCores := fmt.Sprintf("Underlying Cores: %v", funk.Map(cr.UnderlyingCores, func(weight float64, cr []CoreResult) string {
-		return fmt.Sprintf("\n{ Weight: %f\n%v\n}\n", weight, funk.Map(cr, func(c CoreResult) string { return fmt.Sprintf("\n{\n%v\n}\n", c.ToStringDeep()) }))
+	underlyingCores := fmt.Sprintf("Underlying Cores: %v", funk.Map(cr.UnderlyingCores, func(weight float64, cr []Core) string {
+		return fmt.Sprintf("\n{ Weight: %f\n%v\n}\n", weight, funk.Map(cr, func(c Core) string { return fmt.Sprintf("\n{\n%v\n}\n", c.ToStringDeep()) }))
 	}))
 
 	return topCore + Separator + softmaxResult + Separator + underlyingCores
 }
 
-func (cr *CoreResult) Normalized() CoreResult {
+func (cr *Core) Normalized() Core {
 
 	var total float64
 	total += cr.NoConcerns
@@ -88,7 +88,7 @@ func (cr *CoreResult) Normalized() CoreResult {
 		total = 1
 	}
 
-	return CoreResult{
+	return Core{
 		Core:              cr.Core,
 		NoConcerns:        cr.NoConcerns / total,
 		NoImmediateAction: cr.NoImmediateAction / total,
@@ -100,7 +100,7 @@ func (cr *CoreResult) Normalized() CoreResult {
 
 type RecommendationDistribution map[Recommendation]float64
 
-func (cr *CoreResult) Softmax() RecommendationDistribution {
+func (cr *Core) Softmax() RecommendationDistribution {
 
 	matrix := mat.NewDense(4, 1, []float64{cr.NoConcerns, cr.NoImmediateAction, cr.Watchlist, cr.DecisionMaking})
 
@@ -128,14 +128,14 @@ func (cr *CoreResult) Softmax() RecommendationDistribution {
 	return result
 }
 
-func (cr *CoreResult) IntakeThreshold(value, threshold, weight float64) {
+func (cr *Core) IntakeThreshold(value, threshold, weight float64) {
 
 	v := math.Min(1, value/threshold)
 
 	cr.Intake(v, weight)
 }
 
-func (cr *CoreResult) IntakeLimit(value, limit, weight float64) {
+func (cr *Core) IntakeLimit(value, limit, weight float64) {
 
 	r := value / limit
 	v := math.Max(0, 1-r)
@@ -150,7 +150,7 @@ func (cr *CoreResult) IntakeLimit(value, limit, weight float64) {
 	cr.Intake(v, weight)
 }
 
-func (cr *CoreResult) Intake(value float64, weight float64) {
+func (cr *Core) Intake(value float64, weight float64) {
 
 	if value > 1 {
 		log.Printf("TOO MUCH TO INTAKE FOR %s", cr.Core)
@@ -182,7 +182,7 @@ func (cr *CoreResult) Intake(value float64, weight float64) {
 	return
 }
 
-func (cr *CoreResult) Overtake(from CoreResult, weight float64) {
+func (cr *Core) Overtake(from Core, weight float64) {
 
 	normalized := from.Normalized()
 

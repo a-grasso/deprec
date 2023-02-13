@@ -6,7 +6,7 @@ import (
 	"github.com/thoas/go-funk"
 )
 
-func ThirdPartyParticipation(m *model.DataModel, c configuration.ThirdPartyParticipation) model.CoreResult {
+func ThirdPartyParticipation(m *model.DataModel, c configuration.ThirdPartyParticipation) model.Core {
 
 	cr := model.NewCoreResult(model.ThirdPartyParticipation)
 

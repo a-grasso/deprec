@@ -5,8 +5,8 @@ import (
 	"testing"
 )
 
-func NewCR() CoreResult {
-	return CoreResult{}
+func NewCR() Core {
+	return Core{}
 }
 
 func TestIntakeLimit_0_4(t *testing.T) {
