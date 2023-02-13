@@ -8,32 +8,32 @@ import (
 	"math"
 )
 
-type Core string
+type CoreName string
 
 const (
-	CombCon                 Core = "Combination And Conclusion"
-	Activity                Core = "Activity"
-	CoreTeam                Core = "Core Team"
-	Rivalry                 Core = "Rivalry"
-	DeityGiven              Core = "Deity-Given"
-	Recentness              Core = "Recentness"
-	OrganizationalBackup    Core = "Organizational Backup"
-	ThirdPartyParticipation Core = "ThirdPartyParticipation"
-	ContributorPrestige     Core = "ContributorPrestige"
-	Processing              Core = "Processing"
-	Effort                  Core = "Effort"
-	Interconnectedness      Core = "Interconnectedness"
-	Network                 Core = "Network"
-	Popularity              Core = "Popularity"
-	Vulnerabilities         Core = "Vulnerabilities"
-	Community               Core = "Community"
-	Support                 Core = "Support"
-	Circumstances           Core = "Circumstances"
-	Engagement              Core = "Engagement"
+	CombCon                 CoreName = "Combination And Conclusion"
+	Activity                CoreName = "Activity"
+	CoreTeam                CoreName = "Core Team"
+	Rivalry                 CoreName = "Rivalry"
+	DeityGiven              CoreName = "Deity-Given"
+	Recentness              CoreName = "Recentness"
+	OrganizationalBackup    CoreName = "Organizational Backup"
+	ThirdPartyParticipation CoreName = "ThirdPartyParticipation"
+	ContributorPrestige     CoreName = "ContributorPrestige"
+	Processing              CoreName = "Processing"
+	Effort                  CoreName = "Effort"
+	Interconnectedness      CoreName = "Interconnectedness"
+	Network                 CoreName = "Network"
+	Popularity              CoreName = "Popularity"
+	Vulnerabilities         CoreName = "Vulnerabilities"
+	Community               CoreName = "Community"
+	Support                 CoreName = "Support"
+	Circumstances           CoreName = "Circumstances"
+	Engagement              CoreName = "Engagement"
 )
 
 type CoreResult struct {
-	Core              Core
+	Core              CoreName
 	NoConcerns        float64
 	NoImmediateAction float64
 
@@ -43,7 +43,7 @@ type CoreResult struct {
 	UnderlyingCores map[float64][]CoreResult
 }
 
-func NewCoreResult(core Core) *CoreResult {
+func NewCoreResult(core CoreName) *CoreResult {
 	return &CoreResult{Core: core, UnderlyingCores: make(map[float64][]CoreResult)}
 }
 
@@ -54,10 +54,10 @@ func (cr *CoreResult) ToString() string {
 	rec := cr.Softmax()
 	topCore := fmt.Sprintf("Top Core: %v", cr.Core)
 	softmaxResult := fmt.Sprintf("%s -> %.3f | %s -> %.3f | %s -> %.3f | %s -> %.3f", NoConcerns, rec[NoConcerns], NoImmediateAction, rec[NoImmediateAction], Watchlist, rec[Watchlist], DecisionMaking, rec[DecisionMaking])
-	underlyingCores := fmt.Sprintf("Underlying Cores: %v", funk.Map(cr.UnderlyingCores, func(weight float64, cr []CoreResult) (float64, []Core) {
-		ads := funk.Map(cr, func(cr CoreResult) Core {
+	underlyingCores := fmt.Sprintf("Underlying Cores: %v", funk.Map(cr.UnderlyingCores, func(weight float64, cr []CoreResult) (float64, []CoreName) {
+		ads := funk.Map(cr, func(cr CoreResult) CoreName {
 			return cr.Core
-		}).([]Core)
+		}).([]CoreName)
 		return weight, ads
 	}))
 

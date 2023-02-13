@@ -20,7 +20,7 @@ type Result struct {
 
 func (ar *Result) UsedCores() string {
 
-	var usedCores []model.Core
+	var usedCores []model.CoreName
 	for _, cores := range ar.Core.UnderlyingCores {
 
 		for _, core := range cores {
