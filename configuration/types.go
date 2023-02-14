@@ -66,8 +66,9 @@ type OrgBackup struct {
 }
 
 type CoreTeam struct {
-	ActiveContributorsPercentile        float64 `json:"ActiveContributorsPercentile"`
-	CoreTeamStrengthThresholdPercentage float64 `json:"CoreTeamStrengthThresholdPercentage"`
+	ActiveContributorsPercentile          float64 `json:"ActiveContributorsPercentile"`
+	ActiveContributorsThresholdPercentage float64 `json:"ActiveContributorsThresholdPercentage"`
+	CoreTeamStrengthThresholdPercentage   float64 `json:"CoreTeamStrengthThresholdPercentage"`
 }
 
 type Extraction struct {

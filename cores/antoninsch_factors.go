@@ -68,7 +68,7 @@ func Effort(m *model.DataModel, c configuration.CoresConfig) model.Core {
 
 	coreTeam := CoreTeam(m, c.CoreTeam)
 
-	cr.Overtake(recentness, 5)
+	cr.Overtake(recentness, 2)
 	cr.Overtake(activity, 2)
 	cr.Overtake(coreTeam, 1)
 
