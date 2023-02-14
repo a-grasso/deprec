@@ -24,7 +24,7 @@ func CoreTeam(m *model.DataModel, c configuration.CoreTeam) model.Core {
 		return *cr
 	}
 
-	percentage := coreTeamPercentage(contributors)
+	percentage := coreTeamPercentage(contributors) * 100
 	//TODO: Needs overhaul, as too punishing for big projects 50+ contributors (all those with ~2 commits)
 
 	cr.IntakeThreshold(percentage, c.CoreTeamStrengthThresholdPercentage, 1)

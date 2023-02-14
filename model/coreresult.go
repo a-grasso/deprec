@@ -32,6 +32,13 @@ const (
 	Engagement              CoreName = "Engagement"
 )
 
+const (
+	NC  float64 = 0.875
+	NIA float64 = 0.625
+	W   float64 = 0.375
+	DM  float64 = 0.125
+)
+
 type Core struct {
 	Name              CoreName
 	NoConcerns        float64

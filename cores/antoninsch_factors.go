@@ -13,17 +13,17 @@ func DeityGiven(m *model.DataModel) model.Core {
 	if m.Repository != nil {
 		archived := m.Repository.Archivation
 		if archived {
-			cr.Intake(0, 1)
+			cr.Intake(model.DM, 1)
 		}
 
 		readme := strings.ToLower(m.Repository.ReadMe)
 		if strings.Contains(readme, "end-of-life") {
-			cr.Intake(0, 1)
+			cr.Intake(model.DM, 1)
 		}
 
 		about := strings.ToLower(m.Repository.About)
 		if strings.Contains(about, "deprecated") || strings.Contains(about, "end-of-life") || strings.Contains(about, "abandoned") {
-			cr.Intake(0, 1)
+			cr.Intake(model.DM, 1)
 		}
 	}
 
@@ -33,7 +33,7 @@ func DeityGiven(m *model.DataModel) model.Core {
 
 			description := strings.ToLower(artifact.Description)
 			if strings.Contains(description, "deprecated") || strings.Contains(description, "end-of-life") || strings.Contains(description, "abandoned") {
-				cr.Intake(0, 1)
+				cr.Intake(model.DM, 1)
 			}
 		}
 	}
@@ -52,7 +52,7 @@ func Vulnerabilities(m *model.DataModel) model.Core {
 	vulnerabilities := m.VulnerabilityIndex.TotalVulnerabilitiesCount
 
 	if vulnerabilities > 0 {
-		cr.Intake(0, 1)
+		cr.Intake(model.DM, 1)
 	}
 
 	return *cr

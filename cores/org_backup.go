@@ -29,9 +29,9 @@ func OrganizationalBackup(m *model.DataModel, c configuration.OrgBackup) model.C
 	cr.IntakeThreshold(organizations, c.OrganizationThreshold, 2)
 
 	if m.Repository.Org != nil {
-		cr.Intake(1, 3)
+		cr.Intake(model.NC, 3)
 	} else {
-		cr.Intake(0, 3)
+		cr.Intake(model.W, 3)
 	}
 
 	return *cr
