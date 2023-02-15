@@ -5,7 +5,7 @@ import (
 )
 
 func Rivalry(m *model.DataModel) model.Core {
-	cr := model.NewCoreResult(model.Rivalry)
+	cr := model.NewCore(model.Rivalry)
 
 	if m.Distribution == nil {
 		return *cr

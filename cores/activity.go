@@ -9,7 +9,7 @@ import (
 
 func Activity(m *model.DataModel, config configuration.Activity) model.Core {
 
-	cr := model.NewCoreResult(model.Activity)
+	cr := model.NewCore(model.Activity)
 
 	if m.Repository == nil {
 		return *cr

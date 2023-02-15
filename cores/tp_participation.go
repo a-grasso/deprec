@@ -8,7 +8,7 @@ import (
 
 func ThirdPartyParticipation(m *model.DataModel, c configuration.ThirdPartyParticipation) model.Core {
 
-	cr := model.NewCoreResult(model.ThirdPartyParticipation)
+	cr := model.NewCore(model.ThirdPartyParticipation)
 
 	if m.Repository == nil {
 		return *cr

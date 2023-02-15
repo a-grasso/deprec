@@ -10,7 +10,7 @@ import (
 
 func Recentness(m *model.DataModel, c configuration.Recentness) model.Core {
 
-	cr := model.NewCoreResult(model.Recentness)
+	cr := model.NewCore(model.Recentness)
 
 	repositoryPart(cr, c, m.Repository)
 

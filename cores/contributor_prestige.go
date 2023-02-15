@@ -9,7 +9,7 @@ import (
 
 func ContributorPrestige(m *model.DataModel) model.Core {
 
-	cr := model.NewCoreResult(model.ContributorPrestige)
+	cr := model.NewCore(model.ContributorPrestige)
 
 	contributors := m.Repository.Contributors
 

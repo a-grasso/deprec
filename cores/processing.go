@@ -11,7 +11,7 @@ import (
 
 func Processing(m *model.DataModel, c configuration.Processing) model.Core {
 
-	cr := model.NewCoreResult(model.Processing)
+	cr := model.NewCore(model.Processing)
 
 	if m.Repository == nil {
 		return *cr

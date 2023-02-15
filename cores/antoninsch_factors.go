@@ -8,7 +8,7 @@ import (
 
 func DeityGiven(m *model.DataModel) model.Core {
 
-	cr := model.NewCoreResult(model.DeityGiven)
+	cr := model.NewCore(model.DeityGiven)
 
 	if m.Repository != nil {
 		archived := m.Repository.Archivation
@@ -43,7 +43,7 @@ func DeityGiven(m *model.DataModel) model.Core {
 
 func Vulnerabilities(m *model.DataModel) model.Core {
 
-	cr := model.NewCoreResult(model.Vulnerabilities)
+	cr := model.NewCore(model.Vulnerabilities)
 
 	if m.VulnerabilityIndex == nil {
 		return *cr
@@ -60,7 +60,7 @@ func Vulnerabilities(m *model.DataModel) model.Core {
 
 func Effort(m *model.DataModel, c configuration.CoresConfig) model.Core {
 
-	cr := model.NewCoreResult(model.Effort)
+	cr := model.NewCore(model.Effort)
 
 	activity := Activity(m, c.Activity)
 
@@ -77,7 +77,7 @@ func Effort(m *model.DataModel, c configuration.CoresConfig) model.Core {
 
 func Interconnectedness(m *model.DataModel, c configuration.CoresConfig) model.Core {
 
-	cr := model.NewCoreResult(model.Interconnectedness)
+	cr := model.NewCore(model.Interconnectedness)
 
 	network := Network(m, c.Network)
 
@@ -92,7 +92,7 @@ func Interconnectedness(m *model.DataModel, c configuration.CoresConfig) model.C
 
 func Community(m *model.DataModel, c configuration.CoresConfig) model.Core {
 
-	cr := model.NewCoreResult(model.Community)
+	cr := model.NewCore(model.Community)
 
 	thirdPartyParticipation := ThirdPartyParticipation(m, c.ThirdPartyParticipation)
 
@@ -107,7 +107,7 @@ func Community(m *model.DataModel, c configuration.CoresConfig) model.Core {
 
 func Support(m *model.DataModel, c configuration.CoresConfig) model.Core {
 
-	cr := model.NewCoreResult(model.Support)
+	cr := model.NewCore(model.Support)
 
 	processing := Processing(m, c.Processing)
 
@@ -121,11 +121,14 @@ func Support(m *model.DataModel, c configuration.CoresConfig) model.Core {
 
 func Circumstances(m *model.DataModel) model.Core {
 
-	cr := model.NewCoreResult(model.Circumstances)
+	cr := model.NewCore(model.Circumstances)
 
 	rivalry := Rivalry(m)
 
+	licensing := Licensing(m)
+
 	cr.Overtake(rivalry, 1)
+	cr.Overtake(licensing, 2)
 
 	return *cr
 }

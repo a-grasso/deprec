@@ -11,7 +11,7 @@ import (
 
 func CoreTeam(m *model.DataModel, c configuration.CoreTeam) model.Core {
 
-	cr := model.NewCoreResult(model.CoreTeam)
+	cr := model.NewCore(model.CoreTeam)
 
 	if m.Repository == nil {
 		return *cr

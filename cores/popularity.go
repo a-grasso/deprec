@@ -6,7 +6,7 @@ import (
 )
 
 func Popularity(m *model.DataModel, c configuration.Popularity) model.Core {
-	cr := model.NewCoreResult(model.Popularity)
+	cr := model.NewCore(model.Popularity)
 
 	if m.Repository != nil {
 		var repositoryPopularity int

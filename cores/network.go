@@ -6,7 +6,7 @@ import (
 )
 
 func Network(m *model.DataModel, c configuration.Network) model.Core {
-	cr := model.NewCoreResult(model.Network)
+	cr := model.NewCore(model.Network)
 
 	if m.Repository != nil {
 		var repositoryNetwork int

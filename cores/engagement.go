@@ -8,7 +8,7 @@ import (
 
 func Engagement(m *model.DataModel, c configuration.Engagement) model.Core {
 
-	cr := model.NewCoreResult(model.Engagement)
+	cr := model.NewCore(model.Engagement)
 
 	if m.Repository == nil {
 		return *cr

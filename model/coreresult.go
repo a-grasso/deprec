@@ -30,6 +30,7 @@ const (
 	Support                 CoreName = "Support"
 	Circumstances           CoreName = "Circumstances"
 	Engagement              CoreName = "Engagement"
+	Licensing               CoreName = "Licensing"
 )
 
 const (
@@ -50,7 +51,7 @@ type Core struct {
 	UnderlyingCores map[float64][]Core
 }
 
-func NewCoreResult(core CoreName) *Core {
+func NewCore(core CoreName) *Core {
 	return &Core{Name: core, UnderlyingCores: make(map[float64][]Core)}
 }
 

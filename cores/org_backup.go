@@ -8,7 +8,7 @@ import (
 
 func OrganizationalBackup(m *model.DataModel, c configuration.OrgBackup) model.Core {
 
-	cr := model.NewCoreResult(model.OrganizationalBackup)
+	cr := model.NewCore(model.OrganizationalBackup)
 
 	if m.Repository == nil {
 		return *cr
