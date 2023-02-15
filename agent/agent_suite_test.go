@@ -106,6 +106,6 @@ var _ = Describe("Agent", func() {
 			Expect(actual).To(Equal(expected), "Expected: '%s', Was: '%s' | %s", expected, actual, agentResult.Core.ToStringDeep())
 		},
 		func(row *CSVRow) string {
-			return fmt.Sprintf("should result in '%s' when running for dependency '%s', comment: '%s'", row.Recommendation, row.Name, row.Comment)
+			return fmt.Sprintf("should result in '%s' when running for dependency '%s:%s', comment: '%s'", row.Recommendation, row.Name, row.Version, row.Comment)
 		}, tableEntries())
 })

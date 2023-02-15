@@ -30,7 +30,7 @@ func ThirdPartyParticipation(m *model.DataModel, c configuration.ThirdPartyParti
 
 	totalUsers := len(contributors)
 
-	ratio := float64(len(users)) / float64(totalUsers)
+	ratio := float64(len(users)) / float64(totalUsers) * 100
 
 	cr.IntakeThreshold(ratio, float64(c.ThirdPartyCommitThresholdPercentage), 1)
 

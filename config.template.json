@@ -23,7 +23,7 @@
     },
     "ThirdPartyParticipation": {
       "CommitLimit": 2,
-      "ThirdPartyCommitThresholdPercentage": 30
+      "ThirdPartyCommitThresholdPercentage": 80
     },
     "Engagement": {
       "IssueCommentsRatioThresholdPercentage": 325

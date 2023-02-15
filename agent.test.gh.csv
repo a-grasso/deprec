@@ -47,9 +47,10 @@ true,https://github.com/reactjs/reactjs.org,heavy weight test case,NC,react,,,,
 ,https://github.com/carhartl/jquery-cookie,archived,DM,jquery-cookie,,,,
 ,https://github.com/js-cookie/js-cookie,"release long ago, last activity kinda long ago, very popular",NIA,js-cookie,,,,
 ,https://github.com/ryanb/nifty-generators,archived + readme,DM,nifty,,,,
-,https://github.com/ReactiveX/RxJava,"active, good contributors, very strong popular, 2.x and 1.x are eol tho",NC,rxjava,,"unlucky that second percentile commit activity that high
+,https://github.com/ReactiveX/RxJava,"active, good contributors, very strong popular, 2.x and 1.x are eol tho",NC,rxjava,3.0,"unlucky that second percentile commit activity that high
 for now not possible for marking to differentiate",,
-,,,,,,,,
+,https://github.com/ReactiveX/RxJava,"active, good contributors, very strong popular, 2.x and 1.x are eol tho",DM,rxjava,2.1,"unlucky that second percentile commit activity that high
+for now not possible for marking to differentiate",,
 ,,,,,,,,
 ,,,,,,,,
 ,,,,,,,,
