@@ -123,7 +123,7 @@ func (agent *Agent) Extraction() []string {
 
 func (agent *Agent) CombinationAndConclusion() model.Core {
 
-	cr := model.NewCoreResult(model.CombCon)
+	cr := model.NewCore(model.CombCon)
 
 	if agent.DataModel.Repository == nil && agent.DataModel.Distribution == nil {
 		return *cr
