@@ -39,16 +39,11 @@ func handle[T statistics.HasTimestamp](count []T, weight float64, percentile flo
 
 	analysis := statistics.AnalyzeForActivity(count, percentile)
 
-	eval := evaluateActivityAnalysis(analysis)
+	percentileAverageDiff := analysis.LPAOverSPA()
 
-	cr.Intake(eval, weight)
-}
+	lpaAverageDiff := analysis.LPAOverAVG()
 
-func evaluateActivityAnalysis(r statistics.Result) float64 {
+	cr.Intake(percentileAverageDiff, weight)
 
-	percentileAverageDiff := r.LPAOverSPA()
-
-	lpaAverageDiff := r.LPAOverAVG()
-
-	return (percentileAverageDiff + lpaAverageDiff) / 2
+	cr.Intake(lpaAverageDiff, weight)
 }
