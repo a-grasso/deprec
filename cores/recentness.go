@@ -83,7 +83,7 @@ func repositoryPart(cr *model.Core, c configuration.Recentness, repository *mode
 }
 
 func averageMonthsSinceLast[T statistics.HasTimestamp](elements []T, percentile float64) float64 {
-	_, _, timeFrame := statistics.GetPercentilesOf(elements, percentile)
+	_, _, timeFrame, _ := statistics.GetPercentilesOf(elements, percentile)
 
 	monthsSince := funk.Map(timeFrame, func(t T) int {
 		return statistics.CalculateTimeDifference(t.GetTimestamp(), statistics.CustomNow())

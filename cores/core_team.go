@@ -54,7 +54,7 @@ func activeContributorsTotalPercentage(commits []model.Commit, contributors []mo
 		return c.Name, c
 	}).(map[string]model.Contributor)
 
-	lastCommits, _, _ := statistics.GetPercentilesOf(commits, percentile)
+	lastCommits, _, _, _ := statistics.GetPercentilesOf(commits, percentile)
 
 	for _, commit := range lastCommits {
 		lastActiveContributors = append(lastActiveContributors, mappedContributors[commit.Author])

@@ -109,6 +109,7 @@ type Result struct {
 
 	SecondPercentileAverage float64 // Basics
 	LastPercentileAverage   float64 // Basics
+	PeakPercentileAverage   float64 // Basics
 
 	SecondPercentileCount           *int     // Count
 	LastPercentileCount             *int     // Count
@@ -129,6 +130,14 @@ func (sa *Result) Ratio(numerator, denominator float64) float64 {
 func (sa *Result) LPAOverAVG() float64 {
 
 	lpa := sa.LastPercentileAverage
+	avg := sa.Average
+
+	return sa.Ratio(lpa, avg)
+}
+
+func (sa *Result) LPAOverPEAK() float64 {
+
+	lpa := sa.PeakPercentileAverage
 	avg := sa.Average
 
 	return sa.Ratio(lpa, avg)
@@ -159,6 +168,8 @@ func Analyze(sortedKeys []Key, grouped map[Key]float64, percentile float64) Resu
 
 	secondPercentileAverage, lastPercentileAverage := CalcPercentileAverage(percentile, sortedKeys, grouped)
 
+	peakPercentileAverage := CalcPercentileAveragePeak(percentile, sortedKeys, grouped)
+
 	return Result{
 		Unit:                    "Per Month",
 		Percentile:              percentile,
@@ -168,6 +179,7 @@ func Analyze(sortedKeys []Key, grouped map[Key]float64, percentile float64) Resu
 		Average:                 avg,
 		SecondPercentileAverage: secondPercentileAverage,
 		LastPercentileAverage:   lastPercentileAverage,
+		PeakPercentileAverage:   peakPercentileAverage,
 	}
 }
 
@@ -242,7 +254,7 @@ func CalcOver(keys []Key, grouped map[Key]float64) (avg float64) {
 
 func CalcPercentileAverage(p float64, sortedKeys []Key, grouped map[Key]float64) (secondPercentileAvg, lastPercentileAvg float64) {
 
-	_, secondPercentile, lastPercentile := GetPercentilesOf(sortedKeys, p)
+	_, secondPercentile, lastPercentile, _ := GetPercentilesOf(sortedKeys, p)
 
 	secondPercentileAvg = CalcOver(secondPercentile, grouped)
 	lastPercentileAvg = CalcOver(lastPercentile, grouped)
@@ -250,9 +262,39 @@ func CalcPercentileAverage(p float64, sortedKeys []Key, grouped map[Key]float64)
 	return
 }
 
+func CalcPercentileAveragePeak(p float64, sortedKeys []Key, grouped map[Key]float64) (peakPercentileAverage float64) {
+
+	_, _, _, allPercentiles := GetPercentilesOf(sortedKeys, p)
+
+	percentileCounts := funk.Map(allPercentiles, func(percentiles []Key) float64 {
+		sum := 0.0
+		for _, key := range percentiles {
+			if count, exists := grouped[key]; exists {
+				sum += count
+			}
+		}
+		return sum
+	}).([]float64)
+
+	sum := 0.0
+	peakIndex := 0
+	for i, count := range percentileCounts {
+
+		if count > sum {
+			sum = count
+			peakIndex = i
+		}
+	}
+
+	peakPercentile := allPercentiles[peakIndex]
+
+	peakPercentileAverage = CalcOver(peakPercentile, grouped)
+	return
+}
+
 func CalcPercentileCount(p float64, sortedKeys []Key, groupedCounts map[Key]float64) (secondPercentileCount, lastPercentileCount int) {
 
-	_, secondPercentile, lastPercentile := GetPercentilesOf(sortedKeys, p)
+	_, secondPercentile, lastPercentile, _ := GetPercentilesOf(sortedKeys, p)
 
 	secondPercentileCount = int(funk.Sum(funk.Map(groupedCounts, func(k Key, v float64) float64 {
 		if funk.Contains(secondPercentile, k) {
@@ -271,7 +313,7 @@ func CalcPercentileCount(p float64, sortedKeys []Key, groupedCounts map[Key]floa
 	return
 }
 
-func GetPercentilesOf[T any](elements []T, p float64) (first, second, last []T) {
+func GetPercentilesOf[T any](elements []T, p float64) (first, second, last []T, all [][]T) {
 
 	// e.g. total = 1000
 	total := len(elements)
@@ -300,6 +342,7 @@ func GetPercentilesOf[T any](elements []T, p float64) (first, second, last []T) 
 	first = elementsPerSlice[0]                             // [0   : 125]
 	second = elementsPerSlice[1]                            // [125 : 250]
 	last = elementsPerSlice[len(elementsPerSlice)-offset-1] // [875 : max]
+	all = elementsPerSlice
 
 	return
 }
