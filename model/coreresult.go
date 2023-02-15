@@ -29,6 +29,7 @@ const (
 	Community               CoreName = "Community"
 	Support                 CoreName = "Support"
 	Circumstances           CoreName = "Circumstances"
+	ProjectQuality          CoreName = "ProjectQuality"
 	Engagement              CoreName = "Engagement"
 	Licensing               CoreName = "Licensing"
 )

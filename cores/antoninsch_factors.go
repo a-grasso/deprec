@@ -125,10 +125,13 @@ func Circumstances(m *model.DataModel) model.Core {
 
 	rivalry := Rivalry(m)
 
+	quality := ProjectQuality(m)
+
 	licensing := Licensing(m)
 
 	cr.Overtake(rivalry, 1)
 	cr.Overtake(licensing, 2)
+	cr.Overtake(quality, 1)
 
 	return *cr
 }
