@@ -1,6 +1,6 @@
 ignore,repository,comment,recommendation,name,version,note,sha1,purl
 ,https://github.com/apache/logging-log4j1,(readme) eol,DM,log4j1,1.2.17,,5af35056b4d257e4b64b9e8069c0746e8b08629f,pkg:maven/log4j/log4j@1.2.17?type=jar
-true,https://github.com/apache/logging-log4j2,active,NC,log4j2,24.1.1-jre,,2e3014320a8005e3f3c1800cb246ed42db8cab81,pkg:maven/com.google.guava/guava@24.1.1-jre?type=jar
+,https://github.com/apache/logging-log4j2,active,NC,log4j2,24.1.1-jre,,2e3014320a8005e3f3c1800cb246ed42db8cab81,pkg:maven/com.google.guava/guava@24.1.1-jre?type=jar
 ,https://github.com/findbugsproject/findbugs,"(readme) eol because successor, development continued on new project",DM,findbugs,,,,
 ,https://github.com/gleclaire/findbugs-maven-plugin,(archived) eol as findbugs eol,DM,findbugs-maven-plugin,,,,
 ,https://github.com/mojohaus/animal-sniffer,"(readme) maintenance mode, as now built-in, support excellent tho",NIA,animal-sniffer,,would be W if activity overall wasnt that high,,
@@ -19,7 +19,7 @@ true,https://github.com/apache/logging-log4j2,active,NC,log4j2,24.1.1-jre,,2e301
 ,https://github.com/damnhandy/Handy-URI-Templates,"meh, release long ago, commits lacking, effort little bit, support bad",DM,handy-uri-templates,,,,
 ,https://github.com/eclipse-ee4j/jaxb-istack-commons,"not too active, probably does not need much action, probably , big org behind, part of something bigger",W,jaxb-istack-commons,,,,
 ,https://github.com/PebbleTemplates/pebble,"active, effort is there but niche, probably needs not much attention",NIA,pebble,,,,
-true,https://github.com/reactjs/reactjs.org,heavy weight test case,NC,react,,,,
+,https://github.com/reactjs/reactjs.org,"heavy weight test case, absolutely not eos",NC,react,,,,
 ,https://github.com/jaredpalmer/tsdx,"activity very bad, release long ago, seems popular tho, support kinda meh",DM,tsdx,,,,
 ,https://github.com/NicolasBissig/azure-functions-decorators,active,NC,nico,,,,
 ,https://github.com/mariadb-corporation/mariadb-connector-j,active,NC,mariadb-connector-j,,,,
@@ -47,13 +47,13 @@ true,https://github.com/reactjs/reactjs.org,heavy weight test case,NC,react,,,,
 ,https://github.com/carhartl/jquery-cookie,archived,DM,jquery-cookie,,,,
 ,https://github.com/js-cookie/js-cookie,"release long ago, last activity kinda long ago, very popular",NIA,js-cookie,,,,
 ,https://github.com/ryanb/nifty-generators,archived + readme,DM,nifty,,,,
-,https://github.com/ReactiveX/RxJava,"active, good contributors, very strong popular, 2.x and 1.x are eol tho",NC,rxjava,3.0,"unlucky that second percentile commit activity that high
+,https://github.com/ReactiveX/RxJava,"active, good contributors, very strong popular, 2.x and 1.x are eol tho",NC,rxjava3,3.0,"unlucky that second percentile commit activity that high
 for now not possible for marking to differentiate",,
-,https://github.com/ReactiveX/RxJava,"active, good contributors, very strong popular, 2.x and 1.x are eol tho",DM,rxjava,2.1,"unlucky that second percentile commit activity that high
+,https://github.com/ReactiveX/RxJava,"active, good contributors, very strong popular, 2.x and 1.x are eol tho",DM,rxjava2,2.1,"unlucky that second percentile commit activity that high
 for now not possible for marking to differentiate",,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
+,https://github.com/microsoft/TypeScript,absolutely active jfc,NC,typescript,,unlucky that second percentile commit activity that high,,
+,https://github.com/sladkoff/minecraft-prometheus-exporter,"rather small project, release some time ago, upswing of activity, contributors ok, popularity rather ok",NIA,mc-prometheus,,how activity is calculated is lucky here,,
+,https://github.com/cloud-carbon-footprint/cloud-carbon-footprint,"release good, commits good, contributors ok, activity huge and consistent",NC,ccf,,little unlucky how activity is calculated,,
 ,,,,,,,,
 ,,,,,,,,
 ,,,,,,,,
