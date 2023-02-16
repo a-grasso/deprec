@@ -1,6 +1,7 @@
 ignore,repository,comment,recommendation,name,version,note,sha1,purl
 ,https://github.com/apache/logging-log4j1,(readme) eol,DM,log4j1,1.2.17,,5af35056b4d257e4b64b9e8069c0746e8b08629f,pkg:maven/log4j/log4j@1.2.17?type=jar
-,https://github.com/apache/logging-log4j2,active,NC,log4j2,24.1.1-jre,,2e3014320a8005e3f3c1800cb246ed42db8cab81,pkg:maven/com.google.guava/guava@24.1.1-jre?type=jar
+,https://github.com/apache/logging-log4j2,active,NC,log4j2,24.1.1-jre,,,
+,https://github.com/apache/logging-log4j2,"active, but vulnerability",DM,log4j2-vuln,24.1.1-jre,,2e3014320a8005e3f3c1800cb246ed42db8cab81,pkg:maven/com.google.guava/guava@24.1.1-jre?type=jar
 ,https://github.com/findbugsproject/findbugs,"(readme) eol because successor, development continued on new project",DM,findbugs,,,,
 ,https://github.com/gleclaire/findbugs-maven-plugin,(archived) eol as findbugs eol,DM,findbugs-maven-plugin,,,,
 ,https://github.com/mojohaus/animal-sniffer,"(readme) maintenance mode, as now built-in, support excellent tho",NIA,animal-sniffer,,would be W if activity overall wasnt that high,,
@@ -31,12 +32,14 @@ ignore,repository,comment,recommendation,name,version,note,sha1,purl
 ,https://github.com/eclipse-ee4j/angus-mail,"successor of mail-api, active but release seems ""final"", rather caution as unsure",NIA,angus-mail,,,,
 ,https://github.com/swagger-api/swagger-core,"activity good, good amount of contributors, core team ok, ",NC,swagger-core,,unlucky that second percentile commit activity that high,,
 ,https://github.com/JodaOrg/joda-time,"steady activity through and through, good processing, org backup present, popular",NC,joda-time,2.10.1,,9ac3dbf89dbf2ee385185dd0cd3064fe789efee0,pkg:maven/joda-time/joda-time@2.10.1?type=jar
-,https://github.com/hibernate/hibernate-validator,"vulnerability, latest release is titled final - seems naming convention tho, active, support present, popular",DM,hibernate-validator,5.4.3.Final,unlucky that second percentile commit activity that high,7c3d91629e81937b33dffd5b170956ef9c76af97,pkg:maven/org.hibernate/hibernate-validator@5.4.3.Final?type=jar
+,https://github.com/hibernate/hibernate-validator,"latest release is titled final - seems naming convention tho, active, support present, popular",NC,hibernate-validator,5.4.3.Final,unlucky that second percentile commit activity that high,,
+,https://github.com/hibernate/hibernate-validator,"vulnerability, latest release is titled final - seems naming convention tho, active, support present, popular",DM,hibernate-validator-vuln,5.4.3.Final,unlucky that second percentile commit activity that high,7c3d91629e81937b33dffd5b170956ef9c76af97,pkg:maven/org.hibernate/hibernate-validator@5.4.3.Final?type=jar
 ,https://github.com/jboss-logging/jboss-logging,"rather small, release a bit ago, activity lacking little bit, probably does not need much attention",NIA,jboss-logging,3.3.0.Final,low NIA,3616bb87707910296e2c195dc016287080bba5af,pkg:maven/org.jboss.logging/jboss-logging@3.3.0.Final?type=jar
 ,https://github.com/dropwizard/metrics/,"very popular, strong activity, strong processing, part of bigger",NC,metrics-logback,4.0.5,,306d0d06b0940c6df49031e8dd750e635e4b170f,pkg:maven/io.dropwizard.metrics/metrics-logback@4.0.5?type=jar
 ,http://github.com/dropwizard/metrics/,"very popular, string activity, strong processing",NC,metrics-core,4.0.5,,b81ef162970cdb9f4512ee2da09715a856ff4c4c,pkg:maven/io.dropwizard.metrics/metrics-core@4.0.5?type=jar
 ,https://github.com/eclipse/jetty.project,"very popular, strong project, oldie, good processing",NC,jetty-util,9.4.18.v20190429,,13e6148bfda7ae511f69ae7e5e3ea898bc9b0e33,pkg:maven/org.eclipse.jetty/jetty-util@9.4.18.v20190429?type=jar
-,https://github.com/eclipse/jetty.project,"vulnerability, very popular, strong project, oldie, good processing",DM,jetty-server,9.4.18.v20190429,,b76ef50e04635f11d4d43bc6ccb7c4482a8384f0,pkg:maven/org.eclipse.jetty/jetty-server@9.4.18.v20190429?type=jar
+,https://github.com/eclipse/jetty.project,"very popular, strong project, oldie, good processing",NC,jetty-server,9.4.18.v20190429,,,
+,https://github.com/eclipse/jetty.project,"vulnerability, very popular, strong project, oldie, good processing",DM,jetty-server-vuln,9.4.18.v20190429,,b76ef50e04635f11d4d43bc6ccb7c4482a8384f0,pkg:maven/org.eclipse.jetty/jetty-server@9.4.18.v20190429?type=jar
 ,https://github.com/javaee/javax.annotation,(archived) is now part of EE4j (?),DM,javax.annotation-api,1.3.1,,20a2c0583598d68b0835474bbe07792d4f3b219f,pkg:maven/javax.annotation/javax.annotation-api@1.3.1?type=jar
 ,http://github.com/dropwizard/metrics/,"very popular, strong activity, strong processing, part of bigger",NC,metrics-healthchecks,4.0.5,,73177b73f9d7ac80b0d0125db9dd41faab816c52,pkg:maven/io.dropwizard.metrics/metrics-healthchecks@4.0.5?type=jar
 ,https://github.com/argparse4j/argparse4j,"release long ago, activity long ago, not too popular",DM,argparse4j,0.8.1,,2c8241f84acf6c924bd75be0dbd68e8d74fbcd70,pkg:maven/net.sourceforge.argparse4j/argparse4j@0.8.1?type=jar
