@@ -98,6 +98,10 @@ func Community(m *model.DataModel, c configuration.CoresConfig) model.Core {
 
 	organizationalBackup := OrganizationalBackup(m, c.OrgBackup)
 
+	prestige := ContributorPrestige(m)
+
+	cr.Overtake(prestige, 1)
+
 	cr.Overtake(organizationalBackup, 3)
 
 	cr.Overtake(thirdPartyParticipation, 1)
