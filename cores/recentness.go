@@ -47,11 +47,7 @@ func repositoryPart(cr *model.Core, c configuration.Recentness, repository *mode
 		lastRelease := releases[len(releases)-1]
 		lastReleaseMonthsSince := statistics.CalculateTimeDifference(lastRelease.Date, statistics.CustomNow())
 
-		averageMonthsLastRelease := averageMonthsSinceLast(releases, c.TimeframePercentileReleases)
-
 		cr.IntakeLimit(float64(lastReleaseMonthsSince), float64(c.ReleaseLimit), 2)
-
-		cr.IntakeLimit(averageMonthsLastRelease, float64(c.ReleaseLimit), 1)
 	}
 }
 
