@@ -33,9 +33,9 @@ func repositoryPart(cr *model.Core, c configuration.Recentness, repository *mode
 
 		averageMonthsLastCommit := averageMonthsSinceLast(commits, c.TimeframePercentileCommits)
 
-		eval := (2*float64(lastCommitMonthsSince) + averageMonthsLastCommit) / 3
+		cr.IntakeLimit(float64(lastCommitMonthsSince), float64(c.CommitLimit), 2)
 
-		cr.IntakeLimit(eval, float64(c.CommitLimit), 2)
+		cr.IntakeLimit(averageMonthsLastCommit, float64(c.CommitLimit), 3)
 	}
 
 	releases := repository.Releases
@@ -49,9 +49,9 @@ func repositoryPart(cr *model.Core, c configuration.Recentness, repository *mode
 
 		averageMonthsLastRelease := averageMonthsSinceLast(releases, c.TimeframePercentileReleases)
 
-		eval := (3*float64(lastReleaseMonthsSince) + averageMonthsLastRelease) / 4
+		cr.IntakeLimit(float64(lastReleaseMonthsSince), float64(c.ReleaseLimit), 2)
 
-		cr.IntakeLimit(eval, float64(c.ReleaseLimit), 2)
+		cr.IntakeLimit(averageMonthsLastRelease, float64(c.ReleaseLimit), 1)
 	}
 }
 
