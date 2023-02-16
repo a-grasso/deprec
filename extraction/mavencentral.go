@@ -51,7 +51,8 @@ func (mce *MavenCentralExtractor) Extract(dataModel *model.DataModel) {
 	version := response.V
 	artifactId := response.A
 	groupId := response.G
-	timestamp := time.Unix(response.Timestamp, 0)
+	var msToNs int64 = 1000000
+	timestamp := time.Unix(0, response.Timestamp*msToNs)
 
 	library := mce.extractLibrary(groupId, artifactId)
 

@@ -45,8 +45,6 @@ type Popularity struct {
 type Recentness struct {
 	CommitLimit                 int     `json:"CommitLimit"`
 	ReleaseLimit                int     `json:"ReleaseLimit"`
-	ArtifactLimit               int     `json:"ArtifactLimit"`
-	LibraryLimit                int     `json:"LibraryLimit"`
 	TimeframePercentileCommits  float64 `json:"TimeframePercentileCommits"`
 	TimeframePercentileReleases float64 `json:"TimeframePercentileReleases"`
 }

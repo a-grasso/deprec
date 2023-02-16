@@ -14,34 +14,7 @@ func Recentness(m *model.DataModel, c configuration.Recentness) model.Core {
 
 	repositoryPart(cr, c, m.Repository)
 
-	distributionPart(cr, c, m.Distribution)
-
 	return *cr
-}
-
-func distributionPart(cr *model.Core, c configuration.Recentness, distribution *model.Distribution) {
-	if distribution == nil {
-		return
-	}
-
-	artifact := distribution.Artifact
-	if artifact != nil {
-		date := artifact.Date
-
-		monthsSince := statistics.CalculateTimeDifference(date, statistics.CustomNow())
-
-		cr.IntakeLimit(float64(monthsSince), float64(c.ArtifactLimit), 1)
-
-	}
-
-	library := distribution.Library
-	if library != nil {
-		lastUpdated := library.LastUpdated
-
-		monthsSince := statistics.CalculateTimeDifference(lastUpdated, statistics.CustomNow())
-
-		cr.IntakeLimit(float64(monthsSince), float64(c.LibraryLimit), 1)
-	}
 }
 
 func repositoryPart(cr *model.Core, c configuration.Recentness, repository *model.Repository) {

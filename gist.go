@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	cdx "github.com/CycloneDX/cyclonedx-go"
+	"github.com/a-grasso/deprec/configuration"
 	"github.com/a-grasso/deprec/model"
 	"github.com/a-grasso/deprec/statistics"
 	"github.com/google/go-github/v48/github"
@@ -25,6 +26,30 @@ func getSBOMFromURL(url string) (io.ReadCloser, error) {
 	return res.Body, nil
 }
 
+func distributionPart(cr *model.Core, c configuration.Recentness, distribution *model.Distribution) {
+	if distribution == nil {
+		return
+	}
+
+	artifact := distribution.Artifact
+	if artifact != nil {
+		//date := artifact.Date
+
+		//monthsSince := statistics.CalculateTimeDifference(date, statistics.CustomNow())
+
+		//cr.IntakeLimit(float64(monthsSince), float64(c.ArtifactLimit), 1)
+
+	}
+
+	library := distribution.Library
+	if library != nil {
+		//lastUpdated := library.LastUpdated
+
+		//monthsSince := statistics.CalculateTimeDifference(lastUpdated, statistics.CustomNow())
+
+		//cr.IntakeLimit(float64(monthsSince), float64(c.LibraryLimit), 1)
+	}
+}
 func averageBurnUp(issues []model.Issue, closed []model.Issue) float64 {
 
 	sortedKeys, _ := statistics.GroupByTimestamp(issues)
