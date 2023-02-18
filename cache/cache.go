@@ -80,14 +80,14 @@ func mongoDBClient(config configuration.MongoDB) *mongo.Client {
 	clientOpts := options.Client().ApplyURI(config.URI).SetAuth(credentials)
 	cache, err := mongo.Connect(context.TODO(), clientOpts)
 	if err != nil {
-		logging.SugaredLogger.Errorf("connecting to mongodb database at '%s': %s", config.URI, err)
+		logging.SugaredLogger.Warnf("connecting to mongodb database at '%s' failed: %s", config.URI, err)
 		return nil
 	}
 
 	timeout, _ := context.WithTimeout(context.TODO(), 1*time.Second)
 	err = cache.Ping(timeout, nil)
 	if err != nil {
-		logging.SugaredLogger.Errorf("pinging mongodb database at '%s' failed: %s", config.URI, err)
+		logging.SugaredLogger.Warnf("pinging mongodb database at '%s' failed: %s", config.URI, err)
 		return nil
 	}
 

@@ -16,9 +16,12 @@ type OSSIndexExtractor struct {
 	Client     *ossindexapi.ClientWrapper
 }
 
-func NewOSSIndexExtractor(dependency model.Dependency, config configuration.OSSIndex, cache *cache.Cache) *OSSIndexExtractor {
+func NewOSSIndexExtractor(dependency model.Dependency, config configuration.OSSIndex, cache *cache.Cache) (*OSSIndexExtractor, error) {
 
-	client := ossindexapi.NewClient(config)
+	client, err := ossindexapi.NewClient(config)
+	if err != nil {
+		return nil, err
+	}
 
 	wrapper := ossindexapi.NewClientWrapper(client, cache)
 
@@ -28,7 +31,7 @@ func NewOSSIndexExtractor(dependency model.Dependency, config configuration.OSSI
 		PackageURL: packageURL,
 		Config:     config,
 		Client:     wrapper,
-	}
+	}, nil
 }
 
 func (ossie *OSSIndexExtractor) Extract(dataModel *model.DataModel) {

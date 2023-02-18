@@ -10,15 +10,15 @@ type Client struct {
 	*ossindex.Client
 }
 
-func NewClient(config configuration.OSSIndex) *Client {
+func NewClient(config configuration.OSSIndex) (*Client, error) {
 
 	client, err := ossindex.NewClient(ossindex.WithAuthentication(config.Username, config.Token))
 	if err != nil {
 		logging.Logger.Warn("error creating ossindex api client")
-		return nil
+		return nil, err
 	}
 
 	return &Client{
 		client,
-	}
+	}, nil
 }

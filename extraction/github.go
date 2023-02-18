@@ -21,16 +21,19 @@ type GitHubExtractor struct {
 	Client        *githubapi.ClientWrapper
 }
 
-func NewGitHubExtractor(dependency model.Dependency, config configuration.GitHub, cache *cache.Cache) *GitHubExtractor {
+func NewGitHubExtractor(dependency model.Dependency, config configuration.GitHub, cache *cache.Cache) (*GitHubExtractor, error) {
 
-	client := githubapi.NewClient(config)
+	client, err := githubapi.NewClient(config)
+	if err != nil {
+		return nil, err
+	}
 
 	clientWrapper := githubapi.NewClientWrapper(client, cache)
 
 	vcs := dependency.ExternalReferences["vcs"]
 	owner, repo := parseVCSString(vcs)
 
-	return &GitHubExtractor{RepositoryURL: vcs, Owner: owner, Repository: repo, Config: config, Client: clientWrapper}
+	return &GitHubExtractor{RepositoryURL: vcs, Owner: owner, Repository: repo, Config: config, Client: clientWrapper}, nil
 }
 
 func (ghe *GitHubExtractor) checkRateLimits() {

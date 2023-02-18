@@ -104,13 +104,19 @@ func (agent *Agent) Extraction() []string {
 	cache := cache.NewCache(agent.Config.MongoDB)
 
 	if vcs, exists := agent.Dependency.ExternalReferences[model.VCS]; exists && strings.Contains(vcs, "github") {
-		extraction.NewGitHubExtractor(agent.Dependency, agent.Config.GitHub, cache).Extract(agent.DataModel)
-		dataSources = append(dataSources, "github")
+		extractor, err := extraction.NewGitHubExtractor(agent.Dependency, agent.Config.GitHub, cache)
+		if err == nil {
+			extractor.Extract(agent.DataModel)
+			dataSources = append(dataSources, "github")
+		}
 	}
 
 	if agent.Dependency.PackageURL != "" {
-		extraction.NewOSSIndexExtractor(agent.Dependency, agent.Config.OSSIndex, cache).Extract(agent.DataModel)
-		dataSources = append(dataSources, "ossindex")
+		extractor, err := extraction.NewOSSIndexExtractor(agent.Dependency, agent.Config.OSSIndex, cache)
+		if err == nil {
+			extractor.Extract(agent.DataModel)
+			dataSources = append(dataSources, "ossindex")
+		}
 	}
 
 	if sha1, exists := agent.Dependency.Hashes[model.SHA1]; exists && sha1 != "" {

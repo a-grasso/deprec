@@ -11,6 +11,10 @@ func ContributorPrestige(m *model.DataModel) model.Core {
 
 	cr := model.NewCore(model.ContributorPrestige)
 
+	if m.Repository == nil {
+		return *cr
+	}
+
 	contributors := m.Repository.Contributors
 
 	sort.Slice(contributors, func(i, j int) bool {
