@@ -11,7 +11,7 @@ import (
 	"testing"
 )
 
-var config, _ = configuration.Load("./../test.ut.config.json")
+var config, _ = configuration.Load("./../config/config.json", "./../config/ut.env")
 
 var mongoCache, _ = mongo.Connect(context.TODO(), options.Client().ApplyURI(config.MongoDB.URI).SetAuth(options.Credential{
 	Username: config.MongoDB.Username,

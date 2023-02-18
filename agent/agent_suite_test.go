@@ -15,7 +15,8 @@ import (
 )
 
 var testCSV = "./../agent.test.gh.csv"
-var testConfig = "./../test.it.config.json"
+var testConfig = "./../config/config.json"
+var testEnv = "./../config/it.env"
 
 func TestAgent(t *testing.T) {
 	RegisterFailHandler(Fail)
@@ -49,7 +50,7 @@ func readCsvFile(filePath string) []*CSVRow {
 	return rows
 }
 
-var config, _ = configuration.Load(testConfig)
+var config, _ = configuration.Load(testConfig, testEnv)
 var csvRows = readCsvFile(testCSV)
 
 func tableEntries() []TableEntry {
