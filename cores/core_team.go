@@ -28,7 +28,7 @@ func CoreTeam(m *model.DataModel, c configuration.CoreTeam) model.Core {
 	//TODO: Needs overhaul, as too punishing for big projects 50+ contributors (all those with ~2 commits)
 	// old??
 
-	cr.IntakeThreshold(coreTeam, c.CoreTeamStrengthThresholdPercentage, c.Weights.CoreTeamStrength)
+	cr.IntakeThreshold(coreTeam, c.CoreTeamStrengthThreshold, c.Weights.CoreTeamStrength)
 
 	if commits == nil {
 		return *cr
@@ -36,7 +36,7 @@ func CoreTeam(m *model.DataModel, c configuration.CoreTeam) model.Core {
 
 	active := activeContributorsTotalPercentage(commits, contributors, c.ActiveContributorsPercentile) * 100
 
-	cr.IntakeThreshold(active, c.ActiveContributorsThresholdPercentage, c.Weights.ActiveContributors)
+	cr.IntakeThreshold(active, c.ActiveContributorsThreshold, c.Weights.ActiveContributors)
 
 	// TODO: in relation zu timeline setzen?
 	// old??

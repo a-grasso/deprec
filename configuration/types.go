@@ -212,10 +212,10 @@ type Backup struct {
 }
 
 type CoreTeam struct {
-	ActiveContributorsPercentile          float64 `json:"ActiveContributorsPercentile,omitempty"`
-	ActiveContributorsThresholdPercentage float64 `json:"ActiveContributorsThresholdPercentage,omitempty"`
-	CoreTeamStrengthThresholdPercentage   float64 `json:"CoreTeamStrengthThresholdPercentage,omitempty"`
-	Weights                               struct {
+	ActiveContributorsPercentile float64 `json:"ActiveContributorsPercentile,omitempty"`
+	ActiveContributorsThreshold  float64 `json:"ActiveContributorsThreshold,omitempty"`
+	CoreTeamStrengthThreshold    float64 `json:"CoreTeamStrengthThreshold,omitempty"`
+	Weights                      struct {
 		ActiveContributors float64 `json:"ActiveContributors,omitempty"`
 		CoreTeamStrength   float64 `json:"CoreTeamStrength,omitempty"`
 	} `json:"Weights"`
