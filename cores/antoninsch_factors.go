@@ -95,9 +95,9 @@ func Circumstances(m *model.DataModel, c configuration.CoresConfig) model.Core {
 
 	licensing := Licensing(m, c.Licensing)
 
-	cr.Overtake(rivalry, 1)
-	cr.Overtake(licensing, 2)
-	cr.Overtake(quality, 1)
+	cr.Overtake(rivalry, c.Circumstances.Weights.Rivalry)
+	cr.Overtake(licensing, c.Circumstances.Weights.Licensing)
+	cr.Overtake(quality, c.Circumstances.Weights.ProjectQuality)
 
 	return *cr
 }
