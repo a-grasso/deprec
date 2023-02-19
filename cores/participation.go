@@ -32,7 +32,7 @@ func Participation(m *model.DataModel, c configuration.Participation) model.Core
 
 	ratio := float64(len(users)) / float64(totalUsers) * 100
 
-	cr.IntakeThreshold(ratio, float64(c.ThirdPartyCommitThresholdPercentage), c.Weights.ThirdPartyCommits)
+	cr.IntakeThreshold(ratio, float64(c.ThirdPartyCommitThreshold), c.Weights.ThirdPartyCommits)
 
 	return *cr
 }

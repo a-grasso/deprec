@@ -153,9 +153,9 @@ type Activity struct {
 }
 
 type Participation struct {
-	CommitLimit                         int `json:"CommitLimit,omitempty"`
-	ThirdPartyCommitThresholdPercentage int `json:"ThirdPartyCommitThresholdPercentage,omitempty"`
-	Weights                             struct {
+	CommitLimit               int `json:"CommitLimit,omitempty"`
+	ThirdPartyCommitThreshold int `json:"ThirdPartyCommitThreshold,omitempty"`
+	Weights                   struct {
 		ThirdPartyCommits float64 `json:"ThirdPartyCommits,omitempty"`
 	} `json:"Weights"`
 }
@@ -194,8 +194,8 @@ type Processing struct {
 }
 
 type Engagement struct {
-	IssueCommentsRatioThresholdPercentage float64 `json:"IssueCommentsRatioThresholdPercentage,omitempty"`
-	Weights                               struct {
+	IssueCommentsRatioThreshold float64 `json:"IssueCommentsRatioThreshold,omitempty"`
+	Weights                     struct {
 		IssueCommentsRatio float64 `json:"IssueCommentsRatio,omitempty"`
 	} `json:"Weights"`
 }
