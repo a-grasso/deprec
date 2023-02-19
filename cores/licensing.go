@@ -1,11 +1,12 @@
 package cores
 
 import (
+	"github.com/a-grasso/deprec/configuration"
 	"github.com/a-grasso/deprec/model"
 	"strings"
 )
 
-func Licensing(m *model.DataModel) model.Core {
+func Licensing(m *model.DataModel, c configuration.Licensing) model.Core {
 	cr := model.NewCore(model.Licensing)
 
 	licenses := map[string]float64{
@@ -24,7 +25,7 @@ func Licensing(m *model.DataModel) model.Core {
 		for l, f := range licenses {
 
 			if strings.Contains(license, l) {
-				cr.Intake(f, 1)
+				cr.Intake(f, c.Weights.Repository)
 			}
 		}
 	}
@@ -37,7 +38,7 @@ func Licensing(m *model.DataModel) model.Core {
 				license = strings.ToLower(license)
 				for l, f := range licenses {
 					if strings.Contains(license, l) {
-						cr.Intake(f, 2)
+						cr.Intake(f, c.Weights.Artifact)
 					}
 				}
 			}
@@ -48,7 +49,7 @@ func Licensing(m *model.DataModel) model.Core {
 			for _, license := range libraryLicenses {
 				for l, f := range licenses {
 					if strings.Contains(license, l) {
-						cr.Intake(f, 1)
+						cr.Intake(f, c.Weights.Library)
 					}
 				}
 			}

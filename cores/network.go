@@ -25,7 +25,7 @@ func Network(m *model.DataModel, c configuration.Network) model.Core {
 			repositoryNetwork += org.Followers
 		}
 
-		cr.IntakeThreshold(float64(repositoryNetwork), float64(c.Threshold), 1)
+		cr.IntakeThreshold(float64(repositoryNetwork), float64(c.Threshold), c.Weights.RepositoryNetwork)
 	}
 
 	return *cr

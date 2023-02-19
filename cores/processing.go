@@ -30,10 +30,10 @@ func Processing(m *model.DataModel, c configuration.Processing) model.Core {
 	closedIssues := funk.Filter(issues, func(i model.Issue) bool { return i.State == model.IssueStateClosed }).([]model.Issue)
 
 	closingTime := averageClosingTime(closedIssues)
-	cr.IntakeLimit(closingTime, float64(c.ClosingTimeLimit), 2)
+	cr.IntakeLimit(closingTime, float64(c.ClosingTimeLimit), c.Weights.AverageClosingTime)
 
 	burn := averageBurn(issues, closedIssues, c.BurnPercentile)
-	cr.Intake(burn, 2)
+	cr.Intake(burn, c.Weights.Burn)
 
 	return *cr
 }

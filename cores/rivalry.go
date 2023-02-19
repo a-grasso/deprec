@@ -1,10 +1,11 @@
 package cores
 
 import (
+	"github.com/a-grasso/deprec/configuration"
 	"github.com/a-grasso/deprec/model"
 )
 
-func Rivalry(m *model.DataModel) model.Core {
+func Rivalry(m *model.DataModel, c configuration.Rivalry) model.Core {
 	cr := model.NewCore(model.Rivalry)
 
 	if m.Distribution == nil {
@@ -15,7 +16,7 @@ func Rivalry(m *model.DataModel) model.Core {
 		return *cr
 	}
 
-	cr.Intake(artifactIsLatest(m), 1)
+	cr.Intake(artifactIsLatest(m), c.Weights.IsLatest)
 
 	return *cr
 }

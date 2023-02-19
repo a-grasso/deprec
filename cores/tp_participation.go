@@ -6,9 +6,9 @@ import (
 	"github.com/thoas/go-funk"
 )
 
-func ThirdPartyParticipation(m *model.DataModel, c configuration.ThirdPartyParticipation) model.Core {
+func Participation(m *model.DataModel, c configuration.Participation) model.Core {
 
-	cr := model.NewCore(model.ThirdPartyParticipation)
+	cr := model.NewCore(model.Participation)
 
 	if m.Repository == nil {
 		return *cr
@@ -32,7 +32,7 @@ func ThirdPartyParticipation(m *model.DataModel, c configuration.ThirdPartyParti
 
 	ratio := float64(len(users)) / float64(totalUsers) * 100
 
-	cr.IntakeThreshold(ratio, float64(c.ThirdPartyCommitThresholdPercentage), 1)
+	cr.IntakeThreshold(ratio, float64(c.ThirdPartyCommitThresholdPercentage), c.Weights.ThirdPartyCommits)
 
 	return *cr
 }

@@ -22,7 +22,7 @@ func Engagement(m *model.DataModel, c configuration.Engagement) model.Core {
 
 	ratio *= 100
 
-	cr.IntakeThreshold(ratio, c.IssueCommentsRatioThresholdPercentage, 1)
+	cr.IntakeThreshold(ratio, c.IssueCommentsRatioThresholdPercentage, c.Weights.IssueCommentsRatio)
 
 	return *cr
 }

@@ -6,9 +6,9 @@ import (
 	"github.com/thoas/go-funk"
 )
 
-func OrganizationalBackup(m *model.DataModel, c configuration.OrgBackup) model.Core {
+func Backup(m *model.DataModel, c configuration.Backup) model.Core {
 
-	cr := model.NewCore(model.OrganizationalBackup)
+	cr := model.NewCore(model.Backup)
 
 	if m.Repository == nil {
 		return *cr
@@ -24,14 +24,14 @@ func OrganizationalBackup(m *model.DataModel, c configuration.OrgBackup) model.C
 	sponsors := funk.Sum(funk.Map(contributors, func(c model.Contributor) int { return c.Sponsors }))
 	organizations := funk.Sum(funk.Map(contributors, func(c model.Contributor) int { return c.Organizations }))
 
-	cr.IntakeThreshold(float64(len(companies)), float64(c.CompanyThreshold), 2)
-	cr.IntakeThreshold(sponsors, c.SponsorThreshold, 1)
-	cr.IntakeThreshold(organizations, c.OrganizationThreshold, 2)
+	cr.IntakeThreshold(float64(len(companies)), float64(c.CompanyThreshold), c.Weights.Companies)
+	cr.IntakeThreshold(sponsors, c.SponsorThreshold, c.Weights.Sponsors)
+	cr.IntakeThreshold(organizations, c.OrganizationThreshold, c.Weights.Organizations)
 
 	if m.Repository.Org != nil {
-		cr.Intake(model.NC, 3)
+		cr.Intake(model.NC, c.Weights.RepositoryOrganization)
 	} else {
-		cr.Intake(model.W, 3)
+		cr.Intake(model.W, c.Weights.RepositoryOrganization)
 	}
 
 	return *cr

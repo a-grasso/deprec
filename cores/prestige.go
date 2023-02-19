@@ -1,15 +1,16 @@
 package cores
 
 import (
+	"github.com/a-grasso/deprec/configuration"
 	"github.com/a-grasso/deprec/model"
 	"github.com/a-grasso/deprec/statistics"
 	"github.com/thoas/go-funk"
 	"sort"
 )
 
-func ContributorPrestige(m *model.DataModel) model.Core {
+func Prestige(m *model.DataModel, c configuration.Prestige) model.Core {
 
-	cr := model.NewCore(model.ContributorPrestige)
+	cr := model.NewCore(model.Prestige)
 
 	if m.Repository == nil {
 		return *cr
@@ -52,7 +53,7 @@ func ContributorPrestige(m *model.DataModel) model.Core {
 	}
 
 	result := funk.Sum(prestiges) / float64(len(prestiges))
-	cr.Intake(result, 1)
+	cr.Intake(result, c.Weights.Contributors)
 
 	return *cr
 }

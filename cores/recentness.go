@@ -29,13 +29,13 @@ func repositoryPart(cr *model.Core, c configuration.Recentness, repository *mode
 		})
 
 		lastCommit := commits[len(commits)-1]
-		lastCommitMonthsSince := statistics.CalculateTimeDifference(lastCommit.Timestamp, statistics.CustomNow())
+		monthsSinceLastCommit := statistics.CalculateTimeDifference(lastCommit.Timestamp, statistics.CustomNow())
 
-		averageMonthsLastCommit := averageMonthsSinceLast(commits, c.TimeframePercentileCommits)
+		averageMonthsSinceLastCommits := averageMonthsSinceLast(commits, c.TimeframePercentileCommits)
 
-		cr.IntakeLimit(float64(lastCommitMonthsSince), float64(c.CommitLimit), 2)
+		cr.IntakeLimit(float64(monthsSinceLastCommit), float64(c.CommitLimit), c.Weights.MonthsSinceLastCommit)
 
-		cr.IntakeLimit(averageMonthsLastCommit, float64(c.CommitLimit), 3)
+		cr.IntakeLimit(averageMonthsSinceLastCommits, float64(c.CommitLimit), c.Weights.AverageMonthsSinceLastCommits)
 	}
 
 	releases := repository.Releases
@@ -45,9 +45,9 @@ func repositoryPart(cr *model.Core, c configuration.Recentness, repository *mode
 		})
 
 		lastRelease := releases[len(releases)-1]
-		lastReleaseMonthsSince := statistics.CalculateTimeDifference(lastRelease.Date, statistics.CustomNow())
+		monthsSinceLastRelease := statistics.CalculateTimeDifference(lastRelease.Date, statistics.CustomNow())
 
-		cr.IntakeLimit(float64(lastReleaseMonthsSince), float64(c.ReleaseLimit), 2)
+		cr.IntakeLimit(float64(monthsSinceLastRelease), float64(c.ReleaseLimit), c.Weights.MonthsSinceLastRelease)
 	}
 }
 

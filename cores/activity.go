@@ -23,10 +23,10 @@ func Activity(m *model.DataModel, config configuration.Activity) model.Core {
 	}).([]model.IssueContribution)
 
 	percentile := config.Percentile
-	handle(commits, 3, percentile, cr)
-	handle(releases, 3, percentile, cr)
-	handle(issues, 2, percentile, cr)
-	handle(issueContributions, 1, percentile, cr)
+	handle(commits, config.Weights.Commits, percentile, cr)
+	handle(releases, config.Weights.Releases, percentile, cr)
+	handle(issues, config.Weights.Issues, percentile, cr)
+	handle(issueContributions, config.Weights.IssueContributions, percentile, cr)
 
 	return *cr
 }

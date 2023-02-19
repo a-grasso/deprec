@@ -135,26 +135,26 @@ func (agent *Agent) CombinationAndConclusion() model.Core {
 		return *cr
 	}
 
-	deityGiven := cores.DeityGiven(agent.DataModel)
-	vulnerabilities := cores.Vulnerabilities(agent.DataModel)
+	config := agent.Config.CoresConfig
 
-	effort := cores.Effort(agent.DataModel, agent.Config.CoresConfig)
+	deityGiven := cores.DeityGiven(agent.DataModel, config)
 
-	interconnectedness := cores.Interconnectedness(agent.DataModel, agent.Config.CoresConfig)
+	effort := cores.Effort(agent.DataModel, config)
 
-	community := cores.Community(agent.DataModel, agent.Config.CoresConfig)
+	interconnectedness := cores.Interconnectedness(agent.DataModel, config)
 
-	support := cores.Support(agent.DataModel, agent.Config.CoresConfig)
+	community := cores.Community(agent.DataModel, config)
 
-	circumstances := cores.Circumstances(agent.DataModel)
+	support := cores.Support(agent.DataModel, config)
 
-	cr.Overtake(deityGiven, 100)
-	cr.Overtake(vulnerabilities, 5)
-	cr.Overtake(effort, 1)
-	cr.Overtake(support, 1)
-	cr.Overtake(circumstances, 1)
-	cr.Overtake(community, 1)
-	cr.Overtake(interconnectedness, 1)
+	circumstances := cores.Circumstances(agent.DataModel, config)
+
+	cr.Overtake(deityGiven, config.CombCon.Weights.DeityGiven)
+	cr.Overtake(effort, config.CombCon.Weights.Effort)
+	cr.Overtake(support, config.CombCon.Weights.Support)
+	cr.Overtake(circumstances, config.CombCon.Weights.Circumstances)
+	cr.Overtake(community, config.CombCon.Weights.Community)
+	cr.Overtake(interconnectedness, config.CombCon.Weights.Interconnectedness)
 
 	return *cr
 }

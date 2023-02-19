@@ -15,7 +15,7 @@ func Popularity(m *model.DataModel, c configuration.Popularity) model.Core {
 		repositoryPopularity += m.Repository.Watchers
 		repositoryPopularity += m.Repository.Forks
 
-		cr.IntakeThreshold(float64(repositoryPopularity), float64(c.Threshold), 1)
+		cr.IntakeThreshold(float64(repositoryPopularity), float64(c.Threshold), c.Weights.RepositoryPopularity)
 	}
 
 	return *cr

@@ -3,57 +3,19 @@ package cores
 import (
 	"github.com/a-grasso/deprec/configuration"
 	"github.com/a-grasso/deprec/model"
-	"strings"
 )
 
-func DeityGiven(m *model.DataModel) model.Core {
+func DeityGiven(m *model.DataModel, c configuration.CoresConfig) model.Core {
 
 	cr := model.NewCore(model.DeityGiven)
 
-	if m.Repository != nil {
-		archived := m.Repository.Archivation
-		if archived {
-			cr.Intake(model.DM, 1)
-		}
+	marking := Marking(m, c.Marking)
 
-		readme := strings.ToLower(m.Repository.ReadMe)
-		if strings.Contains(readme, "end-of-life") {
-			cr.Intake(model.DM, 1)
-		}
+	vulnerabilities := Vulnerabilities(m, c.Vulnerabilities)
 
-		about := strings.ToLower(m.Repository.About)
-		if strings.Contains(about, "deprecated") || strings.Contains(about, "end-of-life") || strings.Contains(about, "abandoned") {
-			cr.Intake(model.DM, 1)
-		}
-	}
+	cr.Overtake(marking, c.DeityGiven.Weights.Marking)
 
-	if distribution := m.Distribution; distribution != nil {
-
-		if artifact := distribution.Artifact; artifact != nil {
-
-			description := strings.ToLower(artifact.Description)
-			if strings.Contains(description, "deprecated") || strings.Contains(description, "end-of-life") || strings.Contains(description, "abandoned") {
-				cr.Intake(model.DM, 1)
-			}
-		}
-	}
-
-	return *cr
-}
-
-func Vulnerabilities(m *model.DataModel) model.Core {
-
-	cr := model.NewCore(model.Vulnerabilities)
-
-	if m.VulnerabilityIndex == nil {
-		return *cr
-	}
-
-	vulnerabilities := m.VulnerabilityIndex.TotalVulnerabilitiesCount
-
-	if vulnerabilities > 0 {
-		cr.Intake(model.DM, 1)
-	}
+	cr.Overtake(vulnerabilities, c.DeityGiven.Weights.Vulnerabilities)
 
 	return *cr
 }
@@ -68,9 +30,9 @@ func Effort(m *model.DataModel, c configuration.CoresConfig) model.Core {
 
 	coreTeam := CoreTeam(m, c.CoreTeam)
 
-	cr.Overtake(recentness, 2)
-	cr.Overtake(activity, 2)
-	cr.Overtake(coreTeam, 1)
+	cr.Overtake(recentness, c.Effort.Weights.Recentness)
+	cr.Overtake(activity, c.Effort.Weights.Activity)
+	cr.Overtake(coreTeam, c.Effort.Weights.CoreTeam)
 
 	return *cr
 }
@@ -83,9 +45,9 @@ func Interconnectedness(m *model.DataModel, c configuration.CoresConfig) model.C
 
 	popularity := Popularity(m, c.Popularity)
 
-	cr.Overtake(network, 1)
+	cr.Overtake(network, c.Interconnectedness.Weights.Network)
 
-	cr.Overtake(popularity, 1)
+	cr.Overtake(popularity, c.Interconnectedness.Weights.Popularity)
 
 	return *cr
 }
@@ -94,17 +56,17 @@ func Community(m *model.DataModel, c configuration.CoresConfig) model.Core {
 
 	cr := model.NewCore(model.Community)
 
-	thirdPartyParticipation := ThirdPartyParticipation(m, c.ThirdPartyParticipation)
+	participation := Participation(m, c.Participation)
 
-	organizationalBackup := OrganizationalBackup(m, c.OrgBackup)
+	backup := Backup(m, c.Backup)
 
-	prestige := ContributorPrestige(m)
+	prestige := Prestige(m, c.Prestige)
 
-	cr.Overtake(prestige, 1)
+	cr.Overtake(prestige, c.Community.Weights.Prestige)
 
-	cr.Overtake(organizationalBackup, 3)
+	cr.Overtake(backup, c.Community.Weights.Backup)
 
-	cr.Overtake(thirdPartyParticipation, 1)
+	cr.Overtake(participation, c.Community.Weights.Participation)
 
 	return *cr
 }
@@ -117,21 +79,21 @@ func Support(m *model.DataModel, c configuration.CoresConfig) model.Core {
 
 	engagement := Engagement(m, c.Engagement)
 
-	cr.Overtake(processing, 2)
+	cr.Overtake(processing, c.Support.Weights.Processing)
 
-	cr.Overtake(engagement, 1)
+	cr.Overtake(engagement, c.Support.Weights.Engagement)
 	return *cr
 }
 
-func Circumstances(m *model.DataModel) model.Core {
+func Circumstances(m *model.DataModel, c configuration.CoresConfig) model.Core {
 
 	cr := model.NewCore(model.Circumstances)
 
-	rivalry := Rivalry(m)
+	rivalry := Rivalry(m, c.Rivalry)
 
-	quality := ProjectQuality(m)
+	quality := ProjectQuality(m, c.ProjectQuality)
 
-	licensing := Licensing(m)
+	licensing := Licensing(m, c.Licensing)
 
 	cr.Overtake(rivalry, 1)
 	cr.Overtake(licensing, 2)
