@@ -12,7 +12,7 @@ func init() {
 
 	config := zap.NewDevelopmentConfig()
 
-	config.Level = zap.NewAtomicLevelAt(zap.InfoLevel)
+	config.Level = zap.NewAtomicLevelAt(zap.WarnLevel)
 
 	zapLogger, _ := config.Build()
 

@@ -64,6 +64,13 @@ func (c *Collection) Database() *Database {
 }
 
 func NewCache(config configuration.MongoDB) *Cache {
+
+	if config.URI == "" || config.Password == "" || config.Username == "" {
+		return &Cache{
+			nil,
+		}
+	}
+
 	client := mongoDBClient(config)
 
 	return &Cache{

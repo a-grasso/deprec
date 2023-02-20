@@ -34,7 +34,7 @@ func Load(configFilePath, envFilePath string) (*Configuration, error) {
 
 	err = godotenv.Load(envFilePath)
 	if err != nil {
-		logging.Logger.Warn(fmt.Sprintf("error loading %s file", envFilePath))
+		logging.Logger.Warn(fmt.Sprintf("error loading %s file - relying on pre set environment variables...", envFilePath))
 	}
 
 	var present bool
