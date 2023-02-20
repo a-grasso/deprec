@@ -163,7 +163,6 @@ func (cr *Core) IntakeLimit(value, limit, weight float64) {
 func (cr *Core) Intake(value float64, weight float64) {
 
 	if value > 1 {
-		log.Printf("TOO MUCH TO INTAKE FOR %s", cr.Name)
 		return
 	}
 

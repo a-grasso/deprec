@@ -52,6 +52,7 @@ func Prestige(m *model.DataModel, c configuration.Prestige) model.Core {
 		prestiges = append(prestiges, prestige)
 	}
 
+	//TODO: too much for intake
 	result := funk.Sum(prestiges) / float64(len(prestiges))
 	cr.Intake(result, c.Weights.Contributors)
 
