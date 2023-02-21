@@ -77,16 +77,16 @@ func (ar *Result) TopRecommendation() model.Recommendation {
 type Agent struct {
 	Dependency model.Dependency
 	Config     configuration.Configuration
-	DataModel  *model.DataModel
+	DataModel  model.DataModel
 }
 
 func NewAgent(dependency model.Dependency, configuration configuration.Configuration) *Agent {
-	agent := Agent{Dependency: dependency, DataModel: &model.DataModel{}, Config: configuration}
+	agent := Agent{Dependency: dependency, DataModel: model.DataModel{}, Config: configuration}
 	return &agent
 }
 
-func (agent *Agent) Run() Result {
-	dataSources := agent.Extraction()
+func (agent *Agent) Run(cache *cache.Cache) Result {
+	dataSources := agent.Extraction(cache)
 
 	result := agent.CombinationAndConclusion()
 
@@ -98,15 +98,14 @@ func (agent *Agent) Run() Result {
 	}
 }
 
-func (agent *Agent) Extraction() []string {
+func (agent *Agent) Extraction(cache *cache.Cache) []string {
 
 	var dataSources []string
-	cache := cache.NewCache(agent.Config.MongoDB)
 
 	if vcs, exists := agent.Dependency.ExternalReferences[model.VCS]; exists && strings.Contains(vcs, "github") {
 		extractor, err := extraction.NewGitHubExtractor(agent.Dependency, agent.Config.GitHub, cache)
 		if err == nil {
-			extractor.Extract(agent.DataModel)
+			extractor.Extract(&agent.DataModel)
 			dataSources = append(dataSources, "github")
 		}
 	}
@@ -114,13 +113,13 @@ func (agent *Agent) Extraction() []string {
 	if agent.Dependency.PackageURL != "" {
 		extractor, err := extraction.NewOSSIndexExtractor(agent.Dependency, agent.Config.OSSIndex, cache)
 		if err == nil {
-			extractor.Extract(agent.DataModel)
+			extractor.Extract(&agent.DataModel)
 			dataSources = append(dataSources, "ossindex")
 		}
 	}
 
 	if sha1, exists := agent.Dependency.Hashes[model.SHA1]; exists && sha1 != "" {
-		extraction.NewMavenCentralExtractor(agent.Dependency, cache).Extract(agent.DataModel)
+		extraction.NewMavenCentralExtractor(agent.Dependency, cache).Extract(&agent.DataModel)
 		dataSources = append(dataSources, "mavencentral")
 	}
 

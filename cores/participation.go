@@ -6,7 +6,7 @@ import (
 	"github.com/thoas/go-funk"
 )
 
-func Participation(m *model.DataModel, c configuration.Participation) model.Core {
+func Participation(m model.DataModel, c configuration.Participation) model.Core {
 
 	cr := model.NewCore(model.Participation)
 

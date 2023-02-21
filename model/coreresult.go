@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/thoas/go-funk"
 	"gonum.org/v1/gonum/mat"
-	"log"
 	"math"
 )
 
@@ -185,8 +184,6 @@ func (cr *Core) Intake(value float64, weight float64) {
 		cr.DecisionMaking += weight
 		return
 	}
-
-	log.Printf("TOO LITTLE TO INTAKE FOR %s", cr.Name)
 
 	return
 }

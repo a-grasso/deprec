@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func Marking(m *model.DataModel, c configuration.Marking) model.Core {
+func Marking(m model.DataModel, c configuration.Marking) model.Core {
 
 	cr := model.NewCore(model.Marking)
 

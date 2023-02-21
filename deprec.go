@@ -1,9 +1,11 @@
 package deprec
 
 import (
+	"context"
 	"github.com/CycloneDX/cyclonedx-go"
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	"github.com/a-grasso/deprec/agent"
+	"github.com/a-grasso/deprec/cache"
 	"github.com/a-grasso/deprec/configuration"
 	"github.com/a-grasso/deprec/logging"
 	"github.com/a-grasso/deprec/model"
@@ -66,6 +68,12 @@ func convertAgentResults(agentResults []agent.Result) *Result {
 func linear(config configuration.Configuration, dependencies []model.Dependency) []agent.Result {
 	var agentResults []agent.Result
 	totalDependencies := len(dependencies)
+
+	cache, err := cache.NewCache(config.MongoDB)
+	if err == nil {
+		defer cache.Client.Disconnect(context.TODO())
+	}
+
 	for i, dep := range dependencies {
 
 		if i > 50 {
@@ -75,7 +83,7 @@ func linear(config configuration.Configuration, dependencies []model.Dependency)
 		logging.SugaredLogger.Infof("running agent for dependency '%s:%s' %d/%d", dep.Name, dep.Version, i, totalDependencies)
 
 		a := agent.NewAgent(dep, config)
-		agentResult := a.Run()
+		agentResult := a.Run(cache)
 		agentResults = append(agentResults, agentResult)
 	}
 
@@ -88,6 +96,11 @@ func parallel(deps []model.Dependency, numWorkers int, config configuration.Conf
 
 	var wg sync.WaitGroup
 
+	cache, err := cache.NewCache(config.MongoDB)
+	if err == nil {
+		defer cache.Client.Disconnect(context.TODO())
+	}
+
 	for w := 0; w < numWorkers; w++ {
 		wg.Add(1)
 
@@ -95,7 +108,7 @@ func parallel(deps []model.Dependency, numWorkers int, config configuration.Conf
 
 		go func() {
 			defer wg.Done()
-			worker(config, dependencies, agentResults, w)
+			worker(config, cache, dependencies, agentResults, w)
 		}()
 	}
 
@@ -121,13 +134,13 @@ func parallel(deps []model.Dependency, numWorkers int, config configuration.Conf
 	return result
 }
 
-func worker(configuration configuration.Configuration, dependencies <-chan model.Dependency, results chan<- agent.Result, worker int) {
+func worker(configuration configuration.Configuration, cache *cache.Cache, dependencies <-chan model.Dependency, results chan<- agent.Result, worker int) {
 
 	for dep := range dependencies {
 		logging.SugaredLogger.Infof("worker %d running agent for dependency '%s:%s' %d/%d", worker, dep.Name, dep.Version, 0, 0)
 
 		a := agent.NewAgent(dep, configuration)
-		results <- a.Run()
+		results <- a.Run(cache)
 	}
 }
 

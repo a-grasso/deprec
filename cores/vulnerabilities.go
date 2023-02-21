@@ -5,7 +5,7 @@ import (
 	"github.com/a-grasso/deprec/model"
 )
 
-func Vulnerabilities(m *model.DataModel, c configuration.Vulnerabilities) model.Core {
+func Vulnerabilities(m model.DataModel, c configuration.Vulnerabilities) model.Core {
 
 	cr := model.NewCore(model.Vulnerabilities)
 

@@ -8,7 +8,7 @@ import (
 	"sort"
 )
 
-func Recentness(m *model.DataModel, c configuration.Recentness) model.Core {
+func Recentness(m model.DataModel, c configuration.Recentness) model.Core {
 
 	cr := model.NewCore(model.Recentness)
 

@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func Licensing(m *model.DataModel, c configuration.Licensing) model.Core {
+func Licensing(m model.DataModel, c configuration.Licensing) model.Core {
 	cr := model.NewCore(model.Licensing)
 
 	licenses := map[string]float64{

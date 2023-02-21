@@ -7,7 +7,7 @@ import (
 	"github.com/thoas/go-funk"
 )
 
-func Activity(m *model.DataModel, config configuration.Activity) model.Core {
+func Activity(m model.DataModel, config configuration.Activity) model.Core {
 
 	cr := model.NewCore(model.Activity)
 

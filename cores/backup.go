@@ -6,7 +6,7 @@ import (
 	"github.com/thoas/go-funk"
 )
 
-func Backup(m *model.DataModel, c configuration.Backup) model.Core {
+func Backup(m model.DataModel, c configuration.Backup) model.Core {
 
 	cr := model.NewCore(model.Backup)
 

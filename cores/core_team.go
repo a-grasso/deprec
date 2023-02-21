@@ -9,7 +9,7 @@ import (
 	"sort"
 )
 
-func CoreTeam(m *model.DataModel, c configuration.CoreTeam) model.Core {
+func CoreTeam(m model.DataModel, c configuration.CoreTeam) model.Core {
 
 	cr := model.NewCore(model.CoreTeam)
 

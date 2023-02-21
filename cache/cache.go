@@ -2,6 +2,7 @@ package cache
 
 import (
 	"context"
+	"errors"
 	"github.com/a-grasso/deprec/configuration"
 	"github.com/a-grasso/deprec/logging"
 	"github.com/google/go-github/v48/github"
@@ -63,19 +64,19 @@ func (c *Collection) Database() *Database {
 	return c.db
 }
 
-func NewCache(config configuration.MongoDB) *Cache {
+func NewCache(config configuration.MongoDB) (*Cache, error) {
 
 	if config.URI == "" || config.Password == "" || config.Username == "" {
 		return &Cache{
 			nil,
-		}
+		}, errors.New("could not create cache, config invalid")
 	}
 
 	client := mongoDBClient(config)
 
 	return &Cache{
 		client,
-	}
+	}, nil
 }
 
 func mongoDBClient(config configuration.MongoDB) *mongo.Client {
@@ -267,7 +268,7 @@ func checkCache[T any](collection *Collection) []T {
 		return nil
 	}
 
-	result := make([]T, 0)
+	var result []T
 	for cur.Next(context.TODO()) {
 		var elem T
 		err = cur.Decode(&elem)

@@ -8,7 +8,7 @@ import (
 	"sort"
 )
 
-func Prestige(m *model.DataModel, c configuration.Prestige) model.Core {
+func Prestige(m model.DataModel, c configuration.Prestige) model.Core {
 
 	cr := model.NewCore(model.Prestige)
 

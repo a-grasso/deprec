@@ -5,7 +5,7 @@ import (
 	"github.com/a-grasso/deprec/model"
 )
 
-func DeityGiven(m *model.DataModel, c configuration.CoresConfig) model.Core {
+func DeityGiven(m model.DataModel, c configuration.CoresConfig) model.Core {
 
 	cr := model.NewCore(model.DeityGiven)
 
@@ -20,7 +20,7 @@ func DeityGiven(m *model.DataModel, c configuration.CoresConfig) model.Core {
 	return *cr
 }
 
-func Effort(m *model.DataModel, c configuration.CoresConfig) model.Core {
+func Effort(m model.DataModel, c configuration.CoresConfig) model.Core {
 
 	cr := model.NewCore(model.Effort)
 
@@ -37,7 +37,7 @@ func Effort(m *model.DataModel, c configuration.CoresConfig) model.Core {
 	return *cr
 }
 
-func Interconnectedness(m *model.DataModel, c configuration.CoresConfig) model.Core {
+func Interconnectedness(m model.DataModel, c configuration.CoresConfig) model.Core {
 
 	cr := model.NewCore(model.Interconnectedness)
 
@@ -52,7 +52,7 @@ func Interconnectedness(m *model.DataModel, c configuration.CoresConfig) model.C
 	return *cr
 }
 
-func Community(m *model.DataModel, c configuration.CoresConfig) model.Core {
+func Community(m model.DataModel, c configuration.CoresConfig) model.Core {
 
 	cr := model.NewCore(model.Community)
 
@@ -71,7 +71,7 @@ func Community(m *model.DataModel, c configuration.CoresConfig) model.Core {
 	return *cr
 }
 
-func Support(m *model.DataModel, c configuration.CoresConfig) model.Core {
+func Support(m model.DataModel, c configuration.CoresConfig) model.Core {
 
 	cr := model.NewCore(model.Support)
 
@@ -85,7 +85,7 @@ func Support(m *model.DataModel, c configuration.CoresConfig) model.Core {
 	return *cr
 }
 
-func Circumstances(m *model.DataModel, c configuration.CoresConfig) model.Core {
+func Circumstances(m model.DataModel, c configuration.CoresConfig) model.Core {
 
 	cr := model.NewCore(model.Circumstances)
 

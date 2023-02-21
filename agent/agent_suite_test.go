@@ -3,6 +3,7 @@ package agent_test
 import (
 	"fmt"
 	"github.com/a-grasso/deprec/agent"
+	"github.com/a-grasso/deprec/cache"
 	"github.com/a-grasso/deprec/configuration"
 	"github.com/a-grasso/deprec/logging"
 	"github.com/a-grasso/deprec/model"
@@ -62,6 +63,8 @@ func tableEntries() []TableEntry {
 	return entries
 }
 
+var mongoCache, _ = cache.NewCache(config.MongoDB)
+
 var _ = Describe("Agent", func() {
 
 	DescribeTable("using only all data",
@@ -96,7 +99,7 @@ var _ = Describe("Agent", func() {
 
 			agent := agent.NewAgent(dep, *config)
 
-			agentResult := agent.Run()
+			agentResult := agent.Run(mongoCache)
 
 			recommendation := agentResult.TopRecommendation()
 

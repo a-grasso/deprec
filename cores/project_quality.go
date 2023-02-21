@@ -5,7 +5,7 @@ import (
 	"github.com/a-grasso/deprec/model"
 )
 
-func ProjectQuality(m *model.DataModel, c configuration.ProjectQuality) model.Core {
+func ProjectQuality(m model.DataModel, c configuration.ProjectQuality) model.Core {
 	cr := model.NewCore(model.ProjectQuality)
 
 	if m.Repository != nil {

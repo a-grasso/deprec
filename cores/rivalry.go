@@ -5,7 +5,7 @@ import (
 	"github.com/a-grasso/deprec/model"
 )
 
-func Rivalry(m *model.DataModel, c configuration.Rivalry) model.Core {
+func Rivalry(m model.DataModel, c configuration.Rivalry) model.Core {
 	cr := model.NewCore(model.Rivalry)
 
 	if m.Distribution == nil {
@@ -21,7 +21,7 @@ func Rivalry(m *model.DataModel, c configuration.Rivalry) model.Core {
 	return *cr
 }
 
-func artifactIsLatest(m *model.DataModel) float64 {
+func artifactIsLatest(m model.DataModel) float64 {
 
 	artifact := m.Distribution.Artifact.Version
 
