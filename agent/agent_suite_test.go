@@ -67,7 +67,7 @@ var mongoCache, _ = cache.NewCache(config.MongoDB)
 
 var _ = Describe("Agent", func() {
 
-	DescribeTable("using only all data",
+	DescribeTable("using evaluation set",
 		func(row *CSVRow) {
 
 			if row.Name == "" {
