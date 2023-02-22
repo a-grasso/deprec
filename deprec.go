@@ -17,10 +17,10 @@ type Result struct {
 }
 
 type Client struct {
-	Configuration *configuration.Configuration
+	Configuration configuration.Configuration
 }
 
-func NewClient(config *configuration.Configuration) *Client {
+func NewClient(config configuration.Configuration) *Client {
 	return &Client{
 		Configuration: config,
 	}
@@ -46,9 +46,9 @@ func (c *Client) Run(sbom *cyclonedx.BOM, runConfig RunConfig) *Result {
 
 	var agentResults []agent.Result
 	if runConfig.Mode == Linear {
-		agentResults = linear(*c.Configuration, dependencies)
+		agentResults = linear(c.Configuration, dependencies)
 	} else if runConfig.Mode == Parallel {
-		agentResults = parallel(dependencies, runConfig.NumWorkers, *c.Configuration)
+		agentResults = parallel(dependencies, runConfig.NumWorkers, c.Configuration)
 	}
 
 	return convertAgentResults(agentResults)
