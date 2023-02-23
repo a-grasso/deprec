@@ -2,6 +2,7 @@ package deprec_test
 
 import (
 	"context"
+	"encoding/csv"
 	"fmt"
 	"github.com/a-grasso/deprec/agent"
 	"github.com/a-grasso/deprec/cache"
@@ -58,10 +59,27 @@ func TestEvaluation(t *testing.T) {
 
 	agentResults := parallel(dependencies, 5, *config)
 
-	evaluation(agentResults, confidence)
+	records := evaluation(agentResults, confidence)
+
+	writeToCSV(records)
 }
 
-func evaluation(agentResults []agent.Result, confidence float64) {
+func writeToCSV(records [][]string) {
+	csvFile, err := os.Create("evaluation.csv")
+	if err != nil {
+		log.Fatalf("failed creating file: %s", err)
+	}
+	defer csvFile.Close()
+
+	csvWriter := csv.NewWriter(csvFile)
+
+	for _, record := range records {
+		_ = csvWriter.Write(record)
+	}
+	csvWriter.Flush()
+}
+
+func evaluation(agentResults []agent.Result, confidence float64) [][]string {
 
 	var coreNames []model.CoreName
 
@@ -149,6 +167,24 @@ func evaluation(agentResults []agent.Result, confidence float64) {
 		}
 	}
 
+	file, err := os.Create("evaluation.csv")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	var records = [][]string{
+		{
+			"Core (EOS Factor / Statement)",
+			"Mean Squared Error",
+			"Correct Classified Percentage",
+			"Confident Correct Classified Percentage",
+			"Total Dependencies On Turn (Sum of Kügelis > 0)",
+			"Correct Classified (Highest Softmax Value)",
+			fmt.Sprintf("Confident Correct Classified (Highest Softmax Value > %1.3f)", confidence),
+		},
+	}
+
 	for _, factor := range coreNames {
 
 		correct := correctPerCore[factor]
@@ -161,12 +197,23 @@ func evaluation(agentResults []agent.Result, confidence float64) {
 
 		mse := sum / float64(len(errors))
 
-		log.Println(fmt.Sprintf("----- %s -----", factor))
-		log.Println(fmt.Sprintf("Mean Squared Error: %f", mse))
-		log.Println(fmt.Sprintf("Correct Classified (Highest Softmax Value): %2.2f %% (%d/%d))", float64(correct)/float64(total)*100, correct, total))
-		log.Println(fmt.Sprintf("Confident Correct Classified (Highest Softmax Value > 0.75): %2.2f %% (%d/%d)", float64(correctConfident)/float64(total)*100, correctConfident, total))
-		log.Println("-----  -----")
+		ct := float64(correct) / float64(total) * 100
+		cct := float64(correctConfident) / float64(total) * 100
+
+		record := []string{
+			string(factor),
+			fmt.Sprintf("%f", mse),
+			fmt.Sprintf("%2.2f", ct),
+			fmt.Sprintf("%2.2f", cct),
+			fmt.Sprintf("%d", total),
+			fmt.Sprintf("%d", correct),
+			fmt.Sprintf("%d", correctConfident),
+		}
+
+		records = append(records, record)
 	}
+
+	return records
 }
 
 func dependenciesFromCSVRows() []model.Dependency {
