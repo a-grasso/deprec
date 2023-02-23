@@ -23,6 +23,9 @@ func Prestige(m model.DataModel, c configuration.Prestige) model.Core {
 	})
 
 	commits := m.Repository.Commits
+	if len(commits) == 0 {
+		return *cr
+	}
 
 	sort.Slice(commits, func(i, j int) bool {
 		return commits[i].Timestamp.Before(commits[j].Timestamp)
