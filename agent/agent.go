@@ -110,7 +110,9 @@ func (agent *Agent) Extraction(cache *cache.Cache) []string {
 		}
 	}
 
-	if agent.Dependency.PackageURL != "" {
+	purl := agent.Dependency.PackageURL
+
+	if purl != "" {
 		extractor, err := extraction.NewOSSIndexExtractor(agent.Dependency, agent.Config.OSSIndex, cache)
 		if err == nil {
 			extractor.Extract(&agent.DataModel)
@@ -118,7 +120,7 @@ func (agent *Agent) Extraction(cache *cache.Cache) []string {
 		}
 	}
 
-	if sha1, exists := agent.Dependency.Hashes[model.SHA1]; exists && sha1 != "" {
+	if sha1, exists := agent.Dependency.Hashes[model.SHA1]; exists && sha1 != "" && strings.Contains(purl, "maven") {
 		extraction.NewMavenCentralExtractor(agent.Dependency, cache).Extract(&agent.DataModel)
 		dataSources = append(dataSources, "mavencentral")
 	}
