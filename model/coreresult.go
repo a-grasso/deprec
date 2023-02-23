@@ -85,6 +85,29 @@ func (cr *Core) ToStringDeep() string {
 	return topCore + Separator + softmaxResult + Separator + underlyingCores
 }
 
+func (cr *Core) GetAllCores() []Core {
+
+	var result []Core
+
+	result = append(result, *cr)
+
+	for _, factors := range cr.UnderlyingCores {
+
+		for _, factor := range factors {
+
+			result = append(result, factor)
+
+			for _, statements := range factor.UnderlyingCores {
+
+				for _, statement := range statements {
+					result = append(result, statement)
+				}
+			}
+		}
+	}
+	return result
+}
+
 func (cr *Core) Normalized() Core {
 
 	var total float64
@@ -197,5 +220,5 @@ func (cr *Core) Overtake(from Core, weight float64) {
 	cr.Watchlist += normalized.Watchlist * weight
 	cr.DecisionMaking += normalized.DecisionMaking * weight
 
-	cr.UnderlyingCores[weight] = append(cr.UnderlyingCores[weight], normalized)
+	cr.UnderlyingCores[weight] = append(cr.UnderlyingCores[weight], from)
 }
