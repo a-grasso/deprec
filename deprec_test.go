@@ -52,92 +52,124 @@ func readCsvFile(filePath string) []*CSVRow {
 
 func TestEvaluation(t *testing.T) {
 
-	errors := make(map[string]float64, 0)
+	var confidence = 0.45
 
-	var confidence = 0.75
-
-	dependencies := depsFromRows()
+	dependencies := dependenciesFromCSVRows()
 
 	agentResults := parallel(dependencies, 5, *config)
 
-	correct, correctConfident, total := evaluation(agentResults, confidence, errors)
-
-	sum := funk.Sum(funk.Map(funk.Values(errors), func(f float64) float64 { return f * f }))
-
-	mse := sum / float64(len(errors))
-
-	log.Println(fmt.Sprintf("Mean Squared Error: %f", mse))
-	log.Println(fmt.Sprintf("Correct Classified (Highest Softmax Value): %2.2f %% (%d/%d))", float64(correct)/float64(total)*100, correct, total))
-	log.Println(fmt.Sprintf("Confident Correct Classified (Highest Softmax Value > 0.75): %2.2f %% (%d/%d)", float64(correctConfident)/float64(total)*100, correctConfident, total))
+	evaluation(agentResults, confidence)
 }
 
-func evaluation(agentResults []agent.Result, confidence float64, errors map[string]float64) (int, int, int) {
-	var correct int
-	var correctConfident int
-	var total int
+func evaluation(agentResults []agent.Result, confidence float64) {
+
+	var coreNames []model.CoreName
+
+	correctPerCore := make(map[model.CoreName]int, 0)
+	correctConfidentPerCore := make(map[model.CoreName]int, 0)
+	totalPerCore := make(map[model.CoreName]int, 0)
+
+	errorsPerCore := make(map[model.CoreName][]float64, 0)
+
+	for _, factor := range agentResults[0].Core.GetAllCores() {
+		coreNames = append(coreNames, factor.Name)
+	}
 
 	for _, agentResult := range agentResults {
 
-		dep := agentResult.Dependency
+		cores := agentResult.Core.GetAllCores()
 
-		rows := funk.Filter(csvRows, func(row *CSVRow) bool {
+		for _, core := range cores {
 
-			if row.Name != dep.Name {
-				return false
+			if core.Sum() == 0 {
+				continue
 			}
 
-			if row.Version != dep.Version {
-				return false
+			ar := agent.Result{
+				Dependency:      agentResult.Dependency,
+				Core:            core,
+				Recommendations: core.Softmax(),
+				DataSources:     nil,
 			}
 
-			if row.Repository != dep.ExternalReferences[model.VCS] {
-				return false
+			dep := ar.Dependency
+
+			rows := funk.Filter(csvRows, func(row *CSVRow) bool {
+
+				if row.Name != dep.Name {
+					return false
+				}
+
+				if row.Version != dep.Version {
+					return false
+				}
+
+				if row.Repository != dep.ExternalReferences[model.VCS] {
+					return false
+				}
+
+				if row.SHA1 != dep.Hashes[model.SHA1] {
+					return false
+				}
+
+				if row.PackageURL != dep.PackageURL {
+					return false
+				}
+
+				return true
+			}).([]*CSVRow)
+
+			row := rows[0]
+
+			var expectedRecommendation model.Recommendation
+			switch row.Recommendation {
+			case "DM":
+				expectedRecommendation = model.DecisionMaking
+			case "W":
+				expectedRecommendation = model.Watchlist
+			case "NIA":
+				expectedRecommendation = model.NoImmediateAction
+			case "NC":
+				expectedRecommendation = model.NoConcerns
 			}
 
-			if row.SHA1 != dep.Hashes[model.SHA1] {
-				return false
+			expectedRecommendationValue := ar.Recommendations[expectedRecommendation]
+
+			if ar.TopRecommendation() == expectedRecommendation {
+				correctPerCore[core.Name] += 1
+				if expectedRecommendationValue > confidence {
+					correctConfidentPerCore[core.Name] += 1
+				}
 			}
+			totalPerCore[core.Name] += 1
 
-			if row.PackageURL != dep.PackageURL {
-				return false
-			}
+			diff := 1 - expectedRecommendationValue
 
-			return true
-		}).([]*CSVRow)
-
-		row := rows[0]
-
-		var expectedRec model.Recommendation
-		switch row.Recommendation {
-		case "DM":
-			expectedRec = model.DecisionMaking
-		case "W":
-			expectedRec = model.Watchlist
-		case "NIA":
-			expectedRec = model.NoImmediateAction
-		case "NC":
-			expectedRec = model.NoConcerns
+			errorsPerCore[core.Name] = append(errorsPerCore[core.Name], diff)
 		}
-
-		expectedRecVal := agentResult.Recommendations[expectedRec]
-
-		if agentResult.TopRecommendation() == expectedRec {
-			correct++
-			if expectedRecVal > confidence {
-				correctConfident++
-			}
-		}
-		total++
-
-		diff := 1 - expectedRecVal
-
-		errors[row.Name] = diff
 	}
 
-	return correct, correctConfident, total
+	for _, factor := range coreNames {
+
+		correct := correctPerCore[factor]
+		correctConfident := correctConfidentPerCore[factor]
+		total := totalPerCore[factor]
+
+		errors := errorsPerCore[factor]
+
+		sum := funk.Sum(funk.Map(errors, func(f float64) float64 { return f * f }))
+
+		mse := sum / float64(len(errors))
+
+		log.Println(fmt.Sprintf("----- %s -----", factor))
+		log.Println(fmt.Sprintf("Mean Squared Error: %f", mse))
+		log.Println(fmt.Sprintf("Correct Classified (Highest Softmax Value): %2.2f %% (%d/%d))", float64(correct)/float64(total)*100, correct, total))
+		log.Println(fmt.Sprintf("Confident Correct Classified (Highest Softmax Value > 0.75): %2.2f %% (%d/%d)", float64(correctConfident)/float64(total)*100, correctConfident, total))
+		log.Println("-----  -----")
+	}
 }
 
-func depsFromRows() []model.Dependency {
+func dependenciesFromCSVRows() []model.Dependency {
 	var deps []model.Dependency
 
 	for _, row := range csvRows {
@@ -186,7 +218,6 @@ func parallel(deps []model.Dependency, numWorkers int, config configuration.Conf
 	}
 
 	for _, dep := range deps {
-
 		dependencies <- dep
 	}
 	close(dependencies)

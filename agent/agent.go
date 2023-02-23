@@ -7,7 +7,6 @@ import (
 	"github.com/a-grasso/deprec/cores"
 	"github.com/a-grasso/deprec/extraction"
 	"github.com/a-grasso/deprec/model"
-	"github.com/thoas/go-funk"
 	"strings"
 )
 
@@ -54,14 +53,13 @@ func (ar *Result) ToString() string {
 
 func (ar *Result) TopRecommendation() model.Recommendation {
 
+	if ar.Core.IsInconclusive() {
+		return model.Inconclusive
+	}
+
 	recommendations := ar.Recommendations
 
 	var rec model.Recommendation
-
-	unique := funk.Uniq(funk.Values(recommendations)).([]float64)
-	if len(unique) == 1 {
-		return model.Inconclusive
-	}
 
 	tmp := -1.0
 	for recommendation, f := range recommendations {

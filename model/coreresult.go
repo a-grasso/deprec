@@ -107,6 +107,18 @@ func (cr *Core) GetAllCores() []Core {
 	}
 	return result
 }
+func (cr *Core) Sum() float64 {
+	return cr.DecisionMaking + cr.Watchlist + cr.NoImmediateAction + cr.NoConcerns
+}
+
+func (cr *Core) IsInconclusive() bool {
+	values := []float64{cr.NoConcerns, cr.NoImmediateAction, cr.Watchlist, cr.DecisionMaking}
+	unique := funk.Uniq(values).([]float64)
+	if len(unique) == 1 {
+		return true
+	}
+	return false
+}
 
 func (cr *Core) Normalized() Core {
 
