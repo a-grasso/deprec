@@ -52,7 +52,7 @@ func readCsvFile(filePath string) []*CSVRow {
 
 func TestEvaluation(t *testing.T) {
 
-	var confidence = 0.45
+	var confidence = 0.475
 
 	dependencies := dependenciesFromCSVRows()
 
