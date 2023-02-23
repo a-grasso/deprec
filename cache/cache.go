@@ -221,7 +221,7 @@ func handleAsync[T any](f func() (T, *github.Response, error)) (T, error) {
 			break
 		}
 
-		time.Sleep(100000)
+		time.Sleep(5 * time.Second)
 	}
 	return object, err
 }
