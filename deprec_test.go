@@ -53,7 +53,7 @@ func readCsvFile(filePath string) []*CSVRow {
 
 func TestEvaluation(t *testing.T) {
 
-	var confidence = 0.475
+	var confidence = 0.75
 
 	dependencies := dependenciesFromCSVRows()
 
@@ -86,6 +86,8 @@ func evaluation(agentResults []agent.Result, confidence float64) [][]string {
 	correctPerCore := make(map[model.CoreName]int, 0)
 	correctConfidentPerCore := make(map[model.CoreName]int, 0)
 	totalPerCore := make(map[model.CoreName]int, 0)
+
+	confidencesPerCore := make(map[model.CoreName]float64, 0)
 
 	errorsPerCore := make(map[model.CoreName][]float64, 0)
 
@@ -153,15 +155,19 @@ func evaluation(agentResults []agent.Result, confidence float64) [][]string {
 
 			expectedRecommendationValue := ar.Recommendations[expectedRecommendation]
 
+			dynamicConfidence := ar.Core.HighestPossibleSoftmaxValue() * confidence
+
+			confidencesPerCore[ar.Core.Name] = dynamicConfidence
+
 			if ar.TopRecommendation() == expectedRecommendation {
 				correctPerCore[core.Name] += 1
-				if expectedRecommendationValue > confidence {
+				if expectedRecommendationValue > dynamicConfidence {
 					correctConfidentPerCore[core.Name] += 1
 				}
 			}
 			totalPerCore[core.Name] += 1
 
-			diff := 1 - expectedRecommendationValue
+			diff := ar.Core.HighestPossibleSoftmaxValue() - expectedRecommendationValue
 
 			errorsPerCore[core.Name] = append(errorsPerCore[core.Name], diff)
 		}
@@ -181,7 +187,7 @@ func evaluation(agentResults []agent.Result, confidence float64) [][]string {
 			"Confident Correct Classified Percentage",
 			"Total Dependencies On Turn (Sum of Kügelis > 0)",
 			"Correct Classified (Highest Softmax Value)",
-			fmt.Sprintf("Confident Correct Classified (Highest Softmax Value > %1.3f)", confidence),
+			fmt.Sprintf("Confident Correct Classified (Highest Softmax Value > Highest Possible Softmax Value * %1.3f)", confidence),
 		},
 	}
 
