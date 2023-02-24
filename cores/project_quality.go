@@ -11,11 +11,15 @@ func ProjectQuality(m model.DataModel, c configuration.ProjectQuality) model.Cor
 	if m.Repository != nil {
 
 		if m.Repository.ReadMe != "" {
-			cr.Intake(model.NIA, c.Weights.ReadMe)
+			cr.Intake(model.NC, c.Weights.ReadMe)
+		} else {
+			cr.Intake(model.DM, c.Weights.License)
 		}
 
 		if m.Repository.License != "" {
-			cr.Intake(model.NIA, c.Weights.License)
+			cr.Intake(model.NC, c.Weights.License)
+		} else {
+			cr.Intake(model.DM, c.Weights.License)
 		}
 
 		if m.Repository.About != "" {
