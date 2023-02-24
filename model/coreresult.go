@@ -172,6 +172,29 @@ func (cr *Core) Softmax() RecommendationDistribution {
 	return result
 }
 
+func (cr *Core) HighestPossibleSoftmaxValue() float64 {
+
+	total := cr.Sum()
+
+	matrix := mat.NewDense(4, 1, []float64{total, 0, 0, 0})
+
+	var sum float64
+	// Calculate the sum
+	for _, v := range matrix.RawMatrix().Data {
+		sum += math.Exp(v)
+	}
+
+	resultMatrix := mat.NewDense(matrix.RawMatrix().Rows, matrix.RawMatrix().Cols, nil)
+	// Calculate softmax value for each element
+	resultMatrix.Apply(func(i int, j int, v float64) float64 {
+		return math.Exp(v) / sum
+	}, matrix)
+
+	col := resultMatrix.ColView(0)
+
+	return col.At(0, 0)
+}
+
 func (cr *Core) IntakeThreshold(value, threshold, weight float64) {
 
 	v := math.Min(1, value/threshold)
