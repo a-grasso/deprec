@@ -4,7 +4,6 @@ import (
 	"github.com/a-grasso/deprec/configuration"
 	"github.com/a-grasso/deprec/model"
 	"github.com/a-grasso/deprec/statistics"
-	"github.com/thoas/go-funk"
 )
 
 func Activity(m model.DataModel, config configuration.Activity) model.Core {
@@ -18,15 +17,11 @@ func Activity(m model.DataModel, config configuration.Activity) model.Core {
 	commits := m.Repository.Commits
 	releases := m.Repository.Releases
 	issues := m.Repository.Issues
-	issueContributions := funk.FlatMap(issues, func(issue model.Issue) []model.IssueContribution {
-		return issue.Contributions
-	}).([]model.IssueContribution)
 
 	percentile := config.Percentile
 	handle(commits, config.Weights.Commits, percentile, cr)
 	handle(releases, config.Weights.Releases, percentile, cr)
 	handle(issues, config.Weights.Issues, percentile, cr)
-	handle(issueContributions, config.Weights.IssueContributions, percentile, cr)
 
 	return *cr
 }
