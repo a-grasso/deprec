@@ -3,7 +3,6 @@ package model
 import (
 	"fmt"
 	"github.com/thoas/go-funk"
-	"gonum.org/v1/gonum/mat"
 	"math"
 )
 
@@ -60,7 +59,7 @@ const Separator string = " <---> "
 
 func (cr *Core) ToString() string {
 
-	rec := cr.Softmax()
+	rec := cr.Recommend()
 	topCore := fmt.Sprintf("Top Core: %v", cr.Name)
 	softmaxResult := fmt.Sprintf("%s -> %.3f | %s -> %.3f | %s -> %.3f | %s -> %.3f", NoConcerns, rec[NoConcerns], NoImmediateAction, rec[NoImmediateAction], Watchlist, rec[Watchlist], DecisionMaking, rec[DecisionMaking])
 	underlyingCores := fmt.Sprintf("Underlying Cores: %v", funk.Map(cr.UnderlyingCores, func(weight float64, cr []Core) (float64, []CoreName) {
@@ -75,7 +74,7 @@ func (cr *Core) ToString() string {
 
 func (cr *Core) ToStringDeep() string {
 
-	rec := cr.Softmax()
+	rec := cr.Recommend()
 	topCore := fmt.Sprintf("Top Core: %v", cr.Name)
 	softmaxResult := fmt.Sprintf("%s -> %.3f | %s -> %.3f | %s -> %.3f | %s -> %.3f", NoConcerns, rec[NoConcerns], NoImmediateAction, rec[NoImmediateAction], Watchlist, rec[Watchlist], DecisionMaking, rec[DecisionMaking])
 	underlyingCores := fmt.Sprintf("Underlying Cores: %v", funk.Map(cr.UnderlyingCores, func(weight float64, cr []Core) string {
@@ -144,55 +143,26 @@ func (cr *Core) Normalized() Core {
 
 type RecommendationDistribution map[Recommendation]float64
 
-func (cr *Core) Softmax() RecommendationDistribution {
+func (cr *Core) Recommend() RecommendationDistribution {
 
-	matrix := mat.NewDense(4, 1, []float64{cr.NoConcerns, cr.NoImmediateAction, cr.Watchlist, cr.DecisionMaking})
-
-	var sum float64
-	// Calculate the sum
-	for _, v := range matrix.RawMatrix().Data {
-		sum += math.Exp(v)
-	}
-
-	resultMatrix := mat.NewDense(matrix.RawMatrix().Rows, matrix.RawMatrix().Cols, nil)
-	// Calculate softmax value for each element
-	resultMatrix.Apply(func(i int, j int, v float64) float64 {
-		return math.Exp(v) / sum
-	}, matrix)
+	sum := cr.Sum()
 
 	result := make(RecommendationDistribution)
 
-	col := resultMatrix.ColView(0)
+	if sum == 0 {
+		return RecommendationDistribution{NoConcerns: 0.25, NoImmediateAction: 0.25, Watchlist: 0.25, DecisionMaking: 0.25}
+	}
 
-	result[NoConcerns] = col.At(0, 0)
-	result[NoImmediateAction] = col.At(1, 0)
-	result[Watchlist] = col.At(2, 0)
-	result[DecisionMaking] = col.At(3, 0)
+	result[NoConcerns] = cr.NoConcerns / sum
+	result[NoImmediateAction] = cr.NoImmediateAction / sum
+	result[Watchlist] = cr.Watchlist / sum
+	result[DecisionMaking] = cr.DecisionMaking / sum
 
 	return result
 }
 
-func (cr *Core) HighestPossibleSoftmaxValue() float64 {
-
-	total := cr.Sum()
-
-	matrix := mat.NewDense(4, 1, []float64{total, 0, 0, 0})
-
-	var sum float64
-	// Calculate the sum
-	for _, v := range matrix.RawMatrix().Data {
-		sum += math.Exp(v)
-	}
-
-	resultMatrix := mat.NewDense(matrix.RawMatrix().Rows, matrix.RawMatrix().Cols, nil)
-	// Calculate softmax value for each element
-	resultMatrix.Apply(func(i int, j int, v float64) float64 {
-		return math.Exp(v) / sum
-	}, matrix)
-
-	col := resultMatrix.ColView(0)
-
-	return col.At(0, 0)
+func (cr *Core) HighestPossibleValue() float64 {
+	return 1.0
 }
 
 func (cr *Core) IntakeThreshold(value, threshold, weight float64) {
