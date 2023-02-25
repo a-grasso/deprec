@@ -101,10 +101,6 @@ func evaluation(agentResults []agent.Result, confidence float64) [][]string {
 
 		for _, core := range cores {
 
-			if core.Sum() == 0 {
-				continue
-			}
-
 			ar := agent.Result{
 				Dependency:      agentResult.Dependency,
 				Core:            core,
@@ -183,6 +179,7 @@ func evaluation(agentResults []agent.Result, confidence float64) [][]string {
 		{
 			"Core (EOS Factor / Statement)",
 			"Mean Squared Error",
+			"Mean Absolute Error",
 			"Correct Classified Percentage",
 			"Confident Correct Classified Percentage",
 			"Total Dependencies On Turn (Sum of Kügelis > 0)",
@@ -199,9 +196,11 @@ func evaluation(agentResults []agent.Result, confidence float64) [][]string {
 
 		errors := errorsPerCore[factor]
 
-		sum := funk.Sum(funk.Map(errors, func(f float64) float64 { return f * f }))
+		sum := funk.Sum(errors)
+		sumSquared := funk.Sum(funk.Map(errors, func(f float64) float64 { return f * f }))
 
-		mse := sum / float64(len(errors))
+		mse := sumSquared / float64(len(errors))
+		mae := sum / float64(len(errors))
 
 		ct := float64(correct) / float64(total) * 100
 		cct := float64(correctConfident) / float64(total) * 100
@@ -209,6 +208,7 @@ func evaluation(agentResults []agent.Result, confidence float64) [][]string {
 		record := []string{
 			string(factor),
 			fmt.Sprintf("%f", mse),
+			fmt.Sprintf("%f", mae),
 			fmt.Sprintf("%2.2f", ct),
 			fmt.Sprintf("%2.2f", cct),
 			fmt.Sprintf("%d", total),
