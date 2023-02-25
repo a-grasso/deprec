@@ -91,7 +91,7 @@ func (agent *Agent) Run(cache *cache.Cache) Result {
 	return Result{
 		Dependency:      agent.Dependency,
 		Core:            result,
-		Recommendations: result.Softmax(),
+		Recommendations: result.Recommend(),
 		DataSources:     dataSources,
 	}
 }

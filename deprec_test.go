@@ -87,8 +87,6 @@ func evaluation(agentResults []agent.Result, confidence float64) [][]string {
 	correctConfidentPerCore := make(map[model.CoreName]int, 0)
 	totalPerCore := make(map[model.CoreName]int, 0)
 
-	confidencesPerCore := make(map[model.CoreName]float64, 0)
-
 	errorsPerCore := make(map[model.CoreName][]float64, 0)
 
 	for _, factor := range agentResults[0].Core.GetAllCores() {
@@ -104,7 +102,7 @@ func evaluation(agentResults []agent.Result, confidence float64) [][]string {
 			ar := agent.Result{
 				Dependency:      agentResult.Dependency,
 				Core:            core,
-				Recommendations: core.Softmax(),
+				Recommendations: core.Recommend(),
 				DataSources:     nil,
 			}
 
@@ -151,19 +149,15 @@ func evaluation(agentResults []agent.Result, confidence float64) [][]string {
 
 			expectedRecommendationValue := ar.Recommendations[expectedRecommendation]
 
-			dynamicConfidence := ar.Core.HighestPossibleSoftmaxValue() * confidence
-
-			confidencesPerCore[ar.Core.Name] = dynamicConfidence
-
 			if ar.TopRecommendation() == expectedRecommendation {
 				correctPerCore[core.Name] += 1
-				if expectedRecommendationValue > dynamicConfidence {
+				if expectedRecommendationValue > confidence {
 					correctConfidentPerCore[core.Name] += 1
 				}
 			}
 			totalPerCore[core.Name] += 1
 
-			diff := ar.Core.HighestPossibleSoftmaxValue() - expectedRecommendationValue
+			diff := ar.Core.HighestPossibleValue() - expectedRecommendationValue
 
 			errorsPerCore[core.Name] = append(errorsPerCore[core.Name], diff)
 		}
@@ -183,8 +177,8 @@ func evaluation(agentResults []agent.Result, confidence float64) [][]string {
 			"Correct Classified Percentage",
 			"Confident Correct Classified Percentage",
 			"Total Dependencies On Turn (Sum of Kügelis > 0)",
-			"Correct Classified (Highest Softmax Value)",
-			fmt.Sprintf("Confident Correct Classified (Highest Softmax Value > Highest Possible Softmax Value * %1.3f)", confidence),
+			"Correct Classified (Highest Recommend Value)",
+			fmt.Sprintf("Confident Correct Classified (Highest Recommend Value > %1.3f)", confidence),
 		},
 	}
 
