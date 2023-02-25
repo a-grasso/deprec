@@ -5,6 +5,7 @@ import (
 	"github.com/a-grasso/deprec/model"
 	"github.com/a-grasso/deprec/statistics"
 	"github.com/thoas/go-funk"
+	"math"
 	"sort"
 )
 
@@ -48,9 +49,16 @@ func Prestige(m model.DataModel, c configuration.Prestige) model.Core {
 			diff = float64(contributionMonthSpan) / float64(repoMonthSpan)
 		}
 
-		prestige := float64(c.Sponsors+c.Organizations+c.Repositories) + diff*10
+		backup := float64(c.Sponsors+c.Organizations) / 20
+		backup = math.Min(1, backup)
 
-		prestige *= float64(len(contributors)-i) / float64(len(contributors))
+		repos := float64(c.Repositories) / 250
+		repos = math.Min(1, repos)
+
+		prestige := (backup + diff + repos) / 3
+
+		i2 := len(contributors) - 1*(i%len(contributors)/3)
+		prestige *= float64(i2) / float64(len(contributors))
 
 		prestiges = append(prestiges, prestige)
 	}
