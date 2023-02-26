@@ -5,47 +5,47 @@
       "Effort": 6.5,
       "Circumstances": 1.5,
       "Support": 2.5,
-      "Community": 2.0,
+      "Community": 2,
       "Interconnectedness": 2.5
     }
   },
   "DeityGiven": {
     "Weights": {
-      "Marking": 1.0,
-      "Vulnerabilities": 1.0
+      "Marking": 1,
+      "Vulnerabilities": 1
     }
   },
   "Circumstances": {
     "Weights": {
       "Rivalry": 0.5,
       "Licensing": 1.5,
-      "ProjectQuality": 1.0
+      "ProjectQuality": 1
     }
   },
   "Effort": {
     "Weights": {
-      "Recentness": 4.0,
+      "Recentness": 4,
       "Activity": 1.5,
       "CoreTeam": 0.5
     }
   },
   "Support": {
     "Weights": {
-      "Engagement": 2.0,
+      "Engagement": 2,
       "Processing": 1.5
     }
   },
   "Community": {
     "Weights": {
-      "Prestige": 1.0,
-      "Backup": 3.0,
-      "Participation": 1.0
+      "Prestige": 1,
+      "Backup": 3,
+      "Participation": 1
     }
   },
   "Interconnectedness": {
     "Weights": {
-      "Popularity": 2.0,
-      "Network": 2.0
+      "Popularity": 2,
+      "Network": 2
     }
   },
   "Marking": {
@@ -63,23 +63,23 @@
       "abandoned"
     ],
     "Weights": {
-      "ReadMe": 2.0,
-      "Archivation": 2.0,
-      "About": 1.0,
-      "Artifact": 1.0
+      "ReadMe": 2,
+      "Archivation": 2,
+      "About": 1,
+      "Artifact": 1
     }
   },
   "ProjectQuality": {
     "Weights": {
-      "ReadMe": 2.0,
-      "License": 2.0,
-      "About": 1.0,
-      "AllowForking": 1.0
+      "ReadMe": 2,
+      "License": 2,
+      "About": 1,
+      "AllowForking": 1
     }
   },
   "Vulnerabilities": {
     "Weights": {
-      "CVE": 1.5
+      "CVE": 1
     }
   },
   "Rivalry": {
@@ -90,40 +90,40 @@
   "Licensing": {
     "Weights": {
       "Repository": 1.5,
-      "Artifact": 2.0,
-      "Library": 1.0
+      "Artifact": 2,
+      "Library": 1
     }
   },
   "Prestige": {
     "Weights": {
-      "Contributors": 1.0
+      "Contributors": 1
     }
   },
   "Activity": {
     "Percentile": 2,
     "Weights": {
       "Commits": 3.5,
-      "Releases": 3.0,
-      "Issues": 2.0
+      "Releases": 3,
+      "Issues": 2
     }
   },
   "Participation": {
     "CommitLimit": 2,
     "ThirdPartyCommitThreshold": 80,
     "Weights": {
-      "ThirdPartyCommits": 1.0
+      "ThirdPartyCommits": 1
     }
   },
   "Network": {
     "Threshold": 2000,
     "Weights": {
-      "RepositoryNetwork": 1.0
+      "RepositoryNetwork": 1
     }
   },
   "Popularity": {
     "Threshold": 2000,
     "Weights": {
-      "RepositoryPopularity": 1.0
+      "RepositoryPopularity": 1
     }
   },
   "Recentness": {
@@ -131,9 +131,9 @@
     "CommitLimit": 24,
     "TimeframePercentileCommits": 2,
     "Weights": {
-      "MonthsSinceLastCommit": 2.0,
-      "AverageMonthsSinceLastCommits": 3.0,
-      "MonthsSinceLastRelease": 2.0
+      "MonthsSinceLastCommit": 2,
+      "AverageMonthsSinceLastCommits": 3,
+      "MonthsSinceLastRelease": 2
     }
   },
   "Processing": {
@@ -141,13 +141,13 @@
     "BurnPercentile": 20,
     "Weights": {
       "AverageClosingTime": 1.5,
-      "Burn": 1.0
+      "Burn": 1
     }
   },
   "Engagement": {
     "IssueCommentsRatioThreshold": 325,
     "Weights": {
-      "IssueCommentsRatio": 1.0
+      "IssueCommentsRatio": 1
     }
   },
   "Backup": {
@@ -155,9 +155,9 @@
     "SponsorThreshold": 10,
     "OrganizationThreshold": 10,
     "Weights": {
-      "Companies": 2.0,
-      "Sponsors": 1.0,
-      "Organizations": 2.0,
+      "Companies": 2,
+      "Sponsors": 1,
+      "Organizations": 2,
       "RepositoryOrganization": 3.5
     }
   },
@@ -167,7 +167,7 @@
     "CoreTeamStrengthThreshold": 15,
     "Weights": {
       "ActiveContributors": 2.5,
-      "CoreTeamStrength": 1.0
+      "CoreTeamStrength": 1
     }
   }
 }
