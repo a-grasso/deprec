@@ -17,7 +17,7 @@ import (
 	"testing"
 )
 
-var testCSV = "./agent.test.gh.csv"
+var testCSV = "./agent.test.csv"
 var testConfig = "./config/config.json"
 var testEnv = "./config/it.env"
 
