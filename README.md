@@ -1,5 +1,5 @@
 # deprec
-Dependency End-Of-Support Recognition
+Dependency End-Of-Support Detection
 
 Usage is handled via [deprec-cli](https://github.com/a-grasso/deprec-cli)
 
