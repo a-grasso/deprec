@@ -17,14 +17,14 @@ type Result struct {
 	DataSources     []string
 }
 
-func (ar *Result) UsedCores() string {
+func (ar *Result) UsedFirstLevelCores() string {
 
 	var usedCores []model.CoreName
+
 	for _, cores := range ar.Core.UnderlyingCores {
 
 		for _, core := range cores {
-			coreSum := core.DecisionMaking + core.Watchlist + core.NoImmediateAction + core.NoConcerns
-			if coreSum != 0 {
+			if core.Sum() != 0 {
 				usedCores = append(usedCores, core.Name)
 			}
 		}
